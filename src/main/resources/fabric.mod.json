@@ -1,0 +1,34 @@
+{
+    "schemaVersion": 1,
+    "id": "enhancedweather",
+    "version": "${version}",
+    "name": "Enhanced Weather",
+    "description": "Revamps Vanilla Weather",
+    "authors": [
+        "TalonFox"
+    ],
+    "contact": {},
+    "license": "MIT",
+    "icon": "assets/enhancedweather/icon.png",
+    "environment": "*",
+    "entrypoints": {
+        "client": [
+            "sh.talonfox.enhancedweather.client.EnhancedweatherClient"
+        ],
+        "main": [
+            "sh.talonfox.enhancedweather.Enhancedweather"
+        ],
+        "modmenu": [
+            "sh.talonfox.enhancedweather.config.ModMenuIntegration"
+        ]
+    },
+    "mixins": [
+        "enhancedweather.mixins.json"
+    ],
+    "depends": {
+        "fabricloader": ">=0.14.9",
+        "fabric": "*",
+        "minecraft": ">=1.19",
+        "cloth-config": ">=8.1.77"
+    }
+}
