@@ -1,9 +1,8 @@
 package sh.talonfox.enhancedweather.weather;
 
 import blue.endless.jankson.JsonObject;
-import blue.endless.jankson.JsonPrimitive;
+
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -22,6 +21,7 @@ import java.util.Objects;
 import java.util.Random;
 
 public class ServersideManager extends Manager {
+    public int nextID = 0;
     private final ServerWorld world;
     public ServersideManager(ServerWorld w) {
         this.world = w;
@@ -35,12 +35,30 @@ public class ServersideManager extends Manager {
         if (world.getTime() % 20 == 0) {
             if (world.getServer().getCurrentPlayerCount() == 0 && !Clouds.isEmpty()) {
                 Clouds.clear();
+            } else {
+                for (int j : Clouds.keySet()) {
+                    Cloud cloud = Clouds.get(j);
+                    PlayerEntity ent = world.getClosestPlayer(cloud.Position.x,50,cloud.Position.z,1024,false);
+                    if (ent == null) {
+                        for (ServerPlayerEntity i : PlayerLookup.all(world.getServer())) {
+                            UpdateCloud.send(world.getServer(), j, Clouds.get(j).generateUpdate(), i);
+                        }
+                        break;
+                    }
+                }
             }
             for (ServerPlayerEntity ent : PlayerLookup.all(Objects.requireNonNull(getWorld().getServer()))) {
                 if (Clouds.size() < 20 * getWorld().getServer().getCurrentPlayerCount()) {
                     if (new Random().nextInt(5) == 0) {
                         attemptCloudSpawn(ent, 200);
                     }
+                }
+            }
+        }
+        if(world.getTime() % 40 == 0) {
+            for (int i=0;i<Clouds.size();i++) {
+                for (ServerPlayerEntity j : PlayerLookup.all(world.getServer())) {
+                    UpdateCloud.send(world.getServer(), i, Clouds.get(i).generateUpdate(), j);
                 }
             }
         }
@@ -71,10 +89,12 @@ public class ServersideManager extends Manager {
         }
         if (soClose == null) {
             Cloud so = new Cloud(this,Vec3d.ofCenter(tryPos));
-            List<Integer> keys = Clouds.keySet().stream().sorted().toList();
-            int index = keys.size()==0?0:keys.get(keys.size()-1);
+            int index = nextID;
             Clouds.put(index,so);
-            UpdateCloud.send(world.getServer(),index,so.generateUpdate(),null);
+            nextID += 1;
+            for(ServerPlayerEntity i : PlayerLookup.all(world.getServer())) {
+                UpdateCloud.send(world.getServer(), index, so.generateUpdate(), i);
+            }
         }
     }
 

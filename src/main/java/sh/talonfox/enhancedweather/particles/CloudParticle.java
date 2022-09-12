@@ -72,7 +72,7 @@ public class CloudParticle extends SpriteBillboardParticle {
         this.velocityY /= 0.9800000190734863D;
         this.velocityZ /= 0.9800000190734863D;
         if (this.age < 50) {
-            this.setAlpha(this.age / 50F);
+            this.setAlpha((this.age / 50F));
         } else if(this.age > this.maxAge - 50) {
             this.setAlpha((50 - (this.age - (this.maxAge - 50))) / 50F);
         } else {

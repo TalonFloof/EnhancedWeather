@@ -19,7 +19,7 @@ public class MixinWorld {
     @Overwrite
     public float getRainGradient(float gradient) {
         if(isClient) {
-            return 0.3F;
+            return 0.0F;
         } else {
             return 0.0F;
         }

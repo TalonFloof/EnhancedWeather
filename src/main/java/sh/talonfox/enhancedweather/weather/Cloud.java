@@ -20,7 +20,7 @@ public class Cloud {
     public Vec3d Position = null;
     public int Layer = 0;
     public int Water = 0;
-    public int Size = 0;
+    public int Size = 300;
     public boolean Precipitating = false;
     public boolean Placeholder = false;
     public boolean Expanding = false;
@@ -40,7 +40,7 @@ public class Cloud {
             Vec3i playerPos = new Vec3i(MinecraftClient.getInstance().player.getX(), Position.y, MinecraftClient.getInstance().player.getZ());
             Vec3i spawnPos = new Vec3i(Position.x + (Math.random() * Size) - (Math.random() * Size), Position.y, Position.z + (Math.random() * Size) - (Math.random() * Size));
             if (ParticlesCloud.size() < Size && playerPos.getManhattanDistance(spawnPos) < 512) {
-                CloudParticle newParticle = (CloudParticle)MinecraftClient.getInstance().particleManager.addParticle(ParticleRegister.CLOUD, spawnPos.getX(), spawnPos.getY(), spawnPos.getZ(), Precipitating ? 0.2F : 0.7F, 0F, 0F);
+                CloudParticle newParticle = (CloudParticle)MinecraftClient.getInstance().particleManager.addParticle(ParticleRegister.CLOUD, spawnPos.getX(), spawnPos.getY(), spawnPos.getZ(), Precipitating ? 0.2F : 0.7F, Precipitating ? 0.2F : 0.7F, Precipitating ? 0.2F : 0.7F);
                 newParticle.setVelocity(-Math.sin(Math.toRadians(Enhancedweather.CLIENT_WIND.AngleGlobal)) * 0.01D,0D,Math.cos(Math.toRadians(Enhancedweather.CLIENT_WIND.AngleGlobal)) * 0.01D);
                 ParticlesCloud.add(newParticle);
             }
