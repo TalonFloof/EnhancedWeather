@@ -15,7 +15,7 @@ public class ParticleRegister {
     }
     public static void InitializeClient() {
         ClientSpriteRegistryCallback.event(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE).register(((atlasTexture, registry) -> {
-            registry.register(new Identifier("enhancedweather", "particle/cloud"));
+            registry.register(new Identifier("enhancedweather", "particle/cloud2"));
         }));
         ParticleFactoryRegistry.getInstance().register(CLOUD, CloudParticle.DefaultFactory::new);
     }

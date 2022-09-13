@@ -41,7 +41,7 @@ public class Cloud {
             Vec3i spawnPos = new Vec3i(Position.x + (Math.random() * Size) - (Math.random() * Size), Position.y, Position.z + (Math.random() * Size) - (Math.random() * Size));
             if (ParticlesCloud.size() < Size && playerPos.getManhattanDistance(spawnPos) < 512) {
                 CloudParticle newParticle = (CloudParticle)MinecraftClient.getInstance().particleManager.addParticle(ParticleRegister.CLOUD, spawnPos.getX(), spawnPos.getY(), spawnPos.getZ(), Precipitating ? 0.2F : 0.7F, Precipitating ? 0.2F : 0.7F, Precipitating ? 0.2F : 0.7F);
-                newParticle.setVelocity(-Math.sin(Math.toRadians(Enhancedweather.CLIENT_WIND.AngleGlobal)) * 0.01D,0D,Math.cos(Math.toRadians(Enhancedweather.CLIENT_WIND.AngleGlobal)) * 0.01D);
+                newParticle.setVelocity(-Math.sin(Math.toRadians(Enhancedweather.CLIENT_WIND.AngleGlobal)) * Enhancedweather.CLIENT_WIND.SpeedGlobal * 0.5D,0D,Math.cos(Math.toRadians(Enhancedweather.CLIENT_WIND.AngleGlobal)) * Enhancedweather.CLIENT_WIND.SpeedGlobal * 0.5D);
                 ParticlesCloud.add(newParticle);
             }
         }

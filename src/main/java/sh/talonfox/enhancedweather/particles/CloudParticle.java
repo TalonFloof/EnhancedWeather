@@ -3,8 +3,11 @@ package sh.talonfox.enhancedweather.particles;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.particle.*;
+import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.util.math.MathHelper;
@@ -31,11 +34,16 @@ public class CloudParticle extends SpriteBillboardParticle {
 
     @Override
     public ParticleTextureSheet getType() {
-        return ParticleTextureSheet.PARTICLE_SHEET_TRANSLUCENT;
+        return ParticleTextureSheet.TERRAIN_SHEET;
     }
 
     @Override
     public void buildGeometry(VertexConsumer vertexConsumer, Camera camera, float tickDelta) {
+        internalBuildGeometry(vertexConsumer,camera,tickDelta,pitch);
+        internalBuildGeometry(vertexConsumer,camera,tickDelta,(pitch+180) % 360);
+    }
+
+    public void internalBuildGeometry(VertexConsumer vertexConsumer, Camera camera, float tickDelta, float pit) {
         Vec3d vec3d = camera.getPos();
         float f = (float)(MathHelper.lerp((double)tickDelta, this.prevPosX, this.x) - vec3d.getX());
         float g = (float)(MathHelper.lerp((double)tickDelta, this.prevPosY, this.y) - vec3d.getY());
@@ -43,7 +51,7 @@ public class CloudParticle extends SpriteBillboardParticle {
         Quaternion quaternion;
         quaternion = new Quaternion(0, 0, 0, 1);
         quaternion.hamiltonProduct(Vec3f.POSITIVE_Y.getDegreesQuaternion(this.yaw));
-        quaternion.hamiltonProduct(Vec3f.POSITIVE_X.getDegreesQuaternion(this.pitch));
+        quaternion.hamiltonProduct(Vec3f.POSITIVE_X.getDegreesQuaternion(pit));
         Vec3f[] vec3fs = new Vec3f[]{new Vec3f(-1.0F, -1.0F, 0.0F), new Vec3f(-1.0F, 1.0F, 0.0F), new Vec3f(1.0F, 1.0F, 0.0F), new Vec3f(1.0F, -1.0F, 0.0F)};
         float j = this.getSize(tickDelta);
 
