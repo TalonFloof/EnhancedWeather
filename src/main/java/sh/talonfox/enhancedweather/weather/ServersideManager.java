@@ -32,7 +32,7 @@ public class ServersideManager extends Manager {
 
     @Override
     public void tick() {
-        Clouds.values().parallelStream().forEach(Cloud::tickServer);
+        Clouds.values().stream().forEach(Cloud::tickServer);
         ticks++;
         if (ticks % 20 == 0) {
             if (world.getServer().getCurrentPlayerCount() == 0 && !Clouds.isEmpty()) {

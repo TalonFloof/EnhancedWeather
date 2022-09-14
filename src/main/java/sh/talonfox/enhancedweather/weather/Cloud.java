@@ -75,15 +75,8 @@ public class Cloud {
             if (rand.nextInt(100) == 0) {
                 Water += 10;
                 waterCollected = true;
-            } else if (rand.nextInt(15) == 0) {
-                BlockPos blockPos = this.HostManager.getWorld().getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, new BlockPos(Position.x, Position.y, Position.z));
-                FluidState fluid = this.HostManager.getWorld().getFluidState(blockPos.up());
-                if (fluid.isIn(FluidTags.WATER)) {
-                    Water += 10;
-                    waterCollected = true;
-                }
             }
-            if(rand.nextInt(15) == 0) {
+            if(rand.nextInt(15) == 0 && !waterCollected) {
                 RegistryEntry<Biome> biome = this.HostManager.getWorld().getBiome(new BlockPos(Position.x, Position.y, Position.z));
                 if(biome.isIn(BiomeTags.IS_JUNGLE) || biome.matchesId(new Identifier("minecraft:swamp")) || biome.matchesId(new Identifier("minecraft:mangrove_swamp")) || biome.isIn(BiomeTags.IS_RIVER) || biome.isIn(BiomeTags.IS_OCEAN) || biome.isIn(BiomeTags.IS_DEEP_OCEAN)) {
                     Water += 10;

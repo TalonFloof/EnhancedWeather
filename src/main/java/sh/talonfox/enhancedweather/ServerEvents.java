@@ -23,11 +23,9 @@ public class ServerEvents {
             }
         });
         ServerTickEvents.START_SERVER_TICK.register((server) -> {
-            server.execute(() -> {
-                Enhancedweather.WIND.tick(server, 0);
-                Enhancedweather.NETHER_WIND.tick(server, -1);
-                Enhancedweather.SERVER_WEATHER.tick();
-            });
+            Enhancedweather.WIND.tick(server, 0);
+            Enhancedweather.NETHER_WIND.tick(server, -1);
+            Enhancedweather.SERVER_WEATHER.tick();
         });
         ServerLifecycleEvents.SERVER_STOPPING.register((server) -> {
             Enhancedweather.LOGGER.info("Server stopping!");
