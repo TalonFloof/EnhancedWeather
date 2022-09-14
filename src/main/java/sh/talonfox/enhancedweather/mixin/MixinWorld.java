@@ -1,11 +1,13 @@
 package sh.talonfox.enhancedweather.mixin;
 
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
+import sh.talonfox.enhancedweather.Enhancedweather;
 
 @Mixin(World.class)
 public class MixinWorld {
@@ -18,8 +20,12 @@ public class MixinWorld {
      */
     @Overwrite
     public float getRainGradient(float gradient) {
-        if(isClient) {
-            return 0.0F;
+        if(isClient && Enhancedweather.CLIENT_WEATHER != null) {
+            if(MinecraftClient.getInstance().player != null) {
+                return 0F;
+            } else {
+                return 0.0F;
+            }
         } else {
             return 0.0F;
         }

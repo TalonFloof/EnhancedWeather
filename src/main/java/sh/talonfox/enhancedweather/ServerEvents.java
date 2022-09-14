@@ -19,13 +19,15 @@ public class ServerEvents {
                 Enhancedweather.NETHER_WIND.load(server, -1);
                 Enhancedweather.LOGGER.info("Initializing Server-side Weather Manager...");
                 Enhancedweather.SERVER_WEATHER = new ServersideManager(world);
+                world.setWeather(Integer.MAX_VALUE,Integer.MAX_VALUE,false,false);
             }
         });
         ServerTickEvents.START_SERVER_TICK.register((server) -> {
-            Enhancedweather.WIND.tick(server,0);
-            Enhancedweather.NETHER_WIND.tick(server,-1);
-            Enhancedweather.SERVER_WEATHER.tick();
-            server.getOverworld().setWeather(Integer.MAX_VALUE,Integer.MAX_VALUE,false,false);
+            server.execute(() -> {
+                Enhancedweather.WIND.tick(server, 0);
+                Enhancedweather.NETHER_WIND.tick(server, -1);
+                Enhancedweather.SERVER_WEATHER.tick();
+            });
         });
         ServerLifecycleEvents.SERVER_STOPPING.register((server) -> {
             Enhancedweather.LOGGER.info("Server stopping!");

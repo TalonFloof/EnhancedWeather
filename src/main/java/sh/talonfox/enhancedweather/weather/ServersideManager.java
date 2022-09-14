@@ -22,51 +22,42 @@ import java.util.Random;
 
 public class ServersideManager extends Manager {
     public int nextID = 0;
+    private long ticks = 0;
     private final ServerWorld world;
+    private Random rand;
     public ServersideManager(ServerWorld w) {
         this.world = w;
+        this.rand = new Random();
     }
 
     @Override
     public void tick() {
-        for (Cloud i : Clouds.values()) {
-            i.tickServer();
-        }
-        if (world.getTime() % 20 == 0) {
+        Clouds.values().parallelStream().forEach(Cloud::tickServer);
+        ticks++;
+        if (ticks % 20 == 0) {
             if (world.getServer().getCurrentPlayerCount() == 0 && !Clouds.isEmpty()) {
                 Clouds.clear();
             } else {
-                for (int j : Clouds.keySet()) {
-                    Cloud cloud = Clouds.get(j);
-                    PlayerEntity ent = world.getClosestPlayer(cloud.Position.x,50,cloud.Position.z,1024,false);
-                    if (ent == null) {
-                        for (ServerPlayerEntity i : PlayerLookup.all(world.getServer())) {
+                if (ticks % 40 == 0) {
+                    for (int j : Clouds.keySet()) {
+                        Cloud cloud = Clouds.get(j);
+                        for (ServerPlayerEntity i : PlayerLookup.around(world,new Vec3d(cloud.Position.x, 50, cloud.Position.z),1024.0D)) {
                             UpdateCloud.send(world.getServer(), j, Clouds.get(j).generateUpdate(), i);
                         }
-                        break;
                     }
                 }
             }
             for (ServerPlayerEntity ent : PlayerLookup.all(Objects.requireNonNull(getWorld().getServer()))) {
                 if (Clouds.size() < 20 * getWorld().getServer().getCurrentPlayerCount()) {
-                    if (new Random().nextInt(5) == 0) {
+                    if (rand.nextInt(5) == 0) {
                         attemptCloudSpawn(ent, 200);
                     }
-                }
-            }
-        }
-        if(world.getTime() % 40 == 0) {
-            for (int i=0;i<Clouds.size();i++) {
-                for (ServerPlayerEntity j : PlayerLookup.all(world.getServer())) {
-                    UpdateCloud.send(world.getServer(), i, Clouds.get(i).generateUpdate(), j);
                 }
             }
         }
     }
 
     public void attemptCloudSpawn(PlayerEntity ent, int y) {
-        Random rand = new Random();
-
         int tryCountMax = 10;
         int tryCountCur = 0;
         int spawnX = -1;
@@ -109,6 +100,7 @@ public class ServersideManager extends Manager {
         File file = new File(server.getSavePath(WorldSavePath.ROOT).toAbsolutePath() + "/enhancedweather/Clouds_DIM0.json5");
         try {
             new File(file.getParent()).mkdir();
+            file.delete();
             file.createNewFile();
             FileWriter stream = new FileWriter(file);
             stream.write(data);

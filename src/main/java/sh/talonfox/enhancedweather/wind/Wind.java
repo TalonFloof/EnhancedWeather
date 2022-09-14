@@ -42,13 +42,16 @@ public class Wind {
                     SpeedGlobal += (rand.nextDouble() * SpeedGlobalChangeRate);
                 SpeedGlobalRandChangeTimer = SpeedGlobalRandChangeDelay;
                 if (HighWindTimer <= 0)
-                    if (rand.nextInt(Enhancedweather.CONFIG.Wind_LowWindStartChance) == 0)
-                        LowWindTimer = (20*60*2) + (new Random()).nextInt(20*60*10);
-                    else
+                    if (rand.nextInt(Enhancedweather.CONFIG.Wind_LowWindStartChance) == 0) {
+                        LowWindTimer = (20 * 60 * 2) + (new Random()).nextInt(20 * 60 * 10);
+                        Enhancedweather.LOGGER.info("Low Wind for {} ticks", LowWindTimer);
+                    } else
                         LowWindTimer = 0;
                 if (HighWindTimer <= 0)
-                    if (rand.nextInt(Enhancedweather.CONFIG.Wind_HighWindStartChance) == 0)
-                        HighWindTimer = (20*60*2) + (new Random()).nextInt(20*60*10);
+                    if (rand.nextInt(Enhancedweather.CONFIG.Wind_HighWindStartChance) == 0) {
+                        HighWindTimer = (20 * 60 * 2) + (new Random()).nextInt(20 * 60 * 10);
+                        Enhancedweather.LOGGER.info("High Wind for {} ticks", HighWindTimer);
+                    }
             }
         } else {
             LowWindTimer--;
@@ -136,6 +139,7 @@ public class Wind {
         File file = new File(server.getSavePath(WorldSavePath.ROOT).toAbsolutePath() + "/enhancedweather/Wind_DIM"+dimid+".json5");
         try {
             new File(file.getParent()).mkdir();
+            file.delete();
             file.createNewFile();
             FileWriter stream = new FileWriter(file);
             stream.write(data);
