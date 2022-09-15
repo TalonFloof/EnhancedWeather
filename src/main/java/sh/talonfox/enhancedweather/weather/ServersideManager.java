@@ -41,7 +41,14 @@ public class ServersideManager extends Manager {
                 if (ticks % 40 == 0) {
                     for (int j : Clouds.keySet()) {
                         Cloud cloud = Clouds.get(j);
-                        for (ServerPlayerEntity i : PlayerLookup.around(world,new Vec3d(cloud.Position.x, 50, cloud.Position.z),1024.0D)) {
+                        var col = PlayerLookup.around(world,new Vec3d(cloud.Position.x, 50, cloud.Position.z),1024.0D);
+                        if(col.isEmpty()) {
+                            for (ServerPlayerEntity i : PlayerLookup.all(world.getServer())) {
+                                UpdateCloud.send(world.getServer(), j, null, i);
+                            }
+                            continue;
+                        }
+                        for (ServerPlayerEntity i : col) {
                             UpdateCloud.send(world.getServer(), j, Clouds.get(j).generateUpdate(), i);
                         }
                     }

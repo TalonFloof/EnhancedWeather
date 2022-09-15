@@ -8,9 +8,11 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import sh.talonfox.enhancedweather.Enhancedweather;
+import sh.talonfox.enhancedweather.weather.ClientsideManager;
 
 @Mixin(World.class)
 public class MixinWorld {
+
     @Shadow
     @Final
     public boolean isClient;
@@ -21,11 +23,7 @@ public class MixinWorld {
     @Overwrite
     public float getRainGradient(float gradient) {
         if(isClient && Enhancedweather.CLIENT_WEATHER != null) {
-            if(MinecraftClient.getInstance().player != null) {
-                return 0F;
-            } else {
-                return 0.0F;
-            }
+            return ClientsideManager.PrecipitationRate;
         } else {
             return 0.0F;
         }

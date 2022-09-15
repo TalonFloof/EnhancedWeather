@@ -10,6 +10,7 @@ import net.minecraft.tag.BiomeTags;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.registry.RegistryEntry;
@@ -95,6 +96,21 @@ public class Cloud {
                 Precipitating = true;
             }
         }
+        ///// WIND /////
+        float angle = Enhancedweather.WIND.SpeedGlobal;
+        Random rand = new Random();
+        angle += (rand.nextFloat() - rand.nextFloat()) * 0.15F;
+        float angleAdjust = Math.max(10, Math.min(45,45F * 0 * 0.2F));
+        float yaw = 0 > 0 ? 180 : 0;
+        float bestMove = MathHelper.wrapDegrees(yaw - angle);
+        if(Math.abs(bestMove) < 180) {
+            if(bestMove > 0) angle -= angleAdjust;
+            if(bestMove < 0) angle += angleAdjust;
+        }
+        double vecX = -Math.sin(Math.toRadians(angle));
+        double vecZ = Math.cos(Math.toRadians(angle));
+        Vec3d motion = new Vec3d(vecX * (Enhancedweather.WIND.SpeedGlobal * 0.2F), 0, vecZ * (Enhancedweather.WIND.SpeedGlobal * 0.2F));
+        Position = Position.add(motion);
     }
 
     public NbtCompound generateUpdate() {
