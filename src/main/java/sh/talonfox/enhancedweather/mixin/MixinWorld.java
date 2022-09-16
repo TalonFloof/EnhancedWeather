@@ -23,9 +23,11 @@ public class MixinWorld {
     @Overwrite
     public float getRainGradient(float gradient) {
         if(isClient && Enhancedweather.CLIENT_WEATHER != null) {
-            return ClientsideManager.PrecipitationRate;
-        } else {
-            return 0.0F;
+            if(MinecraftClient.getInstance().player != null) {
+                if (MinecraftClient.getInstance().player.getY() < 200)
+                    return ClientsideManager.PrecipitationRate;
+            }
         }
+        return 0.0F;
     }
 }
