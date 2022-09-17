@@ -19,6 +19,7 @@ public class ServerEvents {
                 Enhancedweather.NETHER_WIND.load(server, -1);
                 Enhancedweather.LOGGER.info("Initializing Server-side Weather Manager...");
                 Enhancedweather.SERVER_WEATHER = new ServersideManager(world);
+                Enhancedweather.SERVER_WEATHER.load(server);
                 world.setWeather(Integer.MAX_VALUE,Integer.MAX_VALUE,false,false);
             }
         });
