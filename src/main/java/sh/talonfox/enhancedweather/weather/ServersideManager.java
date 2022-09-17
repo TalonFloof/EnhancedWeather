@@ -1,7 +1,9 @@
 package sh.talonfox.enhancedweather.weather;
 
+import blue.endless.jankson.Jankson;
 import blue.endless.jankson.JsonObject;
 
+import blue.endless.jankson.JsonPrimitive;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.MinecraftServer;
@@ -101,8 +103,36 @@ public class ServersideManager extends Manager {
         return world;
     }
 
+    public void load(MinecraftServer server) {
+        File file = new File(server.getSavePath(WorldSavePath.ROOT).toAbsolutePath() + "/enhancedweather/Clouds_DIM0.json5");
+        if(file.exists() && file.isFile()) {
+            try {
+                JsonObject jsonObject = Jankson.builder().build().load(file);
+                nextID = jsonObject.getInt("nextID",0);
+                JsonObject clouds = jsonObject.getObject("clouds");
+                if(clouds != null) {
+                    Clouds.clear();
+                    for (String i : clouds.keySet()) {
+                        Cloud cloud = new Cloud(this,new Vec3d(0,0,0));
+                        cloud.applySaveDataJson(Objects.requireNonNull(clouds.getObject(i)));
+                        Clouds.put(Integer.valueOf(i),cloud);
+                    }
+                }
+            } catch (Exception e) {
+                Enhancedweather.LOGGER.error("Failed to load Cloud Data for Dimension #0");
+                Enhancedweather.LOGGER.error("Reason: "+e.toString());
+            }
+        }
+    }
+
     public void save(MinecraftServer server) {
         JsonObject jsonObject = new JsonObject();
+        jsonObject.put("nextID",new JsonPrimitive(nextID));
+        JsonObject clouds = new JsonObject();
+        for(int i : Clouds.keySet()) {
+            clouds.put(String.valueOf(i),Clouds.get(i).generateSaveDataJson());
+        }
+        jsonObject.put("clouds",clouds);
         String data = jsonObject.toJson(true,true);
         File file = new File(server.getSavePath(WorldSavePath.ROOT).toAbsolutePath() + "/enhancedweather/Clouds_DIM0.json5");
         try {

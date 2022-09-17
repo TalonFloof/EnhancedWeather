@@ -1,20 +1,19 @@
 package sh.talonfox.enhancedweather.weather;
 
+import blue.endless.jankson.JsonObject;
+import blue.endless.jankson.JsonPrimitive;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.particle.Particle;
-import net.minecraft.fluid.FluidState;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.tag.BiomeTags;
-import net.minecraft.tag.FluidTags;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
 import sh.talonfox.enhancedweather.Enhancedweather;
 import sh.talonfox.enhancedweather.particles.CloudParticle;
@@ -135,5 +134,29 @@ public class Cloud {
         Precipitating = data.getBoolean("Precipitating");
         Placeholder = data.getBoolean("Placeholder");
         Expanding = data.getBoolean("Expanding");
+    }
+
+    public JsonObject generateSaveDataJson() {
+        JsonObject json = new JsonObject();
+        json.put("X",new JsonPrimitive(Position.getX()));
+        json.put("Y",new JsonPrimitive(Position.getY()));
+        json.put("Z",new JsonPrimitive(Position.getZ()));
+        json.put("Layer",new JsonPrimitive(Layer));
+        json.put("Water",new JsonPrimitive(Water));
+        json.put("Size",new JsonPrimitive(Size));
+        json.put("Precipitating",new JsonPrimitive(Precipitating));
+        json.put("Placeholder",new JsonPrimitive(Placeholder));
+        json.put("Expanding",new JsonPrimitive(Expanding));
+        return json;
+    }
+
+    public void applySaveDataJson(JsonObject json) {
+        Position = new Vec3d(json.getDouble("X",0),json.getDouble("Y",0),json.getDouble("Z",0));
+        Layer = json.getInt("Layer",0);
+        Water = json.getInt("Water",0);
+        Size = json.getInt("Size",0);
+        Precipitating = json.getBoolean("Precipitating",false);
+        Placeholder = json.getBoolean("Placeholder",false);
+        Expanding = json.getBoolean("Expanding",false);
     }
 }
