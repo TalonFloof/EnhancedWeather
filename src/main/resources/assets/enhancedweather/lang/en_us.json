@@ -10,6 +10,7 @@
     "text.autoconfig.enhancedweather.option.Wind_LowWindDurationExtra": "Additional Duration of Low Wind Event",
     "text.autoconfig.enhancedweather.option.Wind_HighWindDurationExtra": "Additional Duration of High Wind Event",
 
+    "text.autoconfig.enhancedweather.option.Weather_RandomConditionInNewWorld": "Random Weather Condition in New Worlds",
     "text.autoconfig.enhancedweather.option.Weather_LightningStrikeBaseChance": "Base Chance of Lightning Strike",
     "text.autoconfig.enhancedweather.option.Weather_WaterCollectionFromNothingChance": "Chance of Cloud Water Collection from Nothing",
     "text.autoconfig.enhancedweather.option.Weather_WaterCollectionFromBiomeChance": "Chance of Cloud Water Collection from Biome",
