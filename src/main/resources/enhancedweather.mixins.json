@@ -4,10 +4,13 @@
     "package": "sh.talonfox.enhancedweather.mixin",
     "compatibilityLevel": "JAVA_17",
     "mixins": [
-        "MixinWorld"
+        "MixinWorld",
+        "server.MixinLevelProperties",
+        "server.MixinServerWorld"
     ],
     "client": [
         "MixinWorld",
+        "client.MixinBackgroundRenderer",
         "client.MixinParticle"
     ],
     "injectors": {

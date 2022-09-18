@@ -43,13 +43,13 @@ public class Wind {
                 SpeedGlobalRandChangeTimer = SpeedGlobalRandChangeDelay;
                 if (HighWindTimer <= 0)
                     if (rand.nextInt(Enhancedweather.CONFIG.Wind_LowWindStartChance) == 0) {
-                        LowWindTimer = (20 * 60 * 2) + (new Random()).nextInt(20 * 60 * 10);
+                        LowWindTimer = Enhancedweather.CONFIG.Wind_LowWindDurationBase + rand.nextInt(Enhancedweather.CONFIG.Wind_LowWindDurationExtra);
                         Enhancedweather.LOGGER.info("Low Wind for {} ticks", LowWindTimer);
                     } else
                         LowWindTimer = 0;
                 if (HighWindTimer <= 0)
                     if (rand.nextInt(Enhancedweather.CONFIG.Wind_HighWindStartChance) == 0) {
-                        HighWindTimer = (20 * 60 * 2) + (new Random()).nextInt(20 * 60 * 10);
+                        HighWindTimer = Enhancedweather.CONFIG.Wind_HighWindDurationBase + rand.nextInt(Enhancedweather.CONFIG.Wind_HighWindDurationExtra);
                         Enhancedweather.LOGGER.info("High Wind for {} ticks", HighWindTimer);
                     }
             }
@@ -69,22 +69,24 @@ public class Wind {
             SpeedGlobal = 0.00001F;
         if (SpeedGlobal > 1F)
             SpeedGlobal = 1F;
-        if (this.TimeGust == 0)
+        if((server.getTicks() % 40) == 0)
+            WindSync.send(server, dimid);
+    }
+
+    public void tickClient() {
+        Random rand = new Random();
+        if (this.TimeGust == 0) {
             SpeedGust = 0;
-        AngleGust = 0;
+            AngleGust = 0;
+        }
         if (rand.nextInt((int)(100 - 0.5F)) == 0 && HighWindTimer > 0)  {
             SpeedGust = SpeedGlobal + rand.nextFloat() * 0.6F;
             AngleGust = AngleGlobal + rand.nextInt(120) - 60;
             TimeGust = rand.nextInt(GustEventTimeRand);
-            WindSync.send(server, dimid);
         }
         if (TimeGust > 0) {
             TimeGust--;
-            if(TimeGust == 0)
-                WindSync.send(server, dimid);
         }
-        if((server.getTicks() % 40) == 0)
-            WindSync.send(server, dimid);
     }
 
     public Vec3d ApplyWindForce(Vec3d motion, float weight, float multiplier, float maxSpeed) {
@@ -130,9 +132,6 @@ public class Wind {
         jsonObject.put("AngleGlobal", new JsonPrimitive(AngleGlobal));
         jsonObject.put("SpeedGlobal", new JsonPrimitive(SpeedGlobal));
         jsonObject.put("SpeedGlobalRandChangeTimer", new JsonPrimitive(SpeedGlobalRandChangeTimer));
-        jsonObject.put("AngleGust", new JsonPrimitive(AngleGust));
-        jsonObject.put("SpeedGust", new JsonPrimitive(SpeedGust));
-        jsonObject.put("TimeGust", new JsonPrimitive(TimeGust));
         jsonObject.put("LowWindTimer", new JsonPrimitive(LowWindTimer));
         jsonObject.put("HighWindTimer", new JsonPrimitive(HighWindTimer));
         String data = jsonObject.toJson(true,true);
@@ -157,9 +156,6 @@ public class Wind {
                 AngleGlobal = jsonObject.getFloat("AngleGlobal",0);
                 SpeedGlobal = jsonObject.getFloat("SpeedGlobal",0);
                 SpeedGlobalRandChangeTimer = jsonObject.getInt("SpeedGlobalRandChangeTimer",0);
-                AngleGust = jsonObject.getFloat("AngleGust",0);
-                SpeedGust = jsonObject.getFloat("SpeedGust",0);
-                TimeGust = jsonObject.getInt("TimeGust",0);
                 LowWindTimer = jsonObject.getInt("LowWindTimer",0);
                 HighWindTimer = jsonObject.getInt("HighWindTimer",0);
             } catch (Exception e) {

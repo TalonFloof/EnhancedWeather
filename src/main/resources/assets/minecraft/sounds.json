@@ -1,0 +1,59 @@
+{
+    "ambient.weather.rain": {
+        "replace": true,
+        "category": "weather",
+        "sounds": [
+            "ambient/weather/rain1",
+            "ambient/weather/rain2",
+            "ambient/weather/rain3",
+            "ambient/weather/rain4"
+        ]
+    },
+    "ambient.weather.thunder": {
+        "replace": true,
+        "category": "weather",
+        "sounds": [
+            "ambient/weather/thunder1",
+            "ambient/weather/thunder2",
+            "ambient/weather/thunder3",
+            "ambient/weather/thunder4",
+            "ambient/weather/thunder5",
+            "ambient/weather/thunder6",
+            "ambient/weather/thunder7",
+            "ambient/weather/thunder8",
+            "ambient/weather/thunder9",
+            "ambient/weather/thunder10",
+            "ambient/weather/thunder11",
+            "ambient/weather/thunder11",
+            "ambient/weather/thunder12",
+            "ambient/weather/thunder13",
+            "ambient/weather/thunder14",
+            "ambient/weather/thunder15",
+            "ambient/weather/thunder16",
+            "ambient/weather/thunder17",
+            "ambient/weather/thunder18",
+            "ambient/weather/thunder19",
+            "ambient/weather/thunder20",
+            "ambient/weather/thunder21",
+            "ambient/weather/thunder22",
+            "ambient/weather/thunder23",
+            "ambient/weather/thunder24",
+            "ambient/weather/thunder25",
+            "ambient/weather/thunder26",
+            "ambient/weather/thunder27",
+            "ambient/weather/thunder28",
+            "ambient/weather/thunder29",
+            "ambient/weather/thunder30",
+            "ambient/weather/thunder31",
+            "ambient/weather/thunder32",
+            "ambient/weather/thunder33",
+            "ambient/weather/thunder34",
+            "ambient/weather/thunder35",
+            "ambient/weather/thunder36",
+            "ambient/weather/thunder37",
+            "ambient/weather/thunder38",
+            "ambient/weather/thunder39",
+            "ambient/weather/thunder40"
+        ]
+    }
+}

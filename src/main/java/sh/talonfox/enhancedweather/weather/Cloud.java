@@ -23,12 +23,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class Cloud {
-    private Manager HostManager;
-    public Vec3d Position = null;
+public class Cloud extends Weather {
     public int Layer = 0;
     public int Water = 0;
-    public int Size = 1;
+    public int Intensity = 0;
     public boolean Precipitating = false;
     public boolean Placeholder = false;
     public boolean Expanding = true;
@@ -56,6 +54,9 @@ public class Cloud {
                 ParticlesCloud.add(newParticle);
             }
         }
+        if(Intensity > 1) { // Cloud should be spinning
+
+        }
         for (int i = 0; i < ParticlesCloud.size(); i++) {
             if (!ParticlesCloud.get(i).isAlive()) {
                 ParticlesCloud.remove(i);
@@ -72,11 +73,11 @@ public class Cloud {
         ticks++;
         if((ticks % 60) == 0 && !Placeholder) {
             boolean waterCollected = false;
-            if (rand.nextInt(100) == 0) {
+            if (rand.nextInt(Enhancedweather.CONFIG.Weather_WaterCollectionFromNothingChance) == 0) {
                 Water += 10;
                 waterCollected = true;
             }
-            if(rand.nextInt(15) == 0 && !waterCollected) {
+            if(rand.nextInt(Enhancedweather.CONFIG.Weather_WaterCollectionFromBiomeChance) == 0 && !waterCollected) {
                 RegistryEntry<Biome> biome = this.HostManager.getWorld().getBiome(new BlockPos(Position.x, Position.y, Position.z));
                 if(biome.isIn(BiomeTags.IS_JUNGLE) || biome.matchesId(new Identifier("minecraft:swamp")) || biome.matchesId(new Identifier("minecraft:mangrove_swamp")) || biome.isIn(BiomeTags.IS_RIVER) || biome.isIn(BiomeTags.IS_OCEAN) || biome.isIn(BiomeTags.IS_DEEP_OCEAN)) {
                     Water += 10;
@@ -86,13 +87,16 @@ public class Cloud {
             if (Water > 1000) {
                 Water = 1000;
             }
-            if (Precipitating) {
+            if (Precipitating && Intensity == 0) {
                 Water = Math.max(0, Water - 3);
                 if (Water == 0)
                     Precipitating = false;
-            }
-            if ((Water >= 100 && rand.nextInt(150) == 0)) {
+            } else if(Intensity >= 1) {
                 Precipitating = true;
+            } else if(Intensity == 0) {
+                if ((Water >= 100 && rand.nextInt(Enhancedweather.CONFIG.Weather_PrecipitationChance) == 0)) {
+                    Precipitating = true;
+                }
             }
         }
         ///// WIND /////
@@ -112,49 +116,47 @@ public class Cloud {
         Position = Position.add(motion);
     }
 
+    @Override
     public NbtCompound generateUpdate() {
-        NbtCompound data = new NbtCompound();
-        data.putDouble("X",Position.getX());
-        data.putDouble("Y",Position.getY());
-        data.putDouble("Z",Position.getZ());
+        NbtCompound data = super.generateUpdate();
         data.putInt("Layer",Layer);
         data.putInt("Water",Water);
-        data.putInt("Size",Size);
+        data.putInt("Intensity",Intensity);
         data.putBoolean("Precipitating",Precipitating);
         data.putBoolean("Placeholder",Placeholder);
         data.putBoolean("Expanding",Expanding);
         return data;
     }
 
+    @Override
     public void applyUpdate(NbtCompound data) {
-        Position = new Vec3d(data.getDouble("X"),data.getDouble("Y"),data.getDouble("Z"));
+        super.applyUpdate(data);
         Layer = data.getInt("Layer");
         Water = data.getInt("Water");
-        Size = data.getInt("Size");
+        Intensity = data.getInt("Intensity");
         Precipitating = data.getBoolean("Precipitating");
         Placeholder = data.getBoolean("Placeholder");
         Expanding = data.getBoolean("Expanding");
     }
 
+    @Override
     public JsonObject generateSaveDataJson() {
-        JsonObject json = new JsonObject();
-        json.put("X",new JsonPrimitive(Position.getX()));
-        json.put("Y",new JsonPrimitive(Position.getY()));
-        json.put("Z",new JsonPrimitive(Position.getZ()));
+        JsonObject json = super.generateSaveDataJson();
         json.put("Layer",new JsonPrimitive(Layer));
         json.put("Water",new JsonPrimitive(Water));
-        json.put("Size",new JsonPrimitive(Size));
+        json.put("Intensity",new JsonPrimitive(Intensity));
         json.put("Precipitating",new JsonPrimitive(Precipitating));
         json.put("Placeholder",new JsonPrimitive(Placeholder));
         json.put("Expanding",new JsonPrimitive(Expanding));
         return json;
     }
 
+    @Override
     public void applySaveDataJson(JsonObject json) {
-        Position = new Vec3d(json.getDouble("X",0),json.getDouble("Y",0),json.getDouble("Z",0));
+        super.applySaveDataJson(json);
         Layer = json.getInt("Layer",0);
         Water = json.getInt("Water",0);
-        Size = json.getInt("Size",0);
+        Intensity = json.getInt("Intensity",0);
         Precipitating = json.getBoolean("Precipitating",false);
         Placeholder = json.getBoolean("Placeholder",false);
         Expanding = json.getBoolean("Expanding",false);

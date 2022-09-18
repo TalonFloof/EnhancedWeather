@@ -14,19 +14,20 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 import sh.talonfox.enhancedweather.Enhancedweather;
-import sh.talonfox.enhancedweather.network.UpdateCloud;
+import sh.talonfox.enhancedweather.network.UpdateStorm;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.util.List;
 import java.util.Objects;
 import java.util.Random;
+import java.util.UUID;
 
 public class ServersideManager extends Manager {
-    public int nextID = 0;
     private long ticks = 0;
+    private long secondsSinceNoPlayers = 0;
     private final ServerWorld world;
     private Random rand;
+    public static boolean IsNewWorld = false;
     public ServersideManager(ServerWorld w) {
         this.world = w;
         this.rand = new Random();
@@ -34,24 +35,34 @@ public class ServersideManager extends Manager {
 
     @Override
     public void tick() {
-        Clouds.values().stream().forEach(Cloud::tickServer);
+        Clouds.values().stream().forEach(Weather::tickServer);
         ticks++;
         if (ticks % 20 == 0) {
-            if (world.getServer().getCurrentPlayerCount() == 0 && !Clouds.isEmpty()) {
-                Clouds.clear();
+            if (world.getServer().getCurrentPlayerCount() == 0 && !Clouds.isEmpty()) { // To prevent weather from despawning before entering a single player world
+                if(secondsSinceNoPlayers >= 15) {
+                    Clouds.clear();
+                    secondsSinceNoPlayers = 0;
+                } else {
+                    secondsSinceNoPlayers += 1;
+                }
             } else {
+                secondsSinceNoPlayers = 0;
                 if (ticks % 40 == 0) {
-                    for (int j : Clouds.keySet()) {
-                        Cloud cloud = Clouds.get(j);
-                        var col = PlayerLookup.around(world,new Vec3d(cloud.Position.x, 50, cloud.Position.z),1024.0D);
+                    if(world.getServer().getCurrentPlayerCount() == 0)
+                        return;
+                    for (UUID j : Clouds.keySet()) {
+                        Cloud cloud = (Cloud)Clouds.get(j);
+                        var col = PlayerLookup.around(world.getServer().getOverworld(),new Vec3d(cloud.Position.x, 50, cloud.Position.z),1024.0D);
                         if(col.isEmpty()) {
+                            Enhancedweather.LOGGER.info("Remove Cloud {}", j.toString());
                             for (ServerPlayerEntity i : PlayerLookup.all(world.getServer())) {
-                                UpdateCloud.send(world.getServer(), j, null, i);
+                                UpdateStorm.send(world.getServer(), j, null, i);
                             }
-                            continue;
+                            Clouds.remove(j);
+                            break;
                         }
                         for (ServerPlayerEntity i : col) {
-                            UpdateCloud.send(world.getServer(), j, Clouds.get(j).generateUpdate(), i);
+                            UpdateStorm.send(world.getServer(), j, Clouds.get(j).generateUpdate(), i);
                         }
                     }
                 }
@@ -89,11 +100,10 @@ public class ServersideManager extends Manager {
         }
         if (soClose == null) {
             Cloud so = new Cloud(this,Vec3d.ofCenter(tryPos));
-            int index = nextID;
-            Clouds.put(index,so);
-            nextID += 1;
+            UUID id = UUID.randomUUID();
+            Clouds.put(id,so);
             for(ServerPlayerEntity i : PlayerLookup.all(world.getServer())) {
-                UpdateCloud.send(world.getServer(), index, so.generateUpdate(), i);
+                UpdateStorm.send(world.getServer(), id, so.generateUpdate(), i);
             }
         }
     }
@@ -108,14 +118,13 @@ public class ServersideManager extends Manager {
         if(file.exists() && file.isFile()) {
             try {
                 JsonObject jsonObject = Jankson.builder().build().load(file);
-                nextID = jsonObject.getInt("nextID",0);
                 JsonObject clouds = jsonObject.getObject("clouds");
                 if(clouds != null) {
                     Clouds.clear();
                     for (String i : clouds.keySet()) {
                         Cloud cloud = new Cloud(this,new Vec3d(0,0,0));
                         cloud.applySaveDataJson(Objects.requireNonNull(clouds.getObject(i)));
-                        Clouds.put(Integer.valueOf(i),cloud);
+                        Clouds.put(UUID.fromString(i),cloud);
                     }
                 }
             } catch (Exception e) {
@@ -127,10 +136,9 @@ public class ServersideManager extends Manager {
 
     public void save(MinecraftServer server) {
         JsonObject jsonObject = new JsonObject();
-        jsonObject.put("nextID",new JsonPrimitive(nextID));
         JsonObject clouds = new JsonObject();
-        for(int i : Clouds.keySet()) {
-            clouds.put(String.valueOf(i),Clouds.get(i).generateSaveDataJson());
+        for(UUID i : Clouds.keySet()) {
+            clouds.put(i.toString(),Clouds.get(i).generateSaveDataJson());
         }
         jsonObject.put("clouds",clouds);
         String data = jsonObject.toJson(true,true);

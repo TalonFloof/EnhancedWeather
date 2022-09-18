@@ -9,13 +9,30 @@ import net.minecraft.client.gui.screen.Screen;
 
 @Config(name = "enhancedweather")
 public class EnhancedWeatherConfig implements ConfigData {
-    @ConfigEntry.Category("enhancedweather.wind")
-    @Comment("Sets the change of a Low Wind Event occurring (1 in a [value] chance). Defaults to 4000.")
+    ////////// WIND //////////
+    @ConfigEntry.Category("wind")
     public int Wind_LowWindStartChance = 20*200;
-
-    @ConfigEntry.Category("enhancedweather.wind")
-    @Comment("Sets the change of a High Wind Event occurring (1 in a [value] chance). Defaults to 8000.")
+    @ConfigEntry.Category("wind")
     public int Wind_HighWindStartChance = 20*400;
+    @ConfigEntry.Category("wind")
+    public int Wind_LowWindDurationBase = 20*60*2;
+    @ConfigEntry.Category("wind")
+    public int Wind_HighWindDurationBase = 20*60*2;
+    @ConfigEntry.Category("wind")
+    public int Wind_LowWindDurationExtra = 20*60*10;
+    @ConfigEntry.Category("wind")
+    public int Wind_HighWindDurationExtra = 20*60*10;
+    ///////// WEATHER /////////
+    @ConfigEntry.Category("weather")
+    public boolean Weather_RandomConditionInNewWorld = true;
+    @ConfigEntry.Category("weather")
+    public int Weather_LightningStrikeBaseChance = 10000;
+    @ConfigEntry.Category("weather")
+    public int Weather_WaterCollectionFromNothingChance = 100;
+    @ConfigEntry.Category("weather")
+    public int Weather_WaterCollectionFromBiomeChance = 15;
+    @ConfigEntry.Category("weather")
+    public int Weather_PrecipitationChance = 50;
 
     public static Screen buildScreen(Screen parent) {
         return AutoConfig.getConfigScreen(EnhancedWeatherConfig.class, parent).get();

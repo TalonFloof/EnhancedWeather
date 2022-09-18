@@ -7,10 +7,11 @@ import net.minecraft.world.World;
 public class ClientsideManager extends Manager {
     public static float PrecipitationRate = 0F;
     public static float PrecipitationRateTarget = 0F;
+    public static int PrecipitationIntensity = 0;
     private int ticks = 0;
     @Override
     public void tick() {
-        for (Cloud i : Clouds.values()) {
+        for (Weather i : Clouds.values()) {
             i.tickClient();
         }
         ticks++;
@@ -19,6 +20,7 @@ public class ClientsideManager extends Manager {
                 Cloud cloud = this.getClosestCloud(new Vec3d(MinecraftClient.getInstance().player.getX(),200,MinecraftClient.getInstance().player.getZ()),384,0,true);
                 if(cloud != null) {
                     PrecipitationRateTarget = 1F;
+                    PrecipitationIntensity = cloud.Intensity;
                 } else {
                     PrecipitationRateTarget = 0F;
                 }

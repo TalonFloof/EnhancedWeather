@@ -19,8 +19,8 @@ public class WindSync {
     int: Dimension ID
     float: Global Wind Angle
     float: Global Wind Speed
-    float: Gust Angle
-    float: Gust Speed
+    int: Low Wind Timer
+    int: High Wind Timer
      */
     public static void send(MinecraftServer server, int dimid) {
         PacketByteBuf buf = PacketByteBufs.create();
@@ -28,13 +28,13 @@ public class WindSync {
         if(dimid == 0) {
             buf.writeFloat(Enhancedweather.WIND.AngleGlobal);
             buf.writeFloat(Enhancedweather.WIND.SpeedGlobal);
-            buf.writeFloat(Enhancedweather.WIND.AngleGust);
-            buf.writeFloat(Enhancedweather.WIND.SpeedGust);
+            buf.writeInt(Enhancedweather.WIND.LowWindTimer);
+            buf.writeInt(Enhancedweather.WIND.HighWindTimer);
         } else if(dimid == -1) {
             buf.writeFloat(Enhancedweather.NETHER_WIND.AngleGlobal);
             buf.writeFloat(Enhancedweather.NETHER_WIND.SpeedGlobal);
-            buf.writeFloat(Enhancedweather.NETHER_WIND.AngleGust);
-            buf.writeFloat(Enhancedweather.NETHER_WIND.SpeedGust);
+            buf.writeInt(Enhancedweather.WIND.LowWindTimer);
+            buf.writeInt(Enhancedweather.WIND.HighWindTimer);
         }
         for (ServerPlayerEntity player : PlayerLookup.all(server)) {
             ServerPlayNetworking.send(player, PACKET_ID, buf);
@@ -45,13 +45,13 @@ public class WindSync {
         if(dimid == 0) {
             Enhancedweather.CLIENT_WIND.AngleGlobal = packetByteBuf.readFloat();
             Enhancedweather.CLIENT_WIND.SpeedGlobal = packetByteBuf.readFloat();
-            Enhancedweather.CLIENT_WIND.AngleGust = packetByteBuf.readFloat();
-            Enhancedweather.CLIENT_WIND.SpeedGust = packetByteBuf.readFloat();
+            Enhancedweather.CLIENT_WIND.LowWindTimer = packetByteBuf.readInt();
+            Enhancedweather.CLIENT_WIND.HighWindTimer = packetByteBuf.readInt();
         } else if(dimid == -1) {
             Enhancedweather.NETHER_CLIENT_WIND.AngleGlobal = packetByteBuf.readFloat();
             Enhancedweather.NETHER_CLIENT_WIND.SpeedGlobal = packetByteBuf.readFloat();
-            Enhancedweather.NETHER_CLIENT_WIND.AngleGust = packetByteBuf.readFloat();
-            Enhancedweather.NETHER_CLIENT_WIND.SpeedGust = packetByteBuf.readFloat();
+            Enhancedweather.NETHER_CLIENT_WIND.LowWindTimer = packetByteBuf.readInt();
+            Enhancedweather.NETHER_CLIENT_WIND.HighWindTimer = packetByteBuf.readInt();
         }
     }
 }

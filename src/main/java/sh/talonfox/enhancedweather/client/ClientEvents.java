@@ -12,6 +12,8 @@ public class ClientEvents {
             Enhancedweather.CLIENT_WEATHER = new ClientsideManager();
         });
         ClientTickEvents.START_WORLD_TICK.register((client) -> {
+            Enhancedweather.CLIENT_WIND.tickClient();
+            Enhancedweather.NETHER_CLIENT_WIND.tickClient();
             Enhancedweather.CLIENT_WEATHER.tick();
         });
         ClientPlayConnectionEvents.DISCONNECT.register((handler,client) -> {
