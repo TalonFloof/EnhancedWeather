@@ -1,7 +1,13 @@
 {
     "text.autoconfig.enhancedweather.title": "Enhanced Weather Configuration Screen",
+    "text.autoconfig.enhancedweather.category.client": "Client",
     "text.autoconfig.enhancedweather.category.wind": "Wind",
     "text.autoconfig.enhancedweather.category.weather": "Weather",
+
+    "text.autoconfig.enhancedweather.option.Client_PrecipitationFog": "Render fog during Precipitation",
+    "text.autoconfig.enhancedweather.option.Client_ParticlePrecipitation": "Particle-based Precipitation (EXPERIMENTAL)",
+    "text.autoconfig.enhancedweather.option.Client_TranslucentClouds": "Translucent Cloud Particles",
+    "text.autoconfig.enhancedweather.option.Client_ParticleWind": "Particles move with Wind",
 
     "text.autoconfig.enhancedweather.option.Wind_LowWindStartChance": "Chance of Low Wind Event Triggering",
     "text.autoconfig.enhancedweather.option.Wind_HighWindStartChance": "Chance of High Wind Event Triggering",
@@ -11,7 +17,9 @@
     "text.autoconfig.enhancedweather.option.Wind_HighWindDurationExtra": "Additional Duration of High Wind Event",
 
     "text.autoconfig.enhancedweather.option.Weather_RandomConditionInNewWorld": "Random Weather Condition in New Worlds",
+    "text.autoconfig.enhancedweather.option.Weather_DefaultCloudIntensity": "Default Storm Intensity (DEBUG FEATURE)",
     "text.autoconfig.enhancedweather.option.Weather_LightningStrikeBaseChance": "Base Chance of Lightning Strike",
+    "text.autoconfig.enhancedweather.option.Weather_MinimumWaterToPrecipitate": "Minimum Water Needed to Precipitate",
     "text.autoconfig.enhancedweather.option.Weather_WaterCollectionFromNothingChance": "Chance of Cloud Water Collection from Nothing",
     "text.autoconfig.enhancedweather.option.Weather_WaterCollectionFromBiomeChance": "Chance of Cloud Water Collection from Biome",
     "text.autoconfig.enhancedweather.option.Weather_PrecipitationChance": "Chance of Cloud Precipitation"

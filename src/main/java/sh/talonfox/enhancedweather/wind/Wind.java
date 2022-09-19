@@ -3,11 +3,13 @@ package sh.talonfox.enhancedweather.wind;
 import blue.endless.jankson.Jankson;
 import blue.endless.jankson.JsonObject;
 import blue.endless.jankson.JsonPrimitive;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.math.Vec3d;
 import sh.talonfox.enhancedweather.Enhancedweather;
 import sh.talonfox.enhancedweather.network.WindSync;
+import sh.talonfox.enhancedweather.weather.Cloud;
 
 import java.io.*;
 import java.util.Random;
@@ -24,8 +26,13 @@ public class Wind {
     public int TimeGust = 0;
     public int GustEventTimeRand = 60;
 
+    public float AngleEvent = 0;
+    public float SpeedEvent = 0;
+    public int TimeEvent = 0;
+
     public int LowWindTimer = 0;
     public int HighWindTimer = 0;
+    private long clientTicks = 0;
 
     public Wind() {
         Random rand = new Random();
@@ -75,6 +82,20 @@ public class Wind {
 
     public void tickClient() {
         Random rand = new Random();
+        clientTicks++;
+        if (TimeEvent > 0) {
+            TimeEvent--;
+        }
+        if(clientTicks % 10 == 0) {
+            Cloud cloud = Enhancedweather.CLIENT_WEATHER.getClosestCloud(new Vec3d(MinecraftClient.getInstance().player.getX(),200,MinecraftClient.getInstance().player.getZ()),256,2,true);
+            if(cloud != null) {
+                TimeEvent = 80;
+                double var11 = cloud.Position.getX() - MinecraftClient.getInstance().player.getX();
+                double var15 = cloud.Position.getZ() - MinecraftClient.getInstance().player.getZ();
+                AngleEvent = -((float)Math.atan2(var11, var15)) * 180.0F / (float)Math.PI;
+                SpeedEvent = 2F;
+            }
+        }
         if (this.TimeGust == 0) {
             SpeedGust = 0;
             AngleGust = 0;
@@ -90,8 +111,8 @@ public class Wind {
     }
 
     public Vec3d ApplyWindForce(Vec3d motion, float weight, float multiplier, float maxSpeed) {
-        float windSpeed = (TimeGust > 0)?SpeedGust:SpeedGlobal;
-        float windAngle = (TimeGust > 0)?AngleGust:AngleGlobal;
+        float windSpeed = (TimeEvent > 0)?SpeedEvent:((TimeGust > 0)?SpeedGust:SpeedGlobal);
+        float windAngle = (TimeEvent > 0)?AngleEvent:((TimeGust > 0)?AngleGust:AngleGlobal);
 
         float windX = (float) -Math.sin(Math.toRadians(windAngle)) * windSpeed;
         float windZ = (float) Math.cos(Math.toRadians(windAngle)) * windSpeed;

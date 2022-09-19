@@ -11,9 +11,11 @@ public class ClientsideManager extends Manager {
     private int ticks = 0;
     @Override
     public void tick() {
+        Ambience.HighWindExists = false;
         for (Weather i : Clouds.values()) {
             i.tickClient();
         }
+        Ambience.tick();
         ticks++;
         if(ticks % 40 == 0) {
             if(MinecraftClient.getInstance().player != null) {
@@ -30,6 +32,9 @@ public class ClientsideManager extends Manager {
             PrecipitationRate -= 0.0005F;
         } else if(PrecipitationRate < PrecipitationRateTarget) {
             PrecipitationRate += 0.0005F;
+        }
+        if(PrecipitationRateTarget == 0 && Math.abs(PrecipitationRate-PrecipitationRateTarget) < 0.001F) {
+            PrecipitationRate = 0F;
         }
     }
 

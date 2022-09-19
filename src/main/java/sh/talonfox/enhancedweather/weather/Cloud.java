@@ -39,7 +39,8 @@ public class Cloud extends Weather {
         HostManager = manager;
         Position = pos;
         rand = new Random();
-        Size = rand.nextInt(1,300);
+        Size = 50;
+        Intensity = Enhancedweather.CONFIG.Weather_DefaultCloudIntensity;
     }
 
     public void tickClient() {
@@ -48,19 +49,90 @@ public class Cloud extends Weather {
         if ((HostManager.getWorld().getTime() % ((Math.max(1, (int)(100F / Size))) + 2)) == 0) {
             Vec3i playerPos = new Vec3i(MinecraftClient.getInstance().player.getX(), Position.y, MinecraftClient.getInstance().player.getZ());
             Vec3i spawnPos = new Vec3i(Position.x + (Math.random() * Size) - (Math.random() * Size), Position.y, Position.z + (Math.random() * Size) - (Math.random() * Size));
-            if (ParticlesCloud.size() < Size && playerPos.getManhattanDistance(spawnPos) < 512) {
+            if (ParticlesCloud.size() < Size && spawnPos.isWithinDistance(playerPos,1024D)) {
                 CloudParticle newParticle = (CloudParticle)MinecraftClient.getInstance().particleManager.addParticle(ParticleRegister.CLOUD, spawnPos.getX(), spawnPos.getY(), spawnPos.getZ(), Precipitating ? 0.2F : 0.7F, Precipitating ? 0.2F : 0.7F, Precipitating ? 0.2F : 0.7F);
                 newParticle.setVelocity(-Math.sin(Math.toRadians(Enhancedweather.CLIENT_WIND.AngleGlobal)) * Enhancedweather.CLIENT_WIND.SpeedGlobal * 0.1D,0D,Math.cos(Math.toRadians(Enhancedweather.CLIENT_WIND.AngleGlobal)) * Enhancedweather.CLIENT_WIND.SpeedGlobal * 0.1D);
                 ParticlesCloud.add(newParticle);
             }
         }
-        if(Intensity > 1) { // Cloud should be spinning
-
+        if(Intensity > 1) {
+            Ambience.HighWindExists = true;
         }
         for (int i = 0; i < ParticlesCloud.size(); i++) {
-            if (!ParticlesCloud.get(i).isAlive()) {
+            CloudParticle ent = (CloudParticle)ParticlesCloud.get(i);
+            if (!ent.isAlive()) {
                 ParticlesCloud.remove(i);
                 i -= 1;
+            } else if(Intensity > 1 && ent.isAlive()) {
+                ent.velocityDecay = true;
+                double curSpeed = Math.sqrt(ent.velX * ent.velX + ent.velY * ent.velY + ent.velZ * ent.velZ);
+                double curDist = new Vec3d(ent.X,ent.Y,ent.Z).distanceTo(Position);
+                double spinSpeed = 0.4D;
+                double velocityX = ent.velX;
+                double velocityY = ent.velY;
+                double velocityZ = ent.velZ;
+                if(Intensity == 2 || Intensity == 3) {
+                    spinSpeed = 0.4D * 0.05D;
+                }
+                float extraDropCalc = 0;
+                if (curDist < 200 && ent.ID % 20 < 5) {
+                    extraDropCalc = ((ent.ID % 20) * 15F);
+                }
+                double speed = spinSpeed + (rand.nextDouble() * 0.01D);
+                double vecX = ent.X - Position.getX();
+                double vecZ = ent.Z - Position.getZ();
+                float angle = (float)(Math.atan2(vecZ, vecX) * 180.0D / Math.PI);
+                angle += speed * 50D;
+                angle -= (ent.ID % 10) * 3D;
+                angle += rand.nextInt(10) - rand.nextInt(10);
+                if(curDist > Size) {
+                    angle += 40;
+                }
+                if (ent.ID % 20 < 5) {
+                    if(Intensity >= 4) {
+                        angle += 30 + ((i % 5) * 4);
+                    } else {
+                        if(curDist > 150) {
+                            angle += 50 + ((i % 5) * 4);
+                        }
+                    }
+                    double var16 = Position.getX() - ent.X;
+                    double var18 = Position.getZ() - ent.Z;
+                    ent.yaw = (float)(Math.atan2(var18, var16) * 180.0D / Math.PI) - 90.0F;
+                    ent.pitch = -20F - (i % 10);
+                }
+                if(curSpeed < speed * 20D) {
+                    velocityX += -Math.sin(Math.toRadians(angle)) * speed;
+                    velocityZ += Math.cos(Math.toRadians(angle)) * speed;
+                } else {
+                    float cloudMoveAmp = 0.2F * (1 + Layer);
+
+                    speed = Enhancedweather.CLIENT_WIND.SpeedGlobal * cloudMoveAmp;
+                    angle = Enhancedweather.CLIENT_WIND.AngleGlobal;
+
+                    if (ent.ID % 20 < 5) {
+                        extraDropCalc = ((ent.ID % 20) * 5F);
+                    }
+
+                    if (curSpeed < speed * 1D) {
+                        velocityX += -Math.sin(Math.toRadians(angle)) * speed;
+                        velocityZ += Math.cos(Math.toRadians(angle)) * speed;
+                    }
+                }
+                /*if (Math.abs(ent.Y - (Position.getY() - extraDropCalc)) > 2F) {
+                    if (ent.Y < Position.getY() - extraDropCalc) {
+                        velocityY += 0.1D;
+                    } else {
+                        velocityY -= 0.1D;
+                    }
+                }
+                if (velocityY < -0.15F) {
+                    velocityY = -0.15F;
+                }
+                if (velocityY > 0.15F) {
+                    velocityY = 0.15F;
+                }*/
+                ent.setVelocity(velocityX,velocityY,velocityZ);
             }
         }
     }
@@ -94,7 +166,7 @@ public class Cloud extends Weather {
             } else if(Intensity >= 1) {
                 Precipitating = true;
             } else if(Intensity == 0) {
-                if ((Water >= 100 && rand.nextInt(Enhancedweather.CONFIG.Weather_PrecipitationChance) == 0)) {
+                if ((Water >= Enhancedweather.CONFIG.Weather_MinimumWaterToPrecipitate && rand.nextInt(Enhancedweather.CONFIG.Weather_PrecipitationChance) == 0)) {
                     Precipitating = true;
                 }
             }

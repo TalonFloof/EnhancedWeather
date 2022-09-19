@@ -30,5 +30,6 @@ public class Enhancedweather implements ModInitializer {
         ParticleRegister.Initialize();
         NetworkRegister.Initialize();
         ServerEvents.Initialize();
+        CommandsRegister.Initialize();
     }
 }

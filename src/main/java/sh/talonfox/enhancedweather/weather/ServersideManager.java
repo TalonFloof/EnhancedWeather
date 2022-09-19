@@ -54,7 +54,6 @@ public class ServersideManager extends Manager {
                         Cloud cloud = (Cloud)Clouds.get(j);
                         var col = PlayerLookup.around(world.getServer().getOverworld(),new Vec3d(cloud.Position.x, 50, cloud.Position.z),1024.0D);
                         if(col.isEmpty()) {
-                            Enhancedweather.LOGGER.info("Remove Cloud {}", j.toString());
                             for (ServerPlayerEntity i : PlayerLookup.all(world.getServer())) {
                                 UpdateStorm.send(world.getServer(), j, null, i);
                             }
@@ -67,13 +66,13 @@ public class ServersideManager extends Manager {
                     }
                 }
             }
-            for (ServerPlayerEntity ent : PlayerLookup.all(Objects.requireNonNull(getWorld().getServer()))) {
+            /*for (ServerPlayerEntity ent : PlayerLookup.all(Objects.requireNonNull(getWorld().getServer()))) {
                 if (Clouds.size() < 20 * getWorld().getServer().getCurrentPlayerCount()) {
                     if (rand.nextInt(5) == 0) {
                         attemptCloudSpawn(ent, 200);
                     }
                 }
-            }
+            }*/
         }
     }
 

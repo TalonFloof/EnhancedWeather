@@ -7,7 +7,7 @@ import net.minecraft.util.math.Vec3d;
 
 public abstract class Weather {
     Manager HostManager;
-    Vec3d Position = null;
+    public Vec3d Position = null;
     int Size = 1;
     int MaxSize = 300;
 

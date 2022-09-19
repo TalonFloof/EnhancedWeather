@@ -14,13 +14,25 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3f;
+import sh.talonfox.enhancedweather.Enhancedweather;
 
 public class CloudParticle extends SpriteBillboardParticle {
+    private static long nextID = 0;
+    public long ID = 0;
     public float yaw = 0F;
     public float pitch = 0F;
+    public double X;
+    public double Y;
+    public double Z;
+    public double velX;
+    public double velY;
+    public double velZ;
+    public boolean velocityDecay = false;
 
     public CloudParticle(ClientWorld clientWorld, double x, double y, double z, double r, double g, double b, SpriteProvider provider) {
         super(clientWorld, x, y, z, r, g, b);
+        ID = nextID;
+        nextID += 1;
         this.setSprite(provider);
         this.scale(500F);
         this.collidesWithWorld = false;
@@ -34,7 +46,7 @@ public class CloudParticle extends SpriteBillboardParticle {
 
     @Override
     public ParticleTextureSheet getType() {
-        return ParticleTextureSheet.PARTICLE_SHEET_OPAQUE;
+        return Enhancedweather.CONFIG.Client_TranslucentClouds?ParticleTextureSheet.PARTICLE_SHEET_TRANSLUCENT:ParticleTextureSheet.PARTICLE_SHEET_OPAQUE;
     }
 
     @Override
@@ -76,9 +88,17 @@ public class CloudParticle extends SpriteBillboardParticle {
     @Override
     public void tick() {
         super.tick();
-        this.velocityX /= 0.9800000190734863D;
-        this.velocityY /= 0.9800000190734863D;
-        this.velocityZ /= 0.9800000190734863D;
+        if(!velocityDecay) {
+            this.velocityX /= 0.9800000190734863D;
+            this.velocityY /= 0.9800000190734863D;
+            this.velocityZ /= 0.9800000190734863D;
+        }
+        this.velX = this.velocityX;
+        this.velY = this.velocityY;
+        this.velZ = this.velocityZ;
+        this.X = this.x;
+        this.Y = this.y;
+        this.Z = this.z;
         if (this.age < 50) {
             this.setAlpha((this.age / 50F));
         } else if(this.age > this.maxAge - 50) {

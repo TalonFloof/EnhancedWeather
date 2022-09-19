@@ -9,6 +9,15 @@ import net.minecraft.client.gui.screen.Screen;
 
 @Config(name = "enhancedweather")
 public class EnhancedWeatherConfig implements ConfigData {
+    ////////// CLIENT //////////
+    @ConfigEntry.Category("client")
+    public boolean Client_PrecipitationFog = false;
+    @ConfigEntry.Category("client")
+    public boolean Client_ParticlePrecipitation = false;
+    @ConfigEntry.Category("client")
+    public boolean Client_ParticleWind = true;
+    @ConfigEntry.Category("client")
+    public boolean Client_TranslucentClouds = false;
     ////////// WIND //////////
     @ConfigEntry.Category("wind")
     public int Wind_LowWindStartChance = 20*200;
@@ -26,7 +35,11 @@ public class EnhancedWeatherConfig implements ConfigData {
     @ConfigEntry.Category("weather")
     public boolean Weather_RandomConditionInNewWorld = true;
     @ConfigEntry.Category("weather")
+    public int Weather_DefaultCloudIntensity = 0;
+    @ConfigEntry.Category("weather")
     public int Weather_LightningStrikeBaseChance = 10000;
+    @ConfigEntry.Category("weather")
+    public int Weather_MinimumWaterToPrecipitate = 100;
     @ConfigEntry.Category("weather")
     public int Weather_WaterCollectionFromNothingChance = 100;
     @ConfigEntry.Category("weather")

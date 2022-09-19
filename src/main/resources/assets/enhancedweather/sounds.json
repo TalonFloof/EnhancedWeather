@@ -1,0 +1,11 @@
+{
+    "ambience.distant_winds": {
+        "category": "weather",
+        "sounds": [
+            {
+                "name": "enhancedweather:distant_winds",
+                "stream": true
+            }
+        ]
+    }
+}
