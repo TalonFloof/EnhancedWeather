@@ -49,7 +49,7 @@ public class Cloud extends Weather {
         if ((HostManager.getWorld().getTime() % ((Math.max(1, (int)(100F / Size))) + 2)) == 0) {
             Vec3i playerPos = new Vec3i(MinecraftClient.getInstance().player.getX(), Position.y, MinecraftClient.getInstance().player.getZ());
             Vec3i spawnPos = new Vec3i(Position.x + (Math.random() * Size) - (Math.random() * Size), Position.y, Position.z + (Math.random() * Size) - (Math.random() * Size));
-            if (ParticlesCloud.size() < Size && spawnPos.isWithinDistance(playerPos,1024D)) {
+            if (ParticlesCloud.size() < Size && spawnPos.getManhattanDistance(playerPos) < 512) {
                 CloudParticle newParticle = (CloudParticle)MinecraftClient.getInstance().particleManager.addParticle(ParticleRegister.CLOUD, spawnPos.getX(), spawnPos.getY(), spawnPos.getZ(), Precipitating ? 0.2F : 0.7F, Precipitating ? 0.2F : 0.7F, Precipitating ? 0.2F : 0.7F);
                 newParticle.setVelocity(-Math.sin(Math.toRadians(Enhancedweather.CLIENT_WIND.AngleGlobal)) * Enhancedweather.CLIENT_WIND.SpeedGlobal * 0.1D,0D,Math.cos(Math.toRadians(Enhancedweather.CLIENT_WIND.AngleGlobal)) * Enhancedweather.CLIENT_WIND.SpeedGlobal * 0.1D);
                 ParticlesCloud.add(newParticle);
@@ -132,17 +132,19 @@ public class Cloud extends Weather {
                 if (velocityY > 0.15F) {
                     velocityY = 0.15F;
                 }*/
-                ent.setVelocity(velocityX,velocityY,velocityZ);
+                ent.setVelocity(velocityX,0,velocityZ);
             }
         }
     }
     public void tickServer() {
-        if(Layer != 0) {
-            Size = 300;
-        } else if (Size < 300 && Expanding) {
-            Size++;
-        }
         ticks++;
+        if((ticks % 3) == 0) {
+            if (Layer != 0) {
+                Size = 300;
+            } else if (Size < 300 && Expanding) {
+                Size++;
+            }
+        }
         if((ticks % 60) == 0 && !Placeholder) {
             boolean waterCollected = false;
             if (rand.nextInt(Enhancedweather.CONFIG.Weather_WaterCollectionFromNothingChance) == 0) {
