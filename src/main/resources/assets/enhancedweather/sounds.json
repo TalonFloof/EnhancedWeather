@@ -7,5 +7,14 @@
                 "stream": true
             }
         ]
+    },
+    "ambience.close_winds": {
+        "category": "weather",
+        "sounds": [
+            {
+                "name": "enhancedweather:close_winds",
+                "stream": true
+            }
+        ]
     }
 }
