@@ -65,9 +65,6 @@ public class Cloud extends Weather {
         }
         if(Intensity > 1) {
             Ambience.HighWindExists = true;
-            if(HostManager.getWorld().getTime() % 20 == 0) {
-                Enhancedweather.LOGGER.info("{}", ParticlesCloud.size());
-            }
         }
         for (int i = 0; i < ParticlesCloud.size(); i++) {
             CloudParticle ent = (CloudParticle)ParticlesCloud.get(i);

@@ -33,8 +33,9 @@ public class ClientsideManager extends Manager {
         } else if(PrecipitationRate < PrecipitationRateTarget) {
             PrecipitationRate += 0.0005F;
         }
-        if(PrecipitationRateTarget == 0 && Math.abs(PrecipitationRate-PrecipitationRateTarget) < 0.001F) {
+        if(PrecipitationRateTarget == 0 && PrecipitationRate != 0F && Math.abs(PrecipitationRate-PrecipitationRateTarget) < 0.001F) {
             PrecipitationRate = 0F;
+            PrecipitationIntensity = 0;
         }
     }
 
