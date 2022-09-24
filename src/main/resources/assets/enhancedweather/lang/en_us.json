@@ -8,6 +8,7 @@
     "text.autoconfig.enhancedweather.option.Client_ParticlePrecipitation": "Particle-based Precipitation (EXPERIMENTAL)",
     "text.autoconfig.enhancedweather.option.Client_TranslucentClouds": "Translucent Cloud Particles",
     "text.autoconfig.enhancedweather.option.Client_ParticleWind": "Particles move with Wind",
+    "text.autoconfig.enhancedweather.option.Client_CloudParticleRenderDistance": "Cloud Particle Render Distance",
 
     "text.autoconfig.enhancedweather.option.Wind_LowWindStartChance": "Chance of Low Wind Event Triggering",
     "text.autoconfig.enhancedweather.option.Wind_HighWindStartChance": "Chance of High Wind Event Triggering",
