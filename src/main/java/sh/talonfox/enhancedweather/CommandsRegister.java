@@ -72,6 +72,20 @@ public class CommandsRegister {
                                         return 1;
                                     })
                             )
+                            .then(literal("forming").executes(context -> {
+                                        Cloud cloud = new Cloud(Enhancedweather.SERVER_WEATHER,context.getSource().getPosition().multiply(1,0,1).add(0,200,0));
+                                        cloud.Intensity = 4;
+                                        cloud.Water = Enhancedweather.CONFIG.Weather_MinimumWaterToPrecipitate*2;
+                                        cloud.Precipitating = true;
+                                        UUID id = UUID.randomUUID();
+                                        Enhancedweather.SERVER_WEATHER.Clouds.put(id,cloud);
+                                        for (ServerPlayerEntity j : PlayerLookup.all(context.getSource().getServer())) {
+                                            UpdateStorm.send(context.getSource().getServer(), id, null, j);
+                                        }
+                                        context.getSource().sendMessage(Text.literal("Summoning Forming Funnel Storm"));
+                                        return 1;
+                                    })
+                            )
                     )
                     .then(literal("killallOverworld").executes(context -> {
                         for (UUID i : Enhancedweather.SERVER_WEATHER.Clouds.keySet()) {

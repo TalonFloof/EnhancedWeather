@@ -68,7 +68,6 @@ public class ServersideManager extends Manager {
                                     dist = (int)Math.floor(new Vec3d(i.getX(),200,i.getZ()).distanceTo(cloud.Position));
                             }
                             if(new Random().nextInt(30) == 0 && cloud != null) {
-                                Enhancedweather.LOGGER.info("A distant storm approaches player {}", i.getName().toString());
                                 cloud.Intensity = 1;
                                 cloud.Precipitating = true;
                                 cloud.Placeholder = false;

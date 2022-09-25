@@ -17,7 +17,7 @@ public class EnhancedWeatherConfig implements ConfigData {
     @ConfigEntry.Category("client")
     public boolean Client_ParticleWind = true;
     @ConfigEntry.Category("client")
-    public boolean Client_TranslucentClouds = false;
+    public boolean Client_TranslucentClouds = true;
     @ConfigEntry.Category("client")
     public double Client_CloudParticleRenderDistance = 512.0;
     ////////// WIND //////////

@@ -28,6 +28,9 @@ public class Cloud extends Weather {
     public int Layer = 0;
     public int Water = 0;
     public int Intensity = 0;
+    public int MaxIntensity = 1;
+    public float IntensityProgression = 0F;
+    public boolean PeakedIntensity = false;
     public boolean Precipitating = false;
     public boolean Placeholder = false;
     public boolean Expanding = true;
@@ -44,6 +47,7 @@ public class Cloud extends Weather {
         rand = new Random();
         Size = 50;
         Intensity = Enhancedweather.CONFIG.Weather_DefaultCloudIntensity;
+        MaxIntensity = rand.nextInt(1,5);
     }
 
     public void tickClient() {
@@ -86,6 +90,8 @@ public class Cloud extends Weather {
                 double spinSpeed = 0.4D;
                 if (Intensity == 2 || Intensity == 3) {
                     spinSpeed = 0.4D * 0.05D;
+                } else {
+                    spinSpeed = 0.4D * 0.2D;
                 }
                 float extraDropCalc = 0;
                 if (curDist < 200 && ent.ID % 20 < 5) {
@@ -187,6 +193,24 @@ public class Cloud extends Weather {
                     Precipitating = true;
                 }
             }
+            if (Intensity > 0) {
+                if (!PeakedIntensity && (ticks % 60) == 0) {
+                    if(Intensity >= MaxIntensity) {
+                        PeakedIntensity = true;
+                    }
+                    IntensityProgression += 0.02F * (Intensity >= 5 ? 3 : 1);
+                    if (IntensityProgression >= 0.6F) {
+                        Intensity += 1;
+                        IntensityProgression = 0;
+                    }
+                } else if(PeakedIntensity && (ticks % 60) == 0) {
+                    IntensityProgression += 0.02F * (Intensity >= 5 ? 3 : 1) * 0.3F;
+                    if(IntensityProgression >= 0.6F) {
+                        Intensity -= 1;
+                        IntensityProgression = 0;
+                    }
+                }
+            }
         }
         ///// WIND /////
         if(Angle == Float.MIN_VALUE) {
@@ -234,6 +258,9 @@ public class Cloud extends Weather {
         data.putInt("Layer",Layer);
         data.putInt("Water",Water);
         data.putInt("Intensity",Intensity);
+        data.putFloat("IntensityProgression",IntensityProgression);
+        data.putInt("MaxIntensity",MaxIntensity);
+        data.putBoolean("PeakedIntensity",PeakedIntensity);
         data.putBoolean("Precipitating",Precipitating);
         data.putBoolean("Placeholder",Placeholder);
         data.putBoolean("Expanding",Expanding);
@@ -247,6 +274,9 @@ public class Cloud extends Weather {
         Layer = data.getInt("Layer");
         Water = data.getInt("Water");
         Intensity = data.getInt("Intensity");
+        IntensityProgression = data.getFloat("IntensityProgression");
+        MaxIntensity = data.getInt("MaxIntensity");
+        PeakedIntensity = data.getBoolean("PeakedIntensity");
         Precipitating = data.getBoolean("Precipitating");
         Placeholder = data.getBoolean("Placeholder");
         Expanding = data.getBoolean("Expanding");
@@ -259,6 +289,9 @@ public class Cloud extends Weather {
         json.put("Layer",new JsonPrimitive(Layer));
         json.put("Water",new JsonPrimitive(Water));
         json.put("Intensity",new JsonPrimitive(Intensity));
+        json.put("IntensityProgression",new JsonPrimitive(IntensityProgression));
+        json.put("MaxIntensity",new JsonPrimitive(MaxIntensity));
+        json.put("PeakedIntensity",new JsonPrimitive(PeakedIntensity));
         json.put("Precipitating",new JsonPrimitive(Precipitating));
         json.put("Placeholder",new JsonPrimitive(Placeholder));
         json.put("Expanding",new JsonPrimitive(Expanding));
@@ -272,9 +305,12 @@ public class Cloud extends Weather {
         Layer = json.getInt("Layer",0);
         Water = json.getInt("Water",0);
         Intensity = json.getInt("Intensity",0);
+        IntensityProgression = json.getFloat("IntensityProgression",0F);
+        MaxIntensity = json.getInt("MaxIntensity",1);
+        PeakedIntensity = json.getBoolean("PeakedIntensity",false);
         Precipitating = json.getBoolean("Precipitating",false);
         Placeholder = json.getBoolean("Placeholder",false);
         Expanding = json.getBoolean("Expanding",false);
-        Angle = json.getFloat("Angle",0F);
+        Angle = json.getFloat("Angle",Float.MIN_VALUE);
     }
 }
