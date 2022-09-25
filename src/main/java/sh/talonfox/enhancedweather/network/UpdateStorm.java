@@ -12,6 +12,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 import sh.talonfox.enhancedweather.Enhancedweather;
+import sh.talonfox.enhancedweather.particles.CloudParticle;
 import sh.talonfox.enhancedweather.weather.Cloud;
 
 import java.util.UUID;
@@ -38,7 +39,13 @@ public class UpdateStorm {
         NbtCompound data = packetByteBuf.readNbt();
         client.executeSync(() -> {
             if(data == null) {
-                Enhancedweather.CLIENT_WEATHER.Clouds.remove(id);
+                var storm = Enhancedweather.CLIENT_WEATHER.Clouds.get(id);
+                if(storm != null) {
+                    if(storm instanceof Cloud) {
+                        ((Cloud) storm).ParticlesCloud.forEach(i -> ((CloudParticle)i).setAge(i.getMaxAge()-50));
+                    }
+                    Enhancedweather.CLIENT_WEATHER.Clouds.remove(id);
+                }
             } else {
                 if(Enhancedweather.CLIENT_WEATHER.Clouds.containsKey(id)) {
                     Enhancedweather.CLIENT_WEATHER.Clouds.get(id).applyUpdate(data);

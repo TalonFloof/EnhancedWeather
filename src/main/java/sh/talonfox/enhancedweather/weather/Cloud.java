@@ -6,6 +6,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.particle.Particle;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.tag.BiomeTags;
 import net.minecraft.util.Identifier;
@@ -30,6 +31,7 @@ public class Cloud extends Weather {
     public boolean Precipitating = false;
     public boolean Placeholder = false;
     public boolean Expanding = true;
+    public float Angle = Float.MIN_VALUE;
     private int ticks = 0;
     private int ticksClient = 0;
     public Random rand;
@@ -48,12 +50,19 @@ public class Cloud extends Weather {
         if (Placeholder)
             return;
         ticksClient += 1;
-        if ((ticksClient % ((Math.max(1, (int)(100F / Size))) + 0)) == 0) {
+        if ((ticksClient % ((Math.max(1, (int)(100F / Size))))) == 0) {
+            assert MinecraftClient.getInstance().player != null;
             Vec3i playerPos = new Vec3i(MinecraftClient.getInstance().player.getX(), Position.y, MinecraftClient.getInstance().player.getZ());
             Vec3i spawnPos = new Vec3i(Position.x + (Math.random() * Size) - (Math.random() * Size), Position.y, Position.z + (Math.random() * Size) - (Math.random() * Size));
             if (ParticlesCloud.size() < Size && playerPos.getManhattanDistance(spawnPos) < Enhancedweather.CONFIG.Client_CloudParticleRenderDistance) {
                 CloudParticle newParticle = (CloudParticle) MinecraftClient.getInstance().particleManager.addParticle(ParticleRegister.CLOUD, spawnPos.getX(), spawnPos.getY(), spawnPos.getZ(), Precipitating ? 0.2F : 0.7F, Precipitating ? 0.2F : 0.7F, Precipitating ? 0.2F : 0.7F);
+                assert newParticle != null;
                 newParticle.setVelocity(-Math.sin(Math.toRadians(Enhancedweather.CLIENT_WIND.AngleGlobal)) * Enhancedweather.CLIENT_WIND.SpeedGlobal * 0.1D, 0D, Math.cos(Math.toRadians(Enhancedweather.CLIENT_WIND.AngleGlobal)) * Enhancedweather.CLIENT_WIND.SpeedGlobal * 0.1D);
+                if(Intensity > 1 && newParticle.ID % 20 < 5) {
+                    newParticle.setMaxAge(Size+rand.nextInt(100));
+                } else if(Intensity > 0) {
+                    newParticle.setMaxAge((Size/2)+rand.nextInt(100));
+                }
                 ParticlesCloud.add(newParticle);
             }
         }
@@ -66,15 +75,15 @@ public class Cloud extends Weather {
         }
         if(Intensity > 1) {
             Ambience.HighWindExists = true;
-            for (int i = 0; i < ParticlesCloud.size(); i++) {
-                CloudParticle ent = (CloudParticle)ParticlesCloud.get(i);
+            for(Particle particle : ParticlesCloud) {
+                CloudParticle ent = (CloudParticle) particle;
                 ent.velocityDecay = true;
-                double curSpeed = Math.sqrt(ent.velX * ent.velX + ent.velY * ent.velY + ent.velZ * ent.velZ);
-                double curDist = new Vec3d(ent.X, ent.Y, ent.Z).distanceTo(Position);
+                double velocityX = ent.getVelocityX();
+                double velocityY = ent.getVelocityY();
+                double velocityZ = ent.getVelocityZ();
+                double curSpeed = Math.sqrt(velocityX * velocityX + velocityY * velocityY + velocityZ * velocityZ);
+                double curDist = new Vec3d(ent.getX(), Position.getY(), ent.getZ()).distanceTo(Position);
                 double spinSpeed = 0.4D;
-                double velocityX = ent.velX;
-                double velocityY = ent.velY;
-                double velocityZ = ent.velZ;
                 if (Intensity == 2 || Intensity == 3) {
                     spinSpeed = 0.4D * 0.05D;
                 }
@@ -83,8 +92,8 @@ public class Cloud extends Weather {
                     extraDropCalc = ((ent.ID % 20) * 15F);
                 }
                 double speed = spinSpeed + (rand.nextDouble() * 0.01D);
-                double vecX = ent.X - Position.getX();
-                double vecZ = ent.Z - Position.getZ();
+                double vecX = ent.getX() - Position.getX();
+                double vecZ = ent.getZ() - Position.getZ();
                 float angle = (float) (Math.atan2(vecZ, vecX) * 180.0D / Math.PI);
                 angle += speed * 50D;
                 angle -= (ent.ID % 10) * 3D;
@@ -94,16 +103,16 @@ public class Cloud extends Weather {
                 }
                 if (ent.ID % 20 < 5) {
                     if (Intensity >= 4) {
-                        angle += 30 + ((i % 5) * 4);
+                        angle += 30 + ((ent.ID % 5) * 4);
                     } else {
                         if (curDist > 150) {
-                            angle += 50 + ((i % 5) * 4);
+                            angle += 50 + ((ent.ID % 5) * 4);
                         }
                     }
-                    double var16 = Position.getX() - ent.X;
-                    double var18 = Position.getZ() - ent.Z;
+                    double var16 = Position.getX() - ent.getX();
+                    double var18 = Position.getZ() - ent.getZ();
                     ent.yaw = (float) (Math.atan2(var18, var16) * 180.0D / Math.PI) - 90.0F;
-                    ent.pitch = -20F - (i % 10);
+                    ent.pitch = -20F - (ent.ID % 10);
                 }
                 if (curSpeed < speed * 20D) {
                     velocityX += -Math.sin(Math.toRadians(angle)) * speed;
@@ -118,13 +127,13 @@ public class Cloud extends Weather {
                         extraDropCalc = ((ent.ID % 20) * 5F);
                     }
 
-                    if (curSpeed < speed * 1D) {
+                    if (curSpeed < speed) {
                         velocityX += -Math.sin(Math.toRadians(angle)) * speed;
                         velocityZ += Math.cos(Math.toRadians(angle)) * speed;
                     }
                 }
-                /*if (Math.abs(ent.Y - (Position.getY() - extraDropCalc)) > 2F) {
-                    if (ent.Y < Position.getY() - extraDropCalc) {
+                if (Math.abs(ent.getY() - (Position.getY() - extraDropCalc)) > 2F) {
+                    if (ent.getY() < Position.getY() - extraDropCalc) {
                         velocityY += 0.1D;
                     } else {
                         velocityY -= 0.1D;
@@ -135,8 +144,10 @@ public class Cloud extends Weather {
                 }
                 if (velocityY > 0.15F) {
                     velocityY = 0.15F;
-                }*/
-                ent.setVelocity(velocityX, 0, velocityZ);
+                }
+                ent.setVelocityX(velocityX);
+                ent.setVelocityY(velocityY);
+                ent.setVelocityZ(velocityZ);
             }
         }
     }
@@ -178,20 +189,43 @@ public class Cloud extends Weather {
             }
         }
         ///// WIND /////
-        float angle = Enhancedweather.WIND.SpeedGlobal;
-        Random rand = new Random();
-        angle += (rand.nextFloat() - rand.nextFloat()) * 0.15F;
-        float angleAdjust = Math.max(10, Math.min(45,45F * 0 * 0.2F));
-        float yaw = 0 > 0 ? 180 : 0;
-        float bestMove = MathHelper.wrapDegrees(yaw - angle);
-        if(Math.abs(bestMove) < 180) {
-            if(bestMove > 0) angle -= angleAdjust;
-            if(bestMove < 0) angle += angleAdjust;
+        if(Angle == Float.MIN_VALUE) {
+            float angle = Enhancedweather.WIND.SpeedGlobal;
+            Random rand = new Random();
+            angle += (rand.nextFloat() - rand.nextFloat()) * 0.15F;
+            float angleAdjust = Math.max(10, Math.min(45, 45F * 0 * 0.2F));
+            float yaw = 0 > 0 ? 180 : 0;
+            float bestMove = MathHelper.wrapDegrees(yaw - angle);
+            if (Math.abs(bestMove) < 180) {
+                if (bestMove > 0) angle -= angleAdjust;
+                if (bestMove < 0) angle += angleAdjust;
+            }
+            double vecX = -Math.sin(Math.toRadians(angle));
+            double vecZ = Math.cos(Math.toRadians(angle));
+            Vec3d motion = new Vec3d(vecX * (Enhancedweather.WIND.SpeedGlobal * 0.2F), 0, vecZ * (Enhancedweather.WIND.SpeedGlobal * 0.2F));
+            Position = Position.add(motion);
+        } else {
+            double vecX = -Math.sin(Math.toRadians(Angle));
+            double vecZ = Math.cos(Math.toRadians(Angle));
+            Vec3d motion = new Vec3d(vecX * (0.2F * 0.2F), 0, vecZ * (0.2F * 0.2F));
+            Position = Position.add(motion);
         }
-        double vecX = -Math.sin(Math.toRadians(angle));
-        double vecZ = Math.cos(Math.toRadians(angle));
-        Vec3d motion = new Vec3d(vecX * (Enhancedweather.WIND.SpeedGlobal * 0.2F), 0, vecZ * (Enhancedweather.WIND.SpeedGlobal * 0.2F));
-        Position = Position.add(motion);
+    }
+
+    public void aimAtPlayer(PlayerEntity ent) {
+        if(ent == null)
+            ent = HostManager.getWorld().getClosestPlayer(Position.x,Position.y,Position.z,-1,false);
+        if(ent != null) {
+            Random rand = new Random();
+            double var11 = ent.getX() - Position.x;
+            double var15 = ent.getZ() - Position.z;
+            float yaw = -(float)(Math.atan2(var11, var15) * 180.0D / Math.PI);
+            int size = 0;
+            if(size > 0) {
+                yaw += rand.nextInt(size) - (size / 2F);
+            }
+            Angle = yaw;
+        }
     }
 
     @Override
@@ -203,6 +237,7 @@ public class Cloud extends Weather {
         data.putBoolean("Precipitating",Precipitating);
         data.putBoolean("Placeholder",Placeholder);
         data.putBoolean("Expanding",Expanding);
+        data.putFloat("Angle",Angle);
         return data;
     }
 
@@ -215,6 +250,7 @@ public class Cloud extends Weather {
         Precipitating = data.getBoolean("Precipitating");
         Placeholder = data.getBoolean("Placeholder");
         Expanding = data.getBoolean("Expanding");
+        Angle = data.getFloat("Angle");
     }
 
     @Override
@@ -226,6 +262,7 @@ public class Cloud extends Weather {
         json.put("Precipitating",new JsonPrimitive(Precipitating));
         json.put("Placeholder",new JsonPrimitive(Placeholder));
         json.put("Expanding",new JsonPrimitive(Expanding));
+        json.put("Angle", new JsonPrimitive(Angle));
         return json;
     }
 
@@ -238,5 +275,6 @@ public class Cloud extends Weather {
         Precipitating = json.getBoolean("Precipitating",false);
         Placeholder = json.getBoolean("Placeholder",false);
         Expanding = json.getBoolean("Expanding",false);
+        Angle = json.getFloat("Angle",0F);
     }
 }

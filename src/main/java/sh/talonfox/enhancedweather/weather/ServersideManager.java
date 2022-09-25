@@ -18,6 +18,7 @@ import sh.talonfox.enhancedweather.network.UpdateStorm;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Random;
 import java.util.UUID;
@@ -27,6 +28,7 @@ public class ServersideManager extends Manager {
     private long secondsSinceNoPlayers = 0;
     private final ServerWorld world;
     private Random rand;
+    private long PreviousDay = 0;
     public static boolean IsNewWorld = false;
     public ServersideManager(ServerWorld w) {
         this.world = w;
@@ -50,6 +52,30 @@ public class ServersideManager extends Manager {
                 if (ticks % 40 == 0) {
                     if(world.getServer().getCurrentPlayerCount() == 0)
                         return;
+                    if((long)Math.floor(world.getTimeOfDay()/24000F) != PreviousDay) {
+                        PreviousDay = (long)Math.floor(world.getTimeOfDay()/24000F);
+                        var key_array = new ArrayList<UUID>(Clouds.keySet());
+                        for (ServerPlayerEntity i : PlayerLookup.all(world.getServer())) {
+                            if(Clouds.keySet().size() == 0)
+                                continue;
+                            Cloud cloud = null;
+                            int dist = Integer.MAX_VALUE;
+                            while(dist >= 1024) {
+                                cloud = (Cloud)Clouds.get(key_array.get(rand.nextInt(key_array.size())));
+                                if(Clouds.keySet().size() == 0)
+                                    break;
+                                if(cloud != null)
+                                    dist = (int)Math.floor(new Vec3d(i.getX(),200,i.getZ()).distanceTo(cloud.Position));
+                            }
+                            if(new Random().nextInt(30) == 0 && cloud != null) {
+                                Enhancedweather.LOGGER.info("A distant storm approaches player {}", i.getName().toString());
+                                cloud.Intensity = 1;
+                                cloud.Precipitating = true;
+                                cloud.Placeholder = false;
+                                cloud.aimAtPlayer(i);
+                            }
+                        }
+                    }
                     for (UUID j : Clouds.keySet()) {
                         Cloud cloud = (Cloud)Clouds.get(j);
                         var col = PlayerLookup.around(world.getServer().getOverworld(),new Vec3d(cloud.Position.x, 50, cloud.Position.z),1024.0D);
@@ -117,6 +143,7 @@ public class ServersideManager extends Manager {
         if(file.exists() && file.isFile()) {
             try {
                 JsonObject jsonObject = Jankson.builder().build().load(file);
+                PreviousDay = jsonObject.getLong("previousDay",0);
                 JsonObject clouds = jsonObject.getObject("clouds");
                 if(clouds != null) {
                     Clouds.clear();
@@ -139,6 +166,7 @@ public class ServersideManager extends Manager {
         for(UUID i : Clouds.keySet()) {
             clouds.put(i.toString(),Clouds.get(i).generateSaveDataJson());
         }
+        jsonObject.put("previousDay",new JsonPrimitive(PreviousDay));
         jsonObject.put("clouds",clouds);
         String data = jsonObject.toJson(true,true);
         File file = new File(server.getSavePath(WorldSavePath.ROOT).toAbsolutePath() + "/enhancedweather/Clouds_DIM0.json5");

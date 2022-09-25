@@ -1,12 +1,12 @@
 package sh.talonfox.enhancedweather.particles;
 
+import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.particle.*;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.*;
+import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.DefaultParticleType;
@@ -16,27 +16,25 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3f;
 import sh.talonfox.enhancedweather.Enhancedweather;
 
+import java.util.Random;
+
 public class CloudParticle extends SpriteBillboardParticle {
     private static long nextID = 0;
     public long ID = 0;
     public float yaw = 0F;
     public float pitch = 0F;
-    public double X;
-    public double Y;
-    public double Z;
-    public double velX;
-    public double velY;
-    public double velZ;
     public boolean velocityDecay = false;
+    protected static Random rand = new Random();
 
     public CloudParticle(ClientWorld clientWorld, double x, double y, double z, double r, double g, double b, SpriteProvider provider) {
         super(clientWorld, x, y, z, r, g, b);
         ID = nextID;
         nextID += 1;
         this.setSprite(provider);
-        this.scale(500F);
+        this.setBoundingBoxSpacing(0.25F, 0.25F);
+        this.scale = 500F*0.15F;
         this.collidesWithWorld = false;
-        this.setMaxAge(650);
+        this.setMaxAge(300+rand.nextInt(100));
         this.setColor((float)r,(float)g,(float)b);
         this.age = 0;
         this.setAlpha(0.0F);
@@ -46,7 +44,11 @@ public class CloudParticle extends SpriteBillboardParticle {
 
     @Override
     public ParticleTextureSheet getType() {
-        return Enhancedweather.CONFIG.Client_TranslucentClouds?ParticleTextureSheet.PARTICLE_SHEET_TRANSLUCENT:ParticleTextureSheet.PARTICLE_SHEET_OPAQUE;
+        if(this.red < 0.5F && this.green < 0.5F && this.blue < 0.5F) {
+            return ParticleTextureSheet.PARTICLE_SHEET_OPAQUE;
+        } else {
+            return Enhancedweather.CONFIG.Client_TranslucentClouds ? ParticleTextureSheet.PARTICLE_SHEET_TRANSLUCENT : ParticleTextureSheet.PARTICLE_SHEET_OPAQUE;
+        }
     }
 
     @Override
@@ -93,19 +95,53 @@ public class CloudParticle extends SpriteBillboardParticle {
             this.velocityY /= 0.9800000190734863D;
             this.velocityZ /= 0.9800000190734863D;
         }
-        this.velX = this.velocityX;
-        this.velY = this.velocityY;
-        this.velZ = this.velocityZ;
-        this.X = this.x;
-        this.Y = this.y;
-        this.Z = this.z;
         if (this.age < 50) {
             this.setAlpha((this.age / 50F));
         } else if(this.age > this.maxAge - 50) {
             this.setAlpha((50 - (this.age - (this.maxAge - 50))) / 50F);
         } else {
-            this.setAlpha(1F);
+            this.setAlpha(1.0F);
         }
+    }
+
+    public void setAge(int newAge) {
+        this.age = newAge;
+    }
+
+    public void setVelocityX(double velX) {
+        velocityX = velX;
+    }
+
+    public void setVelocityY(double velY) {
+        velocityY = velY;
+    }
+
+    public void setVelocityZ(double velZ) {
+        velocityZ = velZ;
+    }
+
+    public double getVelocityX() {
+        return velocityX;
+    }
+
+    public double getVelocityY() {
+        return velocityY;
+    }
+
+    public double getVelocityZ() {
+        return velocityZ;
+    }
+
+    public double getX() {
+        return x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+    public double getZ() {
+        return z;
     }
 
     @Environment(EnvType.CLIENT)
