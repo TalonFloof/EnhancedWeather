@@ -19,7 +19,6 @@ public class Ambience {
         if(ticks % 40 == 0) {
             InOverworld = MinecraftClient.getInstance().player.getWorld().getDimensionKey().equals(DimensionTypes.OVERWORLD);
             if(!InOverworld && CurrentAmbientSound != 0) {
-                Enhancedweather.LOGGER.info("No Ambient Sounds");
                 DistantWinds.fadeOut();
                 CloseWinds.fadeOut();
                 CurrentAmbientSound = 0;

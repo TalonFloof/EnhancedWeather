@@ -3,11 +3,15 @@
     "id": "enhancedweather",
     "version": "${version}",
     "name": "Enhanced Weather",
-    "description": "Revamps Vanilla Weather",
+    "description": "Revamps Minecraft's Weather by adding localized weather systems that move and grow over time.",
     "authors": [
         "TalonFox"
     ],
-    "contact": {},
+    "contact": {
+        "sources": "https://github.com/Talon396/EnhancedWeather",
+        "homepage": "https://github.com/Talon396/EnhancedWeather",
+        "issues": "https://github.com/Talon396/EnhancedWeather/issues"
+    },
     "license": "LGPL-3.0",
     "icon": "assets/enhancedweather/icon.png",
     "environment": "*",
