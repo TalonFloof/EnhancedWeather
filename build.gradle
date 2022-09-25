@@ -6,6 +6,11 @@ plugins {
 version = project.mod_version
 group = project.maven_group
 
+allprojects {
+    apply plugin: "java"
+    apply plugin: "fabric-loom"
+}
+
 repositories {
     // Add repositories to retrieve artifacts from in here.
     // You should only use this when depending on other mods because
@@ -33,7 +38,7 @@ dependencies {
         exclude(group: "net.fabricmc.fabric-api")
     }
 
-    "blue.endless:jankson:1.2.1"
+    implementation include("blue.endless:jankson:1.2.0")
 }
 
 processResources {
