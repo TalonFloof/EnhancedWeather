@@ -5,7 +5,9 @@ import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import sh.talonfox.enhancedweather.network.UpdateStorm;
+import sh.talonfox.enhancedweather.weather.Ambience;
 import sh.talonfox.enhancedweather.weather.Cloud;
+import sh.talonfox.enhancedweather.weather.ServersideManager;
 
 import java.util.UUID;
 
@@ -94,6 +96,7 @@ public class CommandsRegister {
                             }
                         }
                         Enhancedweather.SERVER_WEATHER.Clouds.clear();
+                        Ambience.HighWindExists = false;
                         context.getSource().sendMessage(Text.literal("Clearing all Weather"));
                         return 1;
                     })));
