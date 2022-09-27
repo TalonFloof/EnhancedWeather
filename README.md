@@ -32,7 +32,7 @@ Global Winds will flow around the Overworld and Nether. These winds can move the
 
 ---
 
-Enhanced Weather has storms systems that work similar to the original Weather2 Mod. Every day, each player has a 1/30 chance of a severe storm spawning, these storms contain violent winds, heavy lightning, and in the future may even have hail & tornadoes.
+Enhanced Weather has storms systems that work similar to the original Weather2 Mod. Every day, each player has a 1/30 chance of a severe storm spawning, these storms contain violent winds, and heavy lightning.
 
 Rain Clouds can also form from water being collected from humid biomes, releasing the water as rain.
 
