@@ -6,6 +6,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import net.minecraft.client.render.BackgroundRenderer;
@@ -19,5 +20,14 @@ public class MixinLightningEntity {
         } else {
             instance.playSound(x,y,z,sound,category,volume,pitch,useDistance);
         }
+    }
+
+    /**
+     * @author TalonFox
+     * @reason To prevent excessive amounts of fire spawning
+     */
+    @Overwrite
+    private void spawnFire(int spreadAttempts) {
+        // Do nothing...
     }
 }

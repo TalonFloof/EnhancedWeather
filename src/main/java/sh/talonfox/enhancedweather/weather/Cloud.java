@@ -6,6 +6,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.particle.Particle;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.tag.BiomeTags;
@@ -38,6 +39,7 @@ public class Cloud extends Weather {
     private int ticks = 0;
     private int ticksClient = 0;
     public Random rand;
+    protected static List<FunnelParameters> FunnelParametersList;
     @Environment(EnvType.CLIENT)
     public List<Particle> ParticlesCloud = new ArrayList<Particle>();
 
@@ -47,7 +49,42 @@ public class Cloud extends Weather {
         rand = new Random();
         Size = 50;
         Intensity = Enhancedweather.CONFIG.Weather_DefaultCloudIntensity;
-        MaxIntensity = rand.nextInt(1,5);
+        MaxIntensity = rand.nextInt(1,Enhancedweather.CONFIG.Weather_TornadoesCanSpawn?5:4);
+    }
+
+    static {
+        initFunnelParameters();
+    }
+
+    protected static void initFunnelParameters() {
+        FunnelParametersList = new ArrayList();
+
+        FunnelParameters fConf = new FunnelParameters(); // Forming
+        fConf.InitialSpeed = 0.2F;
+        fConf.PullRate = 0.04F;
+        fConf.LiftRate = 0.05F;
+        fConf.RelativeSize = -20;
+        fConf.BaseSize = 3;
+        fConf.WidthScale = 1.5F;
+        FunnelParametersList.add(fConf);
+
+        fConf = new FunnelParameters(); // F1
+        fConf.InitialSpeed = 0.2F;
+        fConf.PullRate = 0.04F;
+        fConf.LiftRate = 0.06F;
+        fConf.RelativeSize = -30;
+        fConf.BaseSize = 6;
+        fConf.WidthScale = 1.5F;
+        FunnelParametersList.add(fConf);
+
+        fConf = new FunnelParameters(); // F2
+        fConf.InitialSpeed = 0.2F;
+        fConf.PullRate = 0.04F;
+        fConf.LiftRate = 0.07F;
+        fConf.RelativeSize = -40;
+        fConf.BaseSize = 10;
+        fConf.WidthScale = 1.9F;
+        FunnelParametersList.add(fConf);
     }
 
     public void tickClient() {
@@ -79,6 +116,15 @@ public class Cloud extends Weather {
         }
         if(Intensity > 1) {
             Ambience.HighWindExists = true;
+            if(Intensity == 3) {
+                for(int i = 0; i < Math.max(1, 10 * (Size/300)); i++) {
+                    int x = (int)(Position.x + rand.nextInt(Size) - rand.nextInt(Size));
+                    int z = (int)(Position.z + rand.nextInt(Size) - rand.nextInt(Size));
+                    if(this.HostManager.getWorld().isChunkLoaded(x/16,z/16) && (this.HostManager.getWorld().getClosestPlayer(x, 50, z, 80, false) != null)) {
+                        this.HostManager.getWorld().addParticle(ParticleRegister.HAIL,x,200,z,0,0,0);
+                    }
+                }
+            }
             for(Particle particle : ParticlesCloud) {
                 CloudParticle ent = (CloudParticle) particle;
                 ent.velocityDecay = true;
@@ -87,7 +133,7 @@ public class Cloud extends Weather {
                 double velocityZ = ent.getVelocityZ();
                 double curSpeed = Math.sqrt(velocityX * velocityX + velocityY * velocityY + velocityZ * velocityZ);
                 double curDist = new Vec3d(ent.getX(), Position.getY(), ent.getZ()).distanceTo(Position);
-                double spinSpeed = 0.4D;
+                double spinSpeed;
                 if (Intensity == 2 || Intensity == 3) {
                     spinSpeed = 0.4D * 0.05D;
                 } else {
@@ -203,7 +249,7 @@ public class Cloud extends Weather {
                         Intensity += 1;
                         IntensityProgression = 0;
                     }
-                } else if(PeakedIntensity && (ticks % 60) == 0) {
+                } else if(PeakedIntensity && Intensity > 1 && (ticks % 60) == 0) {
                     IntensityProgression += 0.02F * (Intensity >= 5 ? 3 : 1) * 0.3F;
                     if(IntensityProgression >= 0.6F) {
                         Intensity -= 1;
@@ -250,6 +296,10 @@ public class Cloud extends Weather {
             }
             Angle = yaw;
         }
+    }
+
+    public void spinEntity(Entity ent) {
+
     }
 
     @Override

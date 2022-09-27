@@ -61,6 +61,7 @@ public class ServerEvents {
                         ((Cloud)so).Water = 400;
                         ((Cloud)so).Precipitating = true;
                         ((Cloud)so).Intensity = 1;
+                        ((Cloud)so).MaxIntensity = 1;
                     });
                 }
             }
