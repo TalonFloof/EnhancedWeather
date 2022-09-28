@@ -7,6 +7,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.tag.BiomeTags;
@@ -16,6 +17,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
 import sh.talonfox.enhancedweather.Enhancedweather;
 import sh.talonfox.enhancedweather.particles.CloudParticle;
@@ -63,12 +65,22 @@ public class Cloud extends Weather {
         fConf.InitialSpeed = 0.2F;
         fConf.PullRate = 0.04F;
         fConf.LiftRate = 0.05F;
+        fConf.RelativeSize = 0;
+        fConf.BaseSize = 3;
+        fConf.WidthScale = 1.0F;
+        fConf.GrabDistance = 40D;
+        FunnelParametersList.add(fConf);
+
+        fConf = new FunnelParameters(); // F1
+        fConf.InitialSpeed = 0.2F;
+        fConf.PullRate = 0.04F;
+        fConf.LiftRate = 0.05F;
         fConf.RelativeSize = -20;
         fConf.BaseSize = 3;
         fConf.WidthScale = 1.5F;
         FunnelParametersList.add(fConf);
 
-        fConf = new FunnelParameters(); // F1
+        fConf = new FunnelParameters(); // F2
         fConf.InitialSpeed = 0.2F;
         fConf.PullRate = 0.04F;
         fConf.LiftRate = 0.06F;
@@ -77,13 +89,31 @@ public class Cloud extends Weather {
         fConf.WidthScale = 1.5F;
         FunnelParametersList.add(fConf);
 
-        fConf = new FunnelParameters(); // F2
+        fConf = new FunnelParameters(); // F3
         fConf.InitialSpeed = 0.2F;
         fConf.PullRate = 0.04F;
         fConf.LiftRate = 0.07F;
         fConf.RelativeSize = -40;
         fConf.BaseSize = 10;
         fConf.WidthScale = 1.9F;
+        FunnelParametersList.add(fConf);
+
+        fConf = new FunnelParameters(); // F4
+        fConf.InitialSpeed = 0.2F;
+        fConf.PullRate = 0.04F;
+        fConf.LiftRate = 0.08F;
+        fConf.RelativeSize = -50;
+        fConf.BaseSize = 10;
+        fConf.WidthScale = 1.9F;
+        FunnelParametersList.add(fConf);
+
+        fConf = new FunnelParameters(); // F5
+        fConf.InitialSpeed = 0.15F;
+        fConf.PullRate = 0.04F;
+        fConf.LiftRate = 0.09F;
+        fConf.RelativeSize = -60;
+        fConf.BaseSize = 25;
+        fConf.WidthScale = 2.5F;
         FunnelParametersList.add(fConf);
     }
 
@@ -298,8 +328,64 @@ public class Cloud extends Weather {
         }
     }
 
-    public void spinEntity(Entity ent) {
+    protected static float calculateEntityWeight(Entity ent) {
+        if(ent instanceof PlayerEntity) {
+            if(((PlayerEntity)ent).isCreative())
+                return Float.MAX_VALUE;
+            return 4.5F;
+        } else if(ent instanceof LivingEntity) {
+            int airTime = 0;
+            if (ent.isOnGround() || ent.isTouchingWater())
+            {
+                airTime = 0;
+            }
+            else {
+                airTime++;
+            }
 
+            //entity1.getEntityData().setInteger("timeInAir", airTime);
+            return 0.5F + (((float)airTime) / 800F);
+        }
+        return 1F;
+    }
+
+    public void spinEntity(Entity ent) {
+        FunnelParameters conf = FunnelParametersList.get(this.Intensity-4);
+        double radius = 10D;
+        double scale = conf.WidthScale;
+        double d1 = this.Position.x - ent.getX();
+        double d2 = this.Position.z - ent.getZ();
+        if(this.Intensity==4) {
+            int groundHeight = ent.getWorld().getTopY(Heightmap.Type.MOTION_BLOCKING,(int)Position.x,(int)Position.z);
+            float range = 30F * (float) Math.sin((Math.toRadians(((ent.getWorld().getTime() * 0.5F) + (ent.getId() * 50)) % 360)));
+            float heightPercent = (float) (1F - ((ent.getY() - groundHeight) / (Position.y - groundHeight)));
+            float posOffsetX = (float) Math.sin((Math.toRadians(heightPercent * 360F)));
+            float posOffsetZ = (float) -Math.cos((Math.toRadians(heightPercent * 360F)));
+            d1 += range*posOffsetX;
+            d2 += range*posOffsetZ;
+        }
+        float f = (float)((Math.atan2(d2, d1) * 180D) / Math.PI) - 90F;
+        float f1;
+
+        double distY = Position.y - ent.getY();
+        double distXZ = Math.sqrt(Math.abs(d1)) + Math.sqrt(Math.abs(d2));
+
+        if (ent.getY() - Position.y < 0.0D) {
+            distY = 1.0D;
+        }
+        else {
+            distY = ent.getY() - Position.y;
+        }
+        if (distY > 60) {
+            distY = 60;
+        }
+        double grab = (10D / calculateEntityWeight(ent)) * ((Math.abs((50 - distY)) / 50));
+        float pullY = 0.0F;
+        if (distXZ > 5D)
+        {
+            grab = grab * (radius / distXZ);
+        }
+        pullY += conf.LiftRate / (calculateEntityWeight(ent) / 2F);
     }
 
     @Override
