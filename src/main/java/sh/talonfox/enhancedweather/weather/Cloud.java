@@ -21,6 +21,7 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
 import sh.talonfox.enhancedweather.Enhancedweather;
 import sh.talonfox.enhancedweather.particles.CloudParticle;
+import sh.talonfox.enhancedweather.particles.FunnelParticle;
 import sh.talonfox.enhancedweather.particles.ParticleRegister;
 
 import java.util.ArrayList;
@@ -334,17 +335,7 @@ public class Cloud extends Weather {
                 return Float.MAX_VALUE;
             return 4.5F;
         } else if(ent instanceof LivingEntity) {
-            int airTime = 0;
-            if (ent.isOnGround() || ent.isTouchingWater())
-            {
-                airTime = 0;
-            }
-            else {
-                airTime++;
-            }
-
-            //entity1.getEntityData().setInteger("timeInAir", airTime);
-            return 0.5F + (((float)airTime) / 800F);
+            return 0.5F;
         }
         return 1F;
     }
@@ -367,6 +358,10 @@ public class Cloud extends Weather {
         float f = (float)((Math.atan2(d2, d1) * 180D) / Math.PI) - 90F;
         float f1;
 
+        for (f1 = f; f1 < -180F; f1 += 360F) { }
+
+        for (; f1 >= 180F; f1 -= 360F) { }
+
         double distY = Position.y - ent.getY();
         double distXZ = Math.sqrt(Math.abs(d1)) + Math.sqrt(Math.abs(d2));
 
@@ -386,6 +381,137 @@ public class Cloud extends Weather {
             grab = grab * (radius / distXZ);
         }
         pullY += conf.LiftRate / (calculateEntityWeight(ent) / 2F);
+
+        if (ent instanceof PlayerEntity)
+        {
+            double adjPull = 0.2D / ((calculateEntityWeight(ent) * ((distXZ + 1D) / radius)));
+            pullY += adjPull;
+            double adjGrab = (10D * (((float)(400D / 400D))));
+
+            if (adjGrab > 50) {
+                adjGrab = 50D;
+            }
+
+            if (adjGrab < -50) {
+                adjGrab = -50D;
+            }
+
+            grab = grab - adjGrab;
+
+            if (ent.getVelocity().y > -0.8) {
+                ent.fallDistance = 0F;
+            }
+        }
+        else if (ent instanceof LivingEntity)
+        {
+            double adjPull = 0.005D / ((calculateEntityWeight(ent) * ((distXZ + 1D) / radius)));
+            pullY += adjPull;
+            double adjGrab = (10D * (((float)(400D / 400D))));
+            if (adjGrab > 50)
+            {
+                adjGrab = 50D;
+            }
+            if (adjGrab < -50)
+            {
+                adjGrab = -50D;
+            }
+            grab = grab - adjGrab;
+            if (ent.getVelocity().y > -1.5) {
+                ent.fallDistance = 0F;
+            }
+
+            if (ent.getVelocity().y > 0.3F) ent.setVelocity(ent.getVelocity().multiply(1D,0D,1D).add(0D,0.3D,0D));
+
+            ent.setOnGround(false);
+        }
+        grab += conf.RelativeSize;
+        double profileAngle = Math.max(1, (75D + grab - (10D * scale)));
+        f1 = (float)((double)f1 + profileAngle);
+
+        float f3 = (float)Math.cos(-f1 * 0.01745329F - (float)Math.PI);
+        float f4 = (float)Math.sin(-f1 * 0.01745329F - (float)Math.PI);
+        float f5 = conf.PullRate * 1;
+
+        if (ent instanceof LivingEntity) {
+            f5 /= (calculateEntityWeight(ent) * ((distXZ + 1D) / radius));
+        }
+
+        if (ent instanceof PlayerEntity) {
+            if (ent.isOnGround()) {
+                f5 *= 10.5F;
+            } else {
+                f5 *= 5F;
+            }
+        } else if (ent instanceof LivingEntity) {
+            f5 *= 1.5F;
+        }
+
+        float moveX = f3 * f5;
+        float moveZ = f4 * f5;
+        float str = 100F;
+
+        pullY *= str / 100F;
+
+        ent.addVelocity(-moveX,pullY,moveZ);
+    }
+
+    public void spinParticle(FunnelParticle ent) { // Like spinEntity, but with 90% less garbage Corosauce code! (Corosauce isn't a bad developer, it's just that some of his code is difficult to understand)
+        FunnelParameters conf = FunnelParametersList.get(this.Intensity-4);
+        double radius = 10D;
+        double scale = conf.WidthScale;
+        double d1 = this.Position.x - ent.getX();
+        double d2 = this.Position.z - ent.getZ();
+        if(this.Intensity==4) {
+            int groundHeight = MinecraftClient.getInstance().world.getTopY(Heightmap.Type.MOTION_BLOCKING,(int)Position.x,(int)Position.z);
+            float range = 30F * (float) Math.sin((Math.toRadians(((MinecraftClient.getInstance().world.getTime() * 0.5F) + (ent.ID * 50)) % 360)));
+            float heightPercent = (float) (1F - ((ent.getY() - groundHeight) / (Position.y - groundHeight)));
+            float posOffsetX = (float) Math.sin((Math.toRadians(heightPercent * 360F)));
+            float posOffsetZ = (float) -Math.cos((Math.toRadians(heightPercent * 360F)));
+            d1 += range*posOffsetX;
+            d2 += range*posOffsetZ;
+        }
+        float f = (float)((Math.atan2(d2, d1) * 180D) / Math.PI) - 90F;
+        float f1;
+
+        for (f1 = f; f1 < -180F; f1 += 360F) { }
+
+        for (; f1 >= 180F; f1 -= 360F) { }
+
+        double distY = Position.y - ent.getY();
+        double distXZ = Math.sqrt(Math.abs(d1)) + Math.sqrt(Math.abs(d2));
+
+        if (ent.getY() - Position.y < 0.0D) {
+            distY = 1.0D;
+        }
+        else {
+            distY = ent.getY() - Position.y;
+        }
+        if (distY > 60) {
+            distY = 60;
+        }
+        double grab = (10D / 1D) * ((Math.abs((50 - distY)) / 50));
+        float pullY = 0.0F;
+        if (distXZ > 5D)
+        {
+            grab = grab * (radius / distXZ);
+        }
+        pullY += conf.LiftRate / (1D / 2F);
+
+        grab += conf.RelativeSize;
+        double profileAngle = Math.max(1, (75D + grab - (10D * scale)));
+        f1 = (float)((double)f1 + profileAngle);
+
+        float f3 = (float)Math.cos(-f1 * 0.01745329F - (float)Math.PI);
+        float f4 = (float)Math.sin(-f1 * 0.01745329F - (float)Math.PI);
+        float f5 = conf.PullRate * 1;
+
+        float moveX = f3 * f5;
+        float moveZ = f4 * f5;
+        float str = 100F;
+
+        pullY *= str / 100F;
+
+        ent.addVelocity(-moveX,pullY,moveZ);
     }
 
     @Override
