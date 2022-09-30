@@ -405,11 +405,11 @@ public class Cloud extends Weather {
         }
     }
 
-    protected static float calculateEntityWeight(Entity ent) {
+    protected static float calculateEntityWeight(Entity ent, int airTime) {
         if(ent instanceof PlayerEntity) {
             if(((PlayerEntity)ent).isCreative())
                 return Float.MAX_VALUE;
-            return 4.5F;
+            return 4.5F + ((float)(airTime / 400));
         } else if(ent instanceof LivingEntity) {
             return 0.5F;
         }
@@ -449,13 +449,13 @@ public class Cloud extends Weather {
         if (distY > 60) {
             distY = 60;
         }
-        double grab = (10D / calculateEntityWeight(ent)) * ((Math.abs((50 - distY)) / 50));
+        double grab = (10D / calculateEntityWeight(ent, EntityAirTime.computeIfAbsent(ent.getUuid(),val -> 0))) * ((Math.abs((50 - distY)) / 50));
         float pullY = 0.0F;
         if (distXZ > 5D)
         {
             grab = grab * (radius / distXZ);
         }
-        pullY += conf.LiftRate / (calculateEntityWeight(ent) / 2F);
+        pullY += conf.LiftRate / (calculateEntityWeight(ent, EntityAirTime.computeIfAbsent(ent.getUuid(),val -> 0)) / 2F);
 
         /*if (ent instanceof PlayerEntity)
         {
@@ -488,7 +488,7 @@ public class Cloud extends Weather {
         }
         else */if (ent instanceof LivingEntity)
         {
-            double adjPull = 0.005D / ((calculateEntityWeight(ent) * ((distXZ + 1D) / radius)));
+            double adjPull = 0.005D / ((calculateEntityWeight(ent, EntityAirTime.computeIfAbsent(ent.getUuid(),val -> 0)) * ((distXZ + 1D) / radius)));
             pullY += adjPull;
             int airTime = EntityAirTime.computeIfAbsent(ent.getUuid(),val -> 0);
             double adjGrab = (10D * (((float)(airTime / 400D))));
@@ -523,7 +523,7 @@ public class Cloud extends Weather {
         float f5 = conf.PullRate * 1;
 
         if (ent instanceof LivingEntity) {
-            f5 /= (calculateEntityWeight(ent) * ((distXZ + 1D) / radius));
+            f5 /= (calculateEntityWeight(ent, EntityAirTime.computeIfAbsent(ent.getUuid(),val -> 0)) * ((distXZ + 1D) / radius));
         }
 
         if (ent instanceof PlayerEntity) {
