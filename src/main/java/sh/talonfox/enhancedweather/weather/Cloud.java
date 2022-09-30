@@ -53,7 +53,7 @@ public class Cloud extends Weather {
         rand = new Random();
         Size = 50;
         Intensity = Enhancedweather.CONFIG.Weather_DefaultCloudIntensity;
-        MaxIntensity = rand.nextInt(1,Enhancedweather.CONFIG.Weather_TornadoesCanSpawn?5:4);
+        MaxIntensity = rand.nextInt(1,Enhancedweather.CONFIG.Weather_TornadoesCanSpawn?10:4);
     }
 
     static {
