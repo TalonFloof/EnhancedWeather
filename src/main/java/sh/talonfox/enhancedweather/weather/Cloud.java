@@ -148,26 +148,29 @@ public class Cloud extends Weather {
                     spinEntity(ent);
                 }
             }
-            int loopSize = Intensity==9?10:(Intensity==8?8:(Intensity==7?6:(Intensity==6?4:2)));
-            double spawnRad = Intensity==9?200D:(Intensity==8?150D:(Intensity==7?100D:(Intensity==6?50D:(Size/48D))));
-            int maxParticles = Intensity==9?1200:(Intensity==8?1000:(Intensity==7?800:600));
-            int currentY = MinecraftClient.getInstance().world.getTopY(Heightmap.Type.MOTION_BLOCKING,(int)Position.x,(int)Position.z);
-            if(currentY == MinecraftClient.getInstance().world.getBottomY())
-                currentY = MinecraftClient.getInstance().world.getSeaLevel()+1;
-            float formationProgress = Intensity==4?Math.min(1F, IntensityProgression * 2F):1F;
-            for (int i = 0; i < loopSize; i++) {
-                if (ParticlesFunnel.size() >= maxParticles) {
-                    ParticlesFunnel.get(0).markDead();
-                    ParticlesFunnel.remove(0);
-                }
-                if (ParticlesFunnel.size() < maxParticles) {
-                    Vec3d tryPos = new Vec3d(Position.x + (rand.nextDouble()*spawnRad) - (rand.nextDouble()*spawnRad), MathHelper.lerp(formationProgress,Position.y,currentY), Position.z + (rand.nextDouble()*spawnRad) - (rand.nextDouble()*spawnRad));
-                    if (tryPos.distanceTo(Vec3d.ofCenter(playerPos)) < Enhancedweather.CONFIG.Client_CloudParticleRenderDistance) {
-                        CloudParticle newParticle = (CloudParticle) MinecraftClient.getInstance().particleManager.addParticle(ParticleRegister.CLOUD, tryPos.getX(), tryPos.getY(), tryPos.getZ(), 1F, 0.3F, 0.3F);
-                        assert newParticle != null;
-                        newParticle.setMaxAge(150 + ((Intensity-1) * 100) + rand.nextInt(100));
-                        newParticle.setScale(250);
-                        ParticlesFunnel.add(newParticle);
+            if((ticks % 3) == 0) {
+                int loopSize = Intensity == 9 ? 10 : (Intensity == 8 ? 8 : (Intensity == 7 ? 6 : (Intensity == 6 ? 4 : 2)));
+                double spawnRad = Intensity == 9 ? 200D : (Intensity == 8 ? 150D : (Intensity == 7 ? 100D : (Intensity == 6 ? 50D : (Size / 48D))));
+                int maxParticles = Intensity == 9 ? 1200 : (Intensity == 8 ? 1000 : (Intensity == 7 ? 800 : 600));
+                assert MinecraftClient.getInstance().world != null;
+                int currentY = MinecraftClient.getInstance().world.getTopY(Heightmap.Type.MOTION_BLOCKING, (int) Position.x, (int) Position.z);
+                if (currentY == MinecraftClient.getInstance().world.getBottomY())
+                    currentY = MinecraftClient.getInstance().world.getSeaLevel() + 1;
+                float formationProgress = Intensity == 4 ? Math.min(1F, IntensityProgression * 2F) : 1F;
+                for (int i = 0; i < loopSize; i++) {
+                    if (ParticlesFunnel.size() >= maxParticles) {
+                        ParticlesFunnel.get(0).markDead();
+                        ParticlesFunnel.remove(0);
+                    }
+                    if (ParticlesFunnel.size() < maxParticles) {
+                        Vec3d tryPos = new Vec3d(Position.x + (rand.nextDouble() * spawnRad) - (rand.nextDouble() * spawnRad), MathHelper.lerp(formationProgress, Position.y, currentY), Position.z + (rand.nextDouble() * spawnRad) - (rand.nextDouble() * spawnRad));
+                        if (tryPos.distanceTo(Vec3d.ofCenter(playerPos)) < Enhancedweather.CONFIG.Client_CloudParticleRenderDistance) {
+                            CloudParticle newParticle = (CloudParticle) MinecraftClient.getInstance().particleManager.addParticle(ParticleRegister.CLOUD, tryPos.getX(), tryPos.getY(), tryPos.getZ(), 1F, 0.3F, 0.3F);
+                            assert newParticle != null;
+                            newParticle.setMaxAge(150 + ((Intensity - 1) * 100) + rand.nextInt(100));
+                            newParticle.setScale(250);
+                            ParticlesFunnel.add(newParticle);
+                        }
                     }
                 }
             }
@@ -336,13 +339,13 @@ public class Cloud extends Weather {
                     if(Intensity >= MaxIntensity) {
                         PeakedIntensity = true;
                     }
-                    IntensityProgression += 0.02F * (Intensity >= 4 ? 3 : 1);
+                    IntensityProgression += 0.02F * (Intensity == 4 ? 3 : 1);
                     if (IntensityProgression >= 0.6F) {
                         Intensity += 1;
                         IntensityProgression = 0;
                     }
                 } else if(PeakedIntensity && Intensity > 1 && (ticks % 60) == 0) {
-                    IntensityProgression += 0.02F * (Intensity >= 4 ? 3 : 1) * 0.3F;
+                    IntensityProgression += 0.02F * (Intensity == 4 ? 3 : 1) * 0.3F;
                     if(IntensityProgression >= 0.6F) {
                         Intensity -= 1;
                         IntensityProgression = 0;
@@ -409,9 +412,9 @@ public class Cloud extends Weather {
         if(ent instanceof PlayerEntity) {
             if(((PlayerEntity)ent).isCreative())
                 return Float.MAX_VALUE;
-            return 4.5F + ((float)(airTime / 400));
+            return 0.5F + ((float)(airTime / 100));
         } else if(ent instanceof LivingEntity) {
-            return 0.5F;
+            return 0.5F + ((float)(airTime / 100));
         }
         return 1F;
     }
@@ -512,7 +515,9 @@ public class Cloud extends Weather {
                 airTime += 1;
                 EntityAirTime.replace(ent.getUuid(),airTime);
             }
-            ent.setOnGround(false);
+            if(!(ent instanceof PlayerEntity)) {
+                ent.setOnGround(false);
+            }
         }
         grab += conf.RelativeSize;
         double profileAngle = Math.max(1, (75D + grab - (10D * scale)));
