@@ -23,6 +23,7 @@ public class CloudParticle extends SpriteBillboardParticle {
     public long ID = 0;
     public float yaw = 0F;
     public float pitch = 0F;
+    public boolean isOpaque;
     public boolean velocityDecay = false;
     protected static Random rand = new Random();
 
@@ -35,20 +36,17 @@ public class CloudParticle extends SpriteBillboardParticle {
         this.scale = 500F*0.15F;
         this.collidesWithWorld = false;
         this.setMaxAge(300+rand.nextInt(100));
-        this.setColor((float)r,(float)g,(float)b);
+        this.setColor((float)g,(float)g,(float)b);
         this.age = 0;
         this.setAlpha(0.0F);
         this.yaw = Math.round(Math.random()*360);
         this.pitch = -90+Math.round(Math.random()*50)-Math.round(Math.random()*50);
+        this.isOpaque = (r >= 1 || !Enhancedweather.CONFIG.Client_TranslucentClouds);
     }
 
     @Override
     public ParticleTextureSheet getType() {
-        if(this.red < 0.5F && this.green < 0.5F && this.blue < 0.5F) {
-            return ParticleTextureSheet.PARTICLE_SHEET_OPAQUE;
-        } else {
-            return Enhancedweather.CONFIG.Client_TranslucentClouds ? ParticleTextureSheet.PARTICLE_SHEET_TRANSLUCENT : ParticleTextureSheet.PARTICLE_SHEET_OPAQUE;
-        }
+        return isOpaque ? ParticleTextureSheet.PARTICLE_SHEET_OPAQUE : ParticleTextureSheet.PARTICLE_SHEET_TRANSLUCENT;
     }
 
     @Override
@@ -142,6 +140,16 @@ public class CloudParticle extends SpriteBillboardParticle {
 
     public double getZ() {
         return z;
+    }
+
+    public void addVelocity(double x, double y, double z) {
+        this.velocityX += x;
+        this.velocityY += y;
+        this.velocityZ += z;
+    }
+
+    public void setScale(float s) {
+        this.scale = s*0.15F;
     }
 
     @Environment(EnvType.CLIENT)

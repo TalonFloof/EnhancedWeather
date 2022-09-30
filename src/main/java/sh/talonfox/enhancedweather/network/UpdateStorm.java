@@ -43,6 +43,7 @@ public class UpdateStorm {
                 if(storm != null) {
                     if(storm instanceof Cloud) {
                         ((Cloud) storm).ParticlesCloud.forEach(i -> ((CloudParticle)i).setAge(i.getMaxAge()-50));
+                        ((Cloud) storm).ParticlesFunnel.forEach(i -> ((CloudParticle)i).setAge(i.getMaxAge()-50));
                     }
                     Enhancedweather.CLIENT_WEATHER.Clouds.remove(id);
                 }

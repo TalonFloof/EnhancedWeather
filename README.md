@@ -36,6 +36,18 @@ Enhanced Weather has storms systems that work similar to the original Weather2 M
 
 Rain Clouds can also form from water being collected from humid biomes, releasing the water as rain.
 
+### Tornadoes
+
+<img src="https://raw.githubusercontent.com/Talon396/EnhancedWeather/main/docs/Tornado.gif" width="640">
+
+**Animation of a Tornado moving across a Plains and Forest Biome**
+
+---
+
+The key feature of this mod! Like in Weather2, Enhanced Weather has tornadoes.
+Tornadoes form when a storm gets powerful enough to create a violent funnel cloud.
+Tornadoes can pick up entities, though it doesn't destroy blocks yet.
+
 ### More Weather is expected to come in later Betas
 
 ## License & Attribution

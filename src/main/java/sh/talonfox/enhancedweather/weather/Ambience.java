@@ -28,10 +28,12 @@ public class Ambience {
             DistantWinds = new MusicLoop(new SoundEvent(new Identifier("enhancedweather:ambience.distant_winds")));
             MinecraftClient.getInstance().getSoundManager().play(DistantWinds);
             DistantWinds.fadeIn();
+            CloseWinds.fadeOut();
             CurrentAmbientSound = 1;
         } else if(CurrentAmbientSound != 2 && ClientsideManager.PrecipitationIntensity > 3 && InOverworld) {
             CloseWinds = new MusicLoop(new SoundEvent(new Identifier("enhancedweather:ambience.close_winds")));
             MinecraftClient.getInstance().getSoundManager().play(CloseWinds);
+            DistantWinds.fadeOut();
             CloseWinds.fadeIn();
             CurrentAmbientSound = 2;
         } else {

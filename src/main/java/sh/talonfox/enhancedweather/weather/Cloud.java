@@ -4,29 +4,26 @@ import blue.endless.jankson.JsonObject;
 import blue.endless.jankson.JsonPrimitive;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.tag.BiomeTags;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.math.*;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
 import sh.talonfox.enhancedweather.Enhancedweather;
 import sh.talonfox.enhancedweather.particles.CloudParticle;
-import sh.talonfox.enhancedweather.particles.FunnelParticle;
 import sh.talonfox.enhancedweather.particles.ParticleRegister;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class Cloud extends Weather {
     public int Layer = 0;
@@ -41,10 +38,14 @@ public class Cloud extends Weather {
     public float Angle = Float.MIN_VALUE;
     private int ticks = 0;
     private int ticksClient = 0;
+    private int GroundY = 50;
     public Random rand;
+    public HashMap<UUID, Integer> EntityAirTime = new HashMap<UUID, Integer>();
     protected static List<FunnelParameters> FunnelParametersList;
     @Environment(EnvType.CLIENT)
     public List<Particle> ParticlesCloud = new ArrayList<Particle>();
+    @Environment(EnvType.CLIENT)
+    public List<Particle> ParticlesFunnel = new ArrayList<Particle>();
 
     public Cloud(Manager manager, Vec3d pos) {
         HostManager = manager;
@@ -60,7 +61,7 @@ public class Cloud extends Weather {
     }
 
     protected static void initFunnelParameters() {
-        FunnelParametersList = new ArrayList();
+        FunnelParametersList = new ArrayList<>();
 
         FunnelParameters fConf = new FunnelParameters(); // Forming
         fConf.InitialSpeed = 0.2F;
@@ -122,12 +123,13 @@ public class Cloud extends Weather {
         if (Placeholder)
             return;
         ticksClient += 1;
+        assert MinecraftClient.getInstance().player != null;
+        Vec3i playerPos = new Vec3i(MinecraftClient.getInstance().player.getX(), Position.y, MinecraftClient.getInstance().player.getZ());
         if ((ticksClient % ((Math.max(1, (int)(100F / Size))))) == 0) {
-            assert MinecraftClient.getInstance().player != null;
-            Vec3i playerPos = new Vec3i(MinecraftClient.getInstance().player.getX(), Position.y, MinecraftClient.getInstance().player.getZ());
             Vec3i spawnPos = new Vec3i(Position.x + (Math.random() * Size) - (Math.random() * Size), Position.y, Position.z + (Math.random() * Size) - (Math.random() * Size));
             if (ParticlesCloud.size() < Size && playerPos.getManhattanDistance(spawnPos) < Enhancedweather.CONFIG.Client_CloudParticleRenderDistance) {
-                CloudParticle newParticle = (CloudParticle) MinecraftClient.getInstance().particleManager.addParticle(ParticleRegister.CLOUD, spawnPos.getX(), spawnPos.getY(), spawnPos.getZ(), Precipitating ? 0.2F : 0.7F, Precipitating ? 0.2F : 0.7F, Precipitating ? 0.2F : 0.7F);
+                float baseBright = Intensity>0?0.2F:(0.7F-(Math.min(1F, (float)Water / (float)Enhancedweather.CONFIG.Weather_MinimumWaterToPrecipitate) * 0.6F));
+                CloudParticle newParticle = (CloudParticle) MinecraftClient.getInstance().particleManager.addParticle(ParticleRegister.CLOUD, spawnPos.getX(), spawnPos.getY(), spawnPos.getZ(), Intensity, Math.min(1F, baseBright), Math.min(1F, baseBright));
                 assert newParticle != null;
                 newParticle.setVelocity(-Math.sin(Math.toRadians(Enhancedweather.CLIENT_WIND.AngleGlobal)) * Enhancedweather.CLIENT_WIND.SpeedGlobal * 0.1D, 0D, Math.cos(Math.toRadians(Enhancedweather.CLIENT_WIND.AngleGlobal)) * Enhancedweather.CLIENT_WIND.SpeedGlobal * 0.1D);
                 if(Intensity > 1 && newParticle.ID % 20 < 5) {
@@ -136,6 +138,49 @@ public class Cloud extends Weather {
                     newParticle.setMaxAge((Size/2)+rand.nextInt(100));
                 }
                 ParticlesCloud.add(newParticle);
+            }
+        }
+        if(Intensity >= 4) {
+            double dist = FunnelParametersList.get(this.Intensity-4).GrabDistance;
+            PlayerEntity ent = MinecraftClient.getInstance().player;
+            if(!ent.isSpectator() && !ent.isCreative()) {
+                if (Math.sqrt(ent.getPos().squaredDistanceTo(Position.x, ent.getY(), Position.z)) < dist && ent.getY() < Position.y) {
+                    spinEntity(ent);
+                }
+            }
+            int loopSize = Intensity==9?10:(Intensity==8?8:(Intensity==7?6:(Intensity==6?4:2)));
+            double spawnRad = Intensity==9?200D:(Intensity==8?150D:(Intensity==7?100D:(Intensity==6?50D:(Size/48D))));
+            int maxParticles = Intensity==9?1200:(Intensity==8?1000:(Intensity==7?800:600));
+            int currentY = MinecraftClient.getInstance().world.getTopY(Heightmap.Type.MOTION_BLOCKING,(int)Position.x,(int)Position.z);
+            if(currentY == MinecraftClient.getInstance().world.getBottomY())
+                currentY = MinecraftClient.getInstance().world.getSeaLevel()+1;
+            float formationProgress = Intensity==4?Math.min(1F, IntensityProgression * 2F):1F;
+            for (int i = 0; i < loopSize; i++) {
+                if (ParticlesFunnel.size() >= maxParticles) {
+                    ParticlesFunnel.get(0).markDead();
+                    ParticlesFunnel.remove(0);
+                }
+                if (ParticlesFunnel.size() < maxParticles) {
+                    Vec3d tryPos = new Vec3d(Position.x + (rand.nextDouble()*spawnRad) - (rand.nextDouble()*spawnRad), MathHelper.lerp(formationProgress,Position.y,currentY), Position.z + (rand.nextDouble()*spawnRad) - (rand.nextDouble()*spawnRad));
+                    if (tryPos.distanceTo(Vec3d.ofCenter(playerPos)) < Enhancedweather.CONFIG.Client_CloudParticleRenderDistance) {
+                        CloudParticle newParticle = (CloudParticle) MinecraftClient.getInstance().particleManager.addParticle(ParticleRegister.CLOUD, tryPos.getX(), tryPos.getY(), tryPos.getZ(), 1F, 0.3F, 0.3F);
+                        assert newParticle != null;
+                        newParticle.setMaxAge(150 + ((Intensity-1) * 100) + rand.nextInt(100));
+                        newParticle.setScale(250);
+                        ParticlesFunnel.add(newParticle);
+                    }
+                }
+            }
+        }
+        for (int i = 0; i < ParticlesFunnel.size(); i++) {
+            CloudParticle ent = (CloudParticle)ParticlesFunnel.get(i);
+            if (!ent.isAlive()) {
+                ParticlesFunnel.remove(i);
+                i -= 1;
+            } else if(ent.getY() > Position.y) {
+                ent.markDead();
+                ParticlesFunnel.remove(i);
+                i -= 1;
             }
         }
         for (int i = 0; i < ParticlesCloud.size(); i++) {
@@ -154,6 +199,17 @@ public class Cloud extends Weather {
                     if(this.HostManager.getWorld().isChunkLoaded(x/16,z/16) && (this.HostManager.getWorld().getClosestPlayer(x, 50, z, 80, false) != null)) {
                         this.HostManager.getWorld().addParticle(ParticleRegister.HAIL,x,200,z,0,0,0);
                     }
+                }
+            }
+            for(Particle particle : ParticlesFunnel) {
+                CloudParticle part = (CloudParticle)particle;
+                double var16 = Position.x - part.getX();
+                double var18 = Position.z - part.getZ();
+                part.yaw = (float)(Math.atan2(var18, var16) * 180.0D / Math.PI) - 90.0F;
+                part.yaw += part.ID % 90;
+                part.pitch = -30F;
+                if(Intensity >= 4) {
+                    spinParticle(part);
                 }
             }
             for(Particle particle : ParticlesCloud) {
@@ -244,6 +300,11 @@ public class Cloud extends Weather {
             }
         }
         if((ticks % 60) == 0 && !Placeholder) {
+            if(Intensity >= 4) {
+                GroundY = HostManager.getWorld().getTopY(Heightmap.Type.MOTION_BLOCKING, (int) Position.x, (int) Position.z);
+                if (GroundY == HostManager.getWorld().getBottomY())
+                    GroundY = HostManager.getWorld().getSeaLevel() + 1;
+            }
             boolean waterCollected = false;
             if (rand.nextInt(Enhancedweather.CONFIG.Weather_WaterCollectionFromNothingChance) == 0) {
                 Water += 10;
@@ -275,19 +336,34 @@ public class Cloud extends Weather {
                     if(Intensity >= MaxIntensity) {
                         PeakedIntensity = true;
                     }
-                    IntensityProgression += 0.02F * (Intensity >= 5 ? 3 : 1);
+                    IntensityProgression += 0.02F * (Intensity >= 4 ? 3 : 1);
                     if (IntensityProgression >= 0.6F) {
                         Intensity += 1;
                         IntensityProgression = 0;
                     }
                 } else if(PeakedIntensity && Intensity > 1 && (ticks % 60) == 0) {
-                    IntensityProgression += 0.02F * (Intensity >= 5 ? 3 : 1) * 0.3F;
+                    IntensityProgression += 0.02F * (Intensity >= 4 ? 3 : 1) * 0.3F;
                     if(IntensityProgression >= 0.6F) {
                         Intensity -= 1;
                         IntensityProgression = 0;
                     }
                 }
             }
+        }
+        if(Intensity >= 4) {
+            double dist = FunnelParametersList.get(this.Intensity-4).GrabDistance;
+            Box box = new Box(Position.x-dist, GroundY, Position.z-dist, Position.x+dist, Position.y, Position.z+dist);
+            List<Entity> list = HostManager.getWorld().getEntitiesByClass(Entity.class, box, EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR);
+            for(Entity ent : list) {
+                if(!(ent instanceof PlayerEntity) && (ent instanceof LivingEntity || ent instanceof ItemEntity)) {
+                    if(Math.sqrt(ent.getPos().squaredDistanceTo(Position.x,ent.getY(),Position.z)) < dist) {
+                        spinEntity(ent);
+                    }
+                }
+            }
+        } else {
+            if(EntityAirTime.size() > 0)
+                EntityAirTime.clear();
         }
         ///// WIND /////
         if(Angle == Float.MIN_VALUE) {
@@ -347,9 +423,8 @@ public class Cloud extends Weather {
         double d1 = this.Position.x - ent.getX();
         double d2 = this.Position.z - ent.getZ();
         if(this.Intensity==4) {
-            int groundHeight = ent.getWorld().getTopY(Heightmap.Type.MOTION_BLOCKING,(int)Position.x,(int)Position.z);
             float range = 30F * (float) Math.sin((Math.toRadians(((ent.getWorld().getTime() * 0.5F) + (ent.getId() * 50)) % 360)));
-            float heightPercent = (float) (1F - ((ent.getY() - groundHeight) / (Position.y - groundHeight)));
+            float heightPercent = (float) (1F - ((ent.getY() - GroundY) / (Position.y - GroundY)));
             float posOffsetX = (float) Math.sin((Math.toRadians(heightPercent * 360F)));
             float posOffsetZ = (float) -Math.cos((Math.toRadians(heightPercent * 360F)));
             d1 += range*posOffsetX;
@@ -382,11 +457,14 @@ public class Cloud extends Weather {
         }
         pullY += conf.LiftRate / (calculateEntityWeight(ent) / 2F);
 
-        if (ent instanceof PlayerEntity)
+        /*if (ent instanceof PlayerEntity)
         {
             double adjPull = 0.2D / ((calculateEntityWeight(ent) * ((distXZ + 1D) / radius)));
             pullY += adjPull;
-            double adjGrab = (10D * (((float)(400D / 400D))));
+            int airTime = EntityAirTime.computeIfAbsent(ent.getUuid(),val -> {
+                return 0;
+            });
+            double adjGrab = (10D * (((float)(airTime / 400D))));
 
             if (adjGrab > 50) {
                 adjGrab = 50D;
@@ -401,12 +479,19 @@ public class Cloud extends Weather {
             if (ent.getVelocity().y > -0.8) {
                 ent.fallDistance = 0F;
             }
+            if(ent.isOnGround() || ent.isTouchingWater()) {
+                EntityAirTime.remove(ent.getUuid());
+            } else {
+                airTime += 1;
+                EntityAirTime.replace(ent.getUuid(),airTime);
+            }
         }
-        else if (ent instanceof LivingEntity)
+        else */if (ent instanceof LivingEntity)
         {
             double adjPull = 0.005D / ((calculateEntityWeight(ent) * ((distXZ + 1D) / radius)));
             pullY += adjPull;
-            double adjGrab = (10D * (((float)(400D / 400D))));
+            int airTime = EntityAirTime.computeIfAbsent(ent.getUuid(),val -> 0);
+            double adjGrab = (10D * (((float)(airTime / 400D))));
             if (adjGrab > 50)
             {
                 adjGrab = 50D;
@@ -421,7 +506,12 @@ public class Cloud extends Weather {
             }
 
             if (ent.getVelocity().y > 0.3F) ent.setVelocity(ent.getVelocity().multiply(1D,0D,1D).add(0D,0.3D,0D));
-
+            if(ent.isOnGround() || ent.isTouchingWater()) {
+                EntityAirTime.remove(ent.getUuid());
+            } else {
+                airTime += 1;
+                EntityAirTime.replace(ent.getUuid(),airTime);
+            }
             ent.setOnGround(false);
         }
         grab += conf.RelativeSize;
@@ -455,7 +545,7 @@ public class Cloud extends Weather {
         ent.addVelocity(-moveX,pullY,moveZ);
     }
 
-    public void spinParticle(FunnelParticle ent) { // Like spinEntity, but with 90% less garbage Corosauce code! (Corosauce isn't a bad developer, it's just that some of his code is difficult to understand)
+    public void spinParticle(CloudParticle ent) { // Like spinEntity, but with 90% less garbage Corosauce code! (Corosauce isn't a bad developer, it's just that some of his code is difficult to understand)
         FunnelParameters conf = FunnelParametersList.get(this.Intensity-4);
         double radius = 10D;
         double scale = conf.WidthScale;
