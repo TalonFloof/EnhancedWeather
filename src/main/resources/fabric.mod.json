@@ -23,7 +23,7 @@
             "sh.talonfox.enhancedweather.Enhancedweather"
         ],
         "modmenu": [
-            "sh.talonfox.enhancedweather.config.ModMenuIntegration"
+            "sh.talonfox.enhancedweather.common.config.ModMenuIntegration"
         ]
     },
     "mixins": [

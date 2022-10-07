@@ -12,7 +12,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 import sh.talonfox.enhancedweather.Enhancedweather;
-import sh.talonfox.enhancedweather.particles.CloudParticle;
+import sh.talonfox.enhancedweather.common.particles.CloudParticle;
 import sh.talonfox.enhancedweather.weather.Cloud;
 
 import java.util.UUID;

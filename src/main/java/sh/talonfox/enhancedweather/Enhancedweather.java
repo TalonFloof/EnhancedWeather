@@ -1,11 +1,12 @@
 package sh.talonfox.enhancedweather;
 
 import net.fabricmc.api.ModInitializer;
-import sh.talonfox.enhancedweather.blocks.BlockRegister;
-import sh.talonfox.enhancedweather.config.ConfigRegister;
-import sh.talonfox.enhancedweather.config.EnhancedWeatherConfig;
+import sh.talonfox.enhancedweather.common.ItemGroupRegister;
+import sh.talonfox.enhancedweather.common.blocks.BlockRegister;
+import sh.talonfox.enhancedweather.common.config.ConfigRegister;
+import sh.talonfox.enhancedweather.common.config.EnhancedWeatherConfig;
 import sh.talonfox.enhancedweather.network.NetworkRegister;
-import sh.talonfox.enhancedweather.particles.ParticleRegister;
+import sh.talonfox.enhancedweather.common.particles.ParticleRegister;
 import sh.talonfox.enhancedweather.weather.ClientsideManager;
 import sh.talonfox.enhancedweather.weather.ServersideManager;
 import sh.talonfox.enhancedweather.wind.Wind;

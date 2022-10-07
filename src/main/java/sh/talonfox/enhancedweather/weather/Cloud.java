@@ -4,7 +4,6 @@ import blue.endless.jankson.JsonObject;
 import blue.endless.jankson.JsonPrimitive;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.entity.Entity;
@@ -20,8 +19,8 @@ import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
 import sh.talonfox.enhancedweather.Enhancedweather;
-import sh.talonfox.enhancedweather.particles.CloudParticle;
-import sh.talonfox.enhancedweather.particles.ParticleRegister;
+import sh.talonfox.enhancedweather.common.particles.CloudParticle;
+import sh.talonfox.enhancedweather.common.particles.ParticleRegister;
 
 import java.util.*;
 

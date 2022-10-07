@@ -24,5 +24,9 @@
     "text.autoconfig.enhancedweather.option.Weather_MinimumWaterToPrecipitate": "Minimum Water Needed to Precipitate",
     "text.autoconfig.enhancedweather.option.Weather_WaterCollectionFromNothingChance": "Chance of Cloud Water Collection from Nothing",
     "text.autoconfig.enhancedweather.option.Weather_WaterCollectionFromBiomeChance": "Chance of Cloud Water Collection from Biome",
-    "text.autoconfig.enhancedweather.option.Weather_PrecipitationChance": "Chance of Cloud Precipitation"
+    "text.autoconfig.enhancedweather.option.Weather_PrecipitationChance": "Chance of Cloud Precipitation",
+
+    "block.enhancedweather.radar": "Doppler Radar",
+    "itemGroup.enhancedweather.enhancedweather_itemgroup": "Enhanced Weather",
+    "item.enhancedweather.itemgroup_icon": "§r§lIt's a secret to everybody.§r"
 }
