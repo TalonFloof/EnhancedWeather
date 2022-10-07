@@ -1,9 +1,7 @@
 package sh.talonfox.enhancedweather;
 
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.minecraft.client.MinecraftClient;
-import sh.talonfox.enhancedweather.client.ClientEvents;
+import sh.talonfox.enhancedweather.blocks.BlockRegister;
 import sh.talonfox.enhancedweather.config.ConfigRegister;
 import sh.talonfox.enhancedweather.config.EnhancedWeatherConfig;
 import sh.talonfox.enhancedweather.network.NetworkRegister;
@@ -27,6 +25,8 @@ public class Enhancedweather implements ModInitializer {
     @Override
     public void onInitialize() {
         ConfigRegister.Initialize();
+        BlockRegister.Initialize();
+        ItemGroupRegister.Initialize();
         ParticleRegister.Initialize();
         NetworkRegister.Initialize();
         ServerEvents.Initialize();
