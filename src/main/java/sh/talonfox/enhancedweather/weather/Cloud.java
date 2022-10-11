@@ -27,11 +27,13 @@ import java.util.*;
 public class Cloud extends Weather {
     public int Layer = 0;
     public int Water = 0;
-    public int Intensity = 0;
-    public int MaxIntensity = 1;
     public float IntensityProgression = 0F;
     public boolean PeakedIntensity = false;
     public boolean Precipitating = false;
+    public boolean Thundering = false;
+    public boolean Hailing = false;
+    public boolean Supercell = false;
+    public int TornadoStage = Integer.MIN_VALUE;
     public boolean Placeholder = false;
     public boolean Expanding = true;
     public float Angle = Float.MIN_VALUE;
@@ -51,8 +53,9 @@ public class Cloud extends Weather {
         Position = pos;
         rand = new Random();
         Size = 50;
-        Intensity = Enhancedweather.CONFIG.Weather_DefaultCloudIntensity;
-        MaxIntensity = rand.nextInt(1,Enhancedweather.CONFIG.Weather_TornadoesCanSpawn?10:4);
+        Thundering = false;
+        Hailing = false;
+        Supercell = false;
     }
 
     static {
@@ -127,19 +130,19 @@ public class Cloud extends Weather {
         if ((ticksClient % ((Math.max(1, (int)(100F / Size))))) == 0) {
             Vec3i spawnPos = new Vec3i(Position.x + (Math.random() * Size) - (Math.random() * Size), Position.y, Position.z + (Math.random() * Size) - (Math.random() * Size));
             if (ParticlesCloud.size() < Size && playerPos.getManhattanDistance(spawnPos) < Enhancedweather.CONFIG.Client_CloudParticleRenderDistance) {
-                float baseBright = Intensity>0?0.2F:(0.7F-(Math.min(1F, (float)Water / (float)Enhancedweather.CONFIG.Weather_MinimumWaterToPrecipitate) * 0.6F));
-                CloudParticle newParticle = (CloudParticle) MinecraftClient.getInstance().particleManager.addParticle(ParticleRegister.CLOUD, spawnPos.getX(), spawnPos.getY(), spawnPos.getZ(), Intensity, Math.min(1F, baseBright), Math.min(1F, baseBright));
+                float baseBright = Thundering?0.2F:(0.7F-(Math.min(1F, (float)Water / (float)Enhancedweather.CONFIG.Weather_MinimumWaterToPrecipitate) * 0.6F));
+                CloudParticle newParticle = (CloudParticle) MinecraftClient.getInstance().particleManager.addParticle(ParticleRegister.CLOUD, spawnPos.getX(), spawnPos.getY(), spawnPos.getZ(), Thundering?1:0, Math.min(1F, baseBright), Math.min(1F, baseBright));
                 assert newParticle != null;
                 newParticle.setVelocity(-Math.sin(Math.toRadians(Enhancedweather.CLIENT_WIND.AngleGlobal)) * Enhancedweather.CLIENT_WIND.SpeedGlobal * 0.1D, 0D, Math.cos(Math.toRadians(Enhancedweather.CLIENT_WIND.AngleGlobal)) * Enhancedweather.CLIENT_WIND.SpeedGlobal * 0.1D);
-                if(Intensity > 1 && newParticle.ID % 20 < 5) {
+                if(Supercell && newParticle.ID % 20 < 5) {
                     newParticle.setMaxAge(Size+rand.nextInt(100));
-                } else if(Intensity > 0) {
+                } else if(Thundering) {
                     newParticle.setMaxAge((Size/2)+rand.nextInt(100));
                 }
                 ParticlesCloud.add(newParticle);
             }
         }
-        if(Intensity >= 4) {
+        /*if(TornadoStage != Integer.MIN_VALUE) {
             double dist = FunnelParametersList.get(this.Intensity-4).GrabDistance;
             PlayerEntity ent = MinecraftClient.getInstance().player;
             if(!ent.isSpectator() && !ent.isCreative()) {
@@ -184,7 +187,7 @@ public class Cloud extends Weather {
                 ParticlesFunnel.remove(i);
                 i -= 1;
             }
-        }
+        }*/
         for (int i = 0; i < ParticlesCloud.size(); i++) {
             CloudParticle ent = (CloudParticle)ParticlesCloud.get(i);
             if (!ent.isAlive()) {
@@ -192,17 +195,17 @@ public class Cloud extends Weather {
                 i -= 1;
             }
         }
-        if(Intensity > 1) {
-            Ambience.HighWindExists = true;
-            if(Intensity == 3) {
-                for(int i = 0; i < Math.max(1, 10 * (Size/300)); i++) {
-                    int x = (int)(Position.x + rand.nextInt(Size) - rand.nextInt(Size));
-                    int z = (int)(Position.z + rand.nextInt(Size) - rand.nextInt(Size));
-                    if(this.HostManager.getWorld().isChunkLoaded(x/16,z/16) && (this.HostManager.getWorld().getClosestPlayer(x, 50, z, 80, false) != null)) {
-                        this.HostManager.getWorld().addParticle(ParticleRegister.HAIL,x,200,z,0,0,0);
-                    }
+        if(Hailing) {
+            for(int i = 0; i < Math.max(1, 10 * (Size/300)); i++) {
+                int x = (int)(Position.x + rand.nextInt(Size) - rand.nextInt(Size));
+                int z = (int)(Position.z + rand.nextInt(Size) - rand.nextInt(Size));
+                if(this.HostManager.getWorld().isChunkLoaded(x/16,z/16) && (this.HostManager.getWorld().getClosestPlayer(x, 50, z, 80, false) != null)) {
+                    this.HostManager.getWorld().addParticle(ParticleRegister.HAIL,x,200,z,0,0,0);
                 }
             }
+        }
+        if(Supercell) {
+            Ambience.HighWindExists = true;
             for(Particle particle : ParticlesFunnel) {
                 CloudParticle part = (CloudParticle)particle;
                 double var16 = Position.x - part.getX();
@@ -210,7 +213,7 @@ public class Cloud extends Weather {
                 part.yaw = (float)(Math.atan2(var18, var16) * 180.0D / Math.PI) - 90.0F;
                 part.yaw += part.ID % 90;
                 part.pitch = -30F;
-                if(Intensity >= 4) {
+                if(TornadoStage != Integer.MIN_VALUE) {
                     spinParticle(part);
                 }
             }
@@ -223,7 +226,7 @@ public class Cloud extends Weather {
                 double curSpeed = Math.sqrt(velocityX * velocityX + velocityY * velocityY + velocityZ * velocityZ);
                 double curDist = new Vec3d(ent.getX(), Position.getY(), ent.getZ()).distanceTo(Position);
                 double spinSpeed;
-                if (Intensity == 2 || Intensity == 3) {
+                if (Supercell && TornadoStage == Integer.MIN_VALUE) {
                     spinSpeed = 0.4D * 0.05D;
                 } else {
                     spinSpeed = 0.4D * 0.2D;
@@ -243,7 +246,7 @@ public class Cloud extends Weather {
                     angle += 40;
                 }
                 if (ent.ID % 20 < 5) {
-                    if (Intensity >= 4) {
+                    if (TornadoStage != Integer.MIN_VALUE) {
                         angle += 30 + ((ent.ID % 5) * 4);
                     } else {
                         if (curDist > 150) {
@@ -302,7 +305,7 @@ public class Cloud extends Weather {
             }
         }
         if((ticks % 60) == 0 && !Placeholder) {
-            if(Intensity >= 4) {
+            if(TornadoStage != Integer.MIN_VALUE) {
                 GroundY = HostManager.getWorld().getTopY(Heightmap.Type.MOTION_BLOCKING, (int) Position.x, (int) Position.z);
                 if (GroundY == HostManager.getWorld().getBottomY())
                     GroundY = HostManager.getWorld().getSeaLevel() + 1;
@@ -322,38 +325,38 @@ public class Cloud extends Weather {
             if (Water > 1000) {
                 Water = 1000;
             }
-            if (Precipitating && Intensity == 0) {
+            if (Precipitating && !Thundering) {
                 Water = Math.max(0, Water - 3);
                 if (Water == 0)
                     Precipitating = false;
-            } else if(Intensity >= 1) {
+            } else if(Thundering) {
                 Precipitating = true;
-            } else if(Intensity == 0) {
+            } else {
                 if ((Water >= Enhancedweather.CONFIG.Weather_MinimumWaterToPrecipitate && rand.nextInt(Enhancedweather.CONFIG.Weather_PrecipitationChance) == 0)) {
                     Precipitating = true;
                 }
             }
-            if (Intensity > 0) {
+            /*if (Thundering) {
                 if (!PeakedIntensity && (ticks % 60) == 0) {
                     if(Intensity >= MaxIntensity) {
                         PeakedIntensity = true;
                     }
-                    IntensityProgression += 0.02F * (Intensity == 4 ? 3 : 1);
+                    IntensityProgression += 0.02F * (TornadoStage != Integer.MIN_VALUE ? 3 : 1);
                     if (IntensityProgression >= 0.6F) {
                         Intensity += 1;
                         IntensityProgression = 0;
                     }
-                } else if(PeakedIntensity && Intensity > 1 && (ticks % 60) == 0) {
-                    IntensityProgression += 0.02F * (Intensity == 4 ? 3 : 1) * 0.3F;
+                } else if(PeakedIntensity && (Hailing || Supercell) && (ticks % 60) == 0) {
+                    IntensityProgression += 0.02F * (TornadoStage != Integer.MIN_VALUE ? 3 : 1) * 0.3F;
                     if(IntensityProgression >= 0.6F) {
                         Intensity -= 1;
                         IntensityProgression = 0;
                     }
                 }
-            }
+            }*/
         }
-        if(Intensity >= 4) {
-            double dist = FunnelParametersList.get(this.Intensity-4).GrabDistance;
+        if(TornadoStage != Integer.MIN_VALUE) {
+            double dist = FunnelParametersList.get(this.TornadoStage).GrabDistance;
             Box box = new Box(Position.x-dist, GroundY, Position.z-dist, Position.x+dist, Position.y, Position.z+dist);
             List<Entity> list = HostManager.getWorld().getEntitiesByClass(Entity.class, box, EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR);
             for(Entity ent : list) {
@@ -419,12 +422,12 @@ public class Cloud extends Weather {
     }
 
     public void spinEntity(Entity ent) {
-        FunnelParameters conf = FunnelParametersList.get(this.Intensity-4);
+        FunnelParameters conf = FunnelParametersList.get(this.TornadoStage-4);
         double radius = 10D;
         double scale = conf.WidthScale;
         double d1 = this.Position.x - ent.getX();
         double d2 = this.Position.z - ent.getZ();
-        if(this.Intensity==4) {
+        if(this.TornadoStage==0) {
             float range = 30F * (float) Math.sin((Math.toRadians(((ent.getWorld().getTime() * 0.5F) + (ent.getId() * 50)) % 360)));
             float heightPercent = (float) (1F - ((ent.getY() - GroundY) / (Position.y - GroundY)));
             float posOffsetX = (float) Math.sin((Math.toRadians(heightPercent * 360F)));
@@ -550,12 +553,12 @@ public class Cloud extends Weather {
     }
 
     public void spinParticle(CloudParticle ent) { // Like spinEntity, but with 90% less garbage Corosauce code! (Corosauce isn't a bad developer, it's just that some of his code is difficult to understand)
-        FunnelParameters conf = FunnelParametersList.get(this.Intensity-4);
+        FunnelParameters conf = FunnelParametersList.get(this.TornadoStage);
         double radius = 10D;
         double scale = conf.WidthScale;
         double d1 = this.Position.x - ent.getX();
         double d2 = this.Position.z - ent.getZ();
-        if(this.Intensity==4) {
+        if(this.TornadoStage==0) {
             int groundHeight = MinecraftClient.getInstance().world.getTopY(Heightmap.Type.MOTION_BLOCKING,(int)Position.x,(int)Position.z);
             float range = 30F * (float) Math.sin((Math.toRadians(((MinecraftClient.getInstance().world.getTime() * 0.5F) + (ent.ID * 50)) % 360)));
             float heightPercent = (float) (1F - ((ent.getY() - groundHeight) / (Position.y - groundHeight)));
@@ -613,11 +616,12 @@ public class Cloud extends Weather {
         NbtCompound data = super.generateUpdate();
         data.putInt("Layer",Layer);
         data.putInt("Water",Water);
-        data.putInt("Intensity",Intensity);
-        data.putFloat("IntensityProgression",IntensityProgression);
-        data.putInt("MaxIntensity",MaxIntensity);
+        data.putInt("TornadoStage",TornadoStage);
         data.putBoolean("PeakedIntensity",PeakedIntensity);
         data.putBoolean("Precipitating",Precipitating);
+        data.putBoolean("Thundering",Thundering);
+        data.putBoolean("Hailing",Hailing);
+        data.putBoolean("Supercell",Supercell);
         data.putBoolean("Placeholder",Placeholder);
         data.putBoolean("Expanding",Expanding);
         data.putFloat("Angle",Angle);
@@ -629,11 +633,12 @@ public class Cloud extends Weather {
         super.applyUpdate(data);
         Layer = data.getInt("Layer");
         Water = data.getInt("Water");
-        Intensity = data.getInt("Intensity");
-        IntensityProgression = data.getFloat("IntensityProgression");
-        MaxIntensity = data.getInt("MaxIntensity");
+        TornadoStage = data.getInt("TornadoStage");
         PeakedIntensity = data.getBoolean("PeakedIntensity");
         Precipitating = data.getBoolean("Precipitating");
+        Thundering = data.getBoolean("Thundering");
+        Hailing = data.getBoolean("Hailing");
+        Supercell = data.getBoolean("Supercell");
         Placeholder = data.getBoolean("Placeholder");
         Expanding = data.getBoolean("Expanding");
         Angle = data.getFloat("Angle");
@@ -644,11 +649,11 @@ public class Cloud extends Weather {
         JsonObject json = super.generateSaveDataJson();
         json.put("Layer",new JsonPrimitive(Layer));
         json.put("Water",new JsonPrimitive(Water));
-        json.put("Intensity",new JsonPrimitive(Intensity));
-        json.put("IntensityProgression",new JsonPrimitive(IntensityProgression));
-        json.put("MaxIntensity",new JsonPrimitive(MaxIntensity));
         json.put("PeakedIntensity",new JsonPrimitive(PeakedIntensity));
         json.put("Precipitating",new JsonPrimitive(Precipitating));
+        json.put("Thundering",new JsonPrimitive(Thundering));
+        json.put("Hailing",new JsonPrimitive(Hailing));
+        json.put("Supercell",new JsonPrimitive(Supercell));
         json.put("Placeholder",new JsonPrimitive(Placeholder));
         json.put("Expanding",new JsonPrimitive(Expanding));
         json.put("Angle", new JsonPrimitive(Angle));
@@ -660,11 +665,12 @@ public class Cloud extends Weather {
         super.applySaveDataJson(json);
         Layer = json.getInt("Layer",0);
         Water = json.getInt("Water",0);
-        Intensity = json.getInt("Intensity",0);
         IntensityProgression = json.getFloat("IntensityProgression",0F);
-        MaxIntensity = json.getInt("MaxIntensity",1);
         PeakedIntensity = json.getBoolean("PeakedIntensity",false);
         Precipitating = json.getBoolean("Precipitating",false);
+        Thundering = json.getBoolean("Thundering",false);
+        Hailing = json.getBoolean("Hailing",false);
+        Supercell = json.getBoolean("Supercell",false);
         Placeholder = json.getBoolean("Placeholder",false);
         Expanding = json.getBoolean("Expanding",false);
         Angle = json.getFloat("Angle",Float.MIN_VALUE);

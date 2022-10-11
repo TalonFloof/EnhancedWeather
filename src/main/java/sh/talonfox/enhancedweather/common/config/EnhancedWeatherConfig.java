@@ -38,8 +38,6 @@ public class EnhancedWeatherConfig implements ConfigData {
     @ConfigEntry.Category("weather")
     public boolean Weather_TornadoesCanSpawn = true;
     @ConfigEntry.Category("weather")
-    public int Weather_DefaultCloudIntensity = 0;
-    @ConfigEntry.Category("weather")
     public int Weather_LightningStrikeBaseChance = 10000;
     @ConfigEntry.Category("weather")
     public int Weather_MinimumWaterToPrecipitate = 100;
