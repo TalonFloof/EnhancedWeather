@@ -87,7 +87,7 @@ public class Wind {
             TimeEvent--;
         }
         if(clientTicks % 10 == 0) {
-            Cloud cloud = Enhancedweather.CLIENT_WEATHER.getClosestCloud(new Vec3d(MinecraftClient.getInstance().player.getX(),200,MinecraftClient.getInstance().player.getZ()),256,2,true);
+            Cloud cloud = Enhancedweather.CLIENT_WEATHER.getClosestCloud(new Vec3d(MinecraftClient.getInstance().player.getX(),200,MinecraftClient.getInstance().player.getZ()),256,false,false,false,true,0);
             if(cloud != null) {
                 TimeEvent = 80;
                 double var11 = cloud.Position.getX() - MinecraftClient.getInstance().player.getX();

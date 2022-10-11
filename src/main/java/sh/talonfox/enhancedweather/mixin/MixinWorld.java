@@ -64,7 +64,7 @@ public class MixinWorld {
                     if(ClientsideManager.PrecipitationRate < 0.2F)
                         return false;
                 } else {
-                    if(Enhancedweather.SERVER_WEATHER.getClosestCloud(new Vec3d(pos.getX(), 200, pos.getZ()), 384, 0, true) == null)
+                    if(Enhancedweather.SERVER_WEATHER.getClosestCloud(new Vec3d(pos.getX(), 200, pos.getZ()), 384, true, false, false, false, 0) == null)
                         return false;
                 }
                 Biome biome = world.getBiome(pos).value();

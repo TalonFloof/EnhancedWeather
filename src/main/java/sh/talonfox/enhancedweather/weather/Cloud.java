@@ -31,7 +31,7 @@ public class Cloud extends Weather {
     public boolean PeakedIntensity = false;
     public boolean Precipitating = false;
     public boolean Thundering = false;
-    public boolean Hailing = false;
+    public int HailIntensity = 0;
     public boolean Supercell = false;
     public int TornadoStage = Integer.MIN_VALUE;
     public boolean Placeholder = false;
@@ -54,7 +54,6 @@ public class Cloud extends Weather {
         rand = new Random();
         Size = 50;
         Thundering = false;
-        Hailing = false;
         Supercell = false;
     }
 
@@ -195,7 +194,7 @@ public class Cloud extends Weather {
                 i -= 1;
             }
         }
-        if(Hailing) {
+        if(HailIntensity > 0) {
             for(int i = 0; i < Math.max(1, 10 * (Size/300)); i++) {
                 int x = (int)(Position.x + rand.nextInt(Size) - rand.nextInt(Size));
                 int z = (int)(Position.z + rand.nextInt(Size) - rand.nextInt(Size));
@@ -617,11 +616,11 @@ public class Cloud extends Weather {
         data.putInt("Layer",Layer);
         data.putInt("Water",Water);
         data.putInt("TornadoStage",TornadoStage);
+        data.putInt("HailIntensity",HailIntensity);
         data.putBoolean("PeakedIntensity",PeakedIntensity);
         data.putBoolean("Precipitating",Precipitating);
         data.putBoolean("Thundering",Thundering);
-        data.putBoolean("Hailing",Hailing);
-        data.putBoolean("Supercell",Supercell);
+        data.putBoolean("Supercell", Supercell);
         data.putBoolean("Placeholder",Placeholder);
         data.putBoolean("Expanding",Expanding);
         data.putFloat("Angle",Angle);
@@ -634,10 +633,10 @@ public class Cloud extends Weather {
         Layer = data.getInt("Layer");
         Water = data.getInt("Water");
         TornadoStage = data.getInt("TornadoStage");
+        HailIntensity = data.getInt("HailIntensity");
         PeakedIntensity = data.getBoolean("PeakedIntensity");
         Precipitating = data.getBoolean("Precipitating");
         Thundering = data.getBoolean("Thundering");
-        Hailing = data.getBoolean("Hailing");
         Supercell = data.getBoolean("Supercell");
         Placeholder = data.getBoolean("Placeholder");
         Expanding = data.getBoolean("Expanding");
@@ -649,10 +648,10 @@ public class Cloud extends Weather {
         JsonObject json = super.generateSaveDataJson();
         json.put("Layer",new JsonPrimitive(Layer));
         json.put("Water",new JsonPrimitive(Water));
+        json.put("HailIntensity",new JsonPrimitive(HailIntensity));
         json.put("PeakedIntensity",new JsonPrimitive(PeakedIntensity));
         json.put("Precipitating",new JsonPrimitive(Precipitating));
         json.put("Thundering",new JsonPrimitive(Thundering));
-        json.put("Hailing",new JsonPrimitive(Hailing));
         json.put("Supercell",new JsonPrimitive(Supercell));
         json.put("Placeholder",new JsonPrimitive(Placeholder));
         json.put("Expanding",new JsonPrimitive(Expanding));
@@ -665,11 +664,10 @@ public class Cloud extends Weather {
         super.applySaveDataJson(json);
         Layer = json.getInt("Layer",0);
         Water = json.getInt("Water",0);
-        IntensityProgression = json.getFloat("IntensityProgression",0F);
+        HailIntensity = json.getInt("HailIntensity",0);
         PeakedIntensity = json.getBoolean("PeakedIntensity",false);
         Precipitating = json.getBoolean("Precipitating",false);
         Thundering = json.getBoolean("Thundering",false);
-        Hailing = json.getBoolean("Hailing",false);
         Supercell = json.getBoolean("Supercell",false);
         Placeholder = json.getBoolean("Placeholder",false);
         Expanding = json.getBoolean("Expanding",false);

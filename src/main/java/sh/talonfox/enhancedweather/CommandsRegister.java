@@ -20,7 +20,6 @@ public class CommandsRegister {
                     .then(literal("summonOverworld")
                             .then(literal("rain").executes(context -> {
                                 Cloud cloud = new Cloud(Enhancedweather.SERVER_WEATHER,context.getSource().getPosition().multiply(1,0,1).add(0,200,0));
-                                cloud.Intensity = 0;
                                 cloud.Water = Enhancedweather.CONFIG.Weather_MinimumWaterToPrecipitate*2;
                                 cloud.Precipitating = true;
                                 UUID id = UUID.randomUUID();
@@ -34,7 +33,7 @@ public class CommandsRegister {
                             )
                             .then(literal("thunder").executes(context -> {
                                         Cloud cloud = new Cloud(Enhancedweather.SERVER_WEATHER,context.getSource().getPosition().multiply(1,0,1).add(0,200,0));
-                                        cloud.Intensity = 1;
+                                        cloud.Thundering = true;
                                         cloud.Water = Enhancedweather.CONFIG.Weather_MinimumWaterToPrecipitate*2;
                                         cloud.Precipitating = true;
                                         UUID id = UUID.randomUUID();
@@ -46,9 +45,10 @@ public class CommandsRegister {
                                         return 1;
                                     })
                             )
-                            .then(literal("wind").executes(context -> {
+                            .then(literal("supercell").executes(context -> {
                                         Cloud cloud = new Cloud(Enhancedweather.SERVER_WEATHER,context.getSource().getPosition().multiply(1,0,1).add(0,200,0));
-                                        cloud.Intensity = 2;
+                                        cloud.Supercell = true;
+                                        cloud.Thundering = true;
                                         cloud.Water = Enhancedweather.CONFIG.Weather_MinimumWaterToPrecipitate*2;
                                         cloud.Precipitating = true;
                                         UUID id = UUID.randomUUID();
@@ -56,105 +56,7 @@ public class CommandsRegister {
                                         for (ServerPlayerEntity j : PlayerLookup.all(context.getSource().getServer())) {
                                             UpdateStorm.send(context.getSource().getServer(), id, null, j);
                                         }
-                                        context.getSource().sendMessage(Text.literal("Summoning Wind Storm"));
-                                        return 1;
-                                    })
-                            )
-                            .then(literal("hail").executes(context -> {
-                                        Cloud cloud = new Cloud(Enhancedweather.SERVER_WEATHER,context.getSource().getPosition().multiply(1,0,1).add(0,200,0));
-                                        cloud.Intensity = 3;
-                                        cloud.Water = Enhancedweather.CONFIG.Weather_MinimumWaterToPrecipitate*2;
-                                        cloud.Precipitating = true;
-                                        UUID id = UUID.randomUUID();
-                                        Enhancedweather.SERVER_WEATHER.Clouds.put(id,cloud);
-                                        for (ServerPlayerEntity j : PlayerLookup.all(context.getSource().getServer())) {
-                                            UpdateStorm.send(context.getSource().getServer(), id, null, j);
-                                        }
-                                        context.getSource().sendMessage(Text.literal("Summoning Hail Storm"));
-                                        return 1;
-                                    })
-                            )
-                            .then(literal("forming").executes(context -> {
-                                        Cloud cloud = new Cloud(Enhancedweather.SERVER_WEATHER,context.getSource().getPosition().multiply(1,0,1).add(0,200,0));
-                                        cloud.Intensity = 4;
-                                        cloud.Water = Enhancedweather.CONFIG.Weather_MinimumWaterToPrecipitate*2;
-                                        cloud.Precipitating = true;
-                                        UUID id = UUID.randomUUID();
-                                        Enhancedweather.SERVER_WEATHER.Clouds.put(id,cloud);
-                                        for (ServerPlayerEntity j : PlayerLookup.all(context.getSource().getServer())) {
-                                            UpdateStorm.send(context.getSource().getServer(), id, null, j);
-                                        }
-                                        context.getSource().sendMessage(Text.literal("Summoning Forming Funnel Storm"));
-                                        return 1;
-                                    })
-                            )
-                            .then(literal("ef1").executes(context -> {
-                                        Cloud cloud = new Cloud(Enhancedweather.SERVER_WEATHER,context.getSource().getPosition().multiply(1,0,1).add(0,200,0));
-                                        cloud.Intensity = 5;
-                                        cloud.Water = Enhancedweather.CONFIG.Weather_MinimumWaterToPrecipitate*2;
-                                        cloud.Precipitating = true;
-                                        UUID id = UUID.randomUUID();
-                                        Enhancedweather.SERVER_WEATHER.Clouds.put(id,cloud);
-                                        for (ServerPlayerEntity j : PlayerLookup.all(context.getSource().getServer())) {
-                                            UpdateStorm.send(context.getSource().getServer(), id, null, j);
-                                        }
-                                        context.getSource().sendMessage(Text.literal("Summoning EF1 Tornado"));
-                                        return 1;
-                                    })
-                            )
-                            .then(literal("ef2").executes(context -> {
-                                        Cloud cloud = new Cloud(Enhancedweather.SERVER_WEATHER,context.getSource().getPosition().multiply(1,0,1).add(0,200,0));
-                                        cloud.Intensity = 6;
-                                        cloud.Water = Enhancedweather.CONFIG.Weather_MinimumWaterToPrecipitate*2;
-                                        cloud.Precipitating = true;
-                                        UUID id = UUID.randomUUID();
-                                        Enhancedweather.SERVER_WEATHER.Clouds.put(id,cloud);
-                                        for (ServerPlayerEntity j : PlayerLookup.all(context.getSource().getServer())) {
-                                            UpdateStorm.send(context.getSource().getServer(), id, null, j);
-                                        }
-                                        context.getSource().sendMessage(Text.literal("Summoning EF2 Tornado"));
-                                        return 1;
-                                    })
-                            )
-                            .then(literal("ef3").executes(context -> {
-                                        Cloud cloud = new Cloud(Enhancedweather.SERVER_WEATHER,context.getSource().getPosition().multiply(1,0,1).add(0,200,0));
-                                        cloud.Intensity = 7;
-                                        cloud.Water = Enhancedweather.CONFIG.Weather_MinimumWaterToPrecipitate*2;
-                                        cloud.Precipitating = true;
-                                        UUID id = UUID.randomUUID();
-                                        Enhancedweather.SERVER_WEATHER.Clouds.put(id,cloud);
-                                        for (ServerPlayerEntity j : PlayerLookup.all(context.getSource().getServer())) {
-                                            UpdateStorm.send(context.getSource().getServer(), id, null, j);
-                                        }
-                                        context.getSource().sendMessage(Text.literal("Summoning EF3 Tornado"));
-                                        return 1;
-                                    })
-                            )
-                            .then(literal("ef4").executes(context -> {
-                                        Cloud cloud = new Cloud(Enhancedweather.SERVER_WEATHER,context.getSource().getPosition().multiply(1,0,1).add(0,200,0));
-                                        cloud.Intensity = 8;
-                                        cloud.Water = Enhancedweather.CONFIG.Weather_MinimumWaterToPrecipitate*2;
-                                        cloud.Precipitating = true;
-                                        UUID id = UUID.randomUUID();
-                                        Enhancedweather.SERVER_WEATHER.Clouds.put(id,cloud);
-                                        for (ServerPlayerEntity j : PlayerLookup.all(context.getSource().getServer())) {
-                                            UpdateStorm.send(context.getSource().getServer(), id, null, j);
-                                        }
-                                        context.getSource().sendMessage(Text.literal("Summoning EF4 Tornado"));
-                                        return 1;
-                                    })
-                            )
-                            .then(literal("ef5").executes(context -> {
-                                        Cloud cloud = new Cloud(Enhancedweather.SERVER_WEATHER,context.getSource().getPosition().multiply(1,0,1).add(0,200,0));
-                                        cloud.Intensity = 9;
-                                        cloud.Water = Enhancedweather.CONFIG.Weather_MinimumWaterToPrecipitate*2;
-                                        cloud.Precipitating = true;
-                                        UUID id = UUID.randomUUID();
-                                        Enhancedweather.SERVER_WEATHER.Clouds.put(id,cloud);
-                                        for (ServerPlayerEntity j : PlayerLookup.all(context.getSource().getServer())) {
-                                            UpdateStorm.send(context.getSource().getServer(), id, null, j);
-                                        }
-                                        context.getSource().sendMessage(Text.literal("Summoning EF5 Tornado"));
+                                        context.getSource().sendMessage(Text.literal("Summoning Supercell"));
                                         return 1;
                                     })
                             )

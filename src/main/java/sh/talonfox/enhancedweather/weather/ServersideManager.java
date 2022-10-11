@@ -68,7 +68,9 @@ public class ServersideManager extends Manager {
                                     dist = (int)Math.floor(new Vec3d(i.getX(),200,i.getZ()).distanceTo(cloud.Position));
                             }
                             if(new Random().nextInt(30) == 0 && cloud != null) {
-                                cloud.Intensity = 1;
+                                cloud.Thundering = true;
+                                cloud.HailIntensity = 0;
+                                cloud.Supercell = false;
                                 cloud.Precipitating = true;
                                 cloud.Placeholder = false;
                                 cloud.aimAtPlayer(i);
@@ -119,7 +121,7 @@ public class ServersideManager extends Manager {
             spawnX = (int) (ent.getX() - vecX + rand.nextInt(1024) - rand.nextInt(1024));
             spawnZ = (int) (ent.getZ() - vecZ + rand.nextInt(1024) - rand.nextInt(1024));
             tryPos = new Vec3i(spawnX, y, spawnZ);
-            soClose = getClosestCloud(Vec3d.ofCenter(tryPos), 300, -1, false);
+            soClose = getClosestCloud(Vec3d.ofCenter(tryPos), 300, false, false, false, false, -1);
             playerClose = ent.getWorld().getClosestPlayer(spawnX, 50, spawnZ, closestToPlayer, false);
         }
         if (soClose == null) {

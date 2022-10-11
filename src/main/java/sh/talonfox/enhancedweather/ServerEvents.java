@@ -60,8 +60,7 @@ public class ServerEvents {
                     Enhancedweather.SERVER_WEATHER.Clouds.values().stream().filter(so -> so instanceof Cloud).forEach((so) -> {
                         ((Cloud)so).Water = 400;
                         ((Cloud)so).Precipitating = true;
-                        ((Cloud)so).Intensity = 1;
-                        ((Cloud)so).MaxIntensity = 1;
+                        ((Cloud)so).Thundering = true;
                     });
                 }
             }

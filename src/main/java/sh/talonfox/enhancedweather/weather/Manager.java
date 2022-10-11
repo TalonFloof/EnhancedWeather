@@ -12,10 +12,10 @@ public abstract class Manager {
     public abstract void tick();
     public abstract World getWorld();
 
-    public Cloud getClosestCloud(Vec3d parPos, double maxDist, int severityFlagMin, boolean rain) {
+    public Cloud getClosestCloud(Vec3d parPos, double maxDist, boolean rain, boolean thunder, boolean strongWinds, boolean supercell, int hailIntensityMin) {
         return (Cloud)Clouds.values().stream()
                 .filter(so -> so instanceof Cloud)
-                .filter(so -> (((Cloud)so).Precipitating || !rain) && (severityFlagMin == -1 || ((Cloud)so).Intensity >= severityFlagMin))
+                .filter(so -> (((Cloud)so).Precipitating || !rain) && (((Cloud)so).Thundering || !thunder) && (!strongWinds) && (((Cloud)so).Supercell || !supercell) && (hailIntensityMin == -1 || ((Cloud)so).HailIntensity >= hailIntensityMin))
                 .filter(so -> so.Position.distanceTo(parPos) < maxDist)
                 .min(Comparator.comparing(so -> so.Position.distanceTo(parPos))).orElse(null);
     }
