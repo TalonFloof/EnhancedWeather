@@ -8,6 +8,7 @@ import sh.talonfox.enhancedweather.network.UpdateStorm;
 import sh.talonfox.enhancedweather.weather.Ambience;
 import sh.talonfox.enhancedweather.weather.Cloud;
 import sh.talonfox.enhancedweather.weather.ServersideManager;
+import sh.talonfox.enhancedweather.weather.frontal.SquallLine;
 
 import java.util.UUID;
 
@@ -59,6 +60,11 @@ public class CommandsRegister {
                                         context.getSource().sendMessage(Text.literal("Summoning Supercell"));
                                         return 1;
                                     })
+                            )
+                            .then(literal("squallLine").executes(context -> {
+                                    SquallLine sl = new SquallLine(Enhancedweather.SERVER_WEATHER,context.getSource().getPosition().multiply(1,0,1).add(0,200,0));
+                                    return 1;
+                                })
                             )
                     )
                     .then(literal("killallOverworld").executes(context -> {
