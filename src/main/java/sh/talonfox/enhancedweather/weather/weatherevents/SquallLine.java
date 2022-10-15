@@ -5,6 +5,7 @@ import blue.endless.jankson.JsonPrimitive;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 import sh.talonfox.enhancedweather.Enhancedweather;
 import sh.talonfox.enhancedweather.network.UpdateStorm;
@@ -26,6 +27,11 @@ public class SquallLine extends Weather {
     public boolean PeakedIntensity = false;
     public float MovementAngle;
     protected int ticks;
+
+    @Override
+    public Identifier getID() {
+        return new Identifier("enhancedweather","squall_line");
+    }
 
     public SquallLine(Manager manager, Vec3d pos) {
         HostManager = manager;
@@ -61,6 +67,7 @@ public class SquallLine extends Weather {
             storm.Water = Enhancedweather.CONFIG.Weather_MinimumWaterToPrecipitate*2;
             storm.Precipitating = true;
             storm.SquallLineControlled = true;
+            storm.Size = 300;
             HostManager.enqueueWeatherObject(uuid,storm);
             Storms.put(Storms.keySet().size(),uuid);
         }

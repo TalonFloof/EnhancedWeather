@@ -51,6 +51,11 @@ public class Cloud extends Weather {
     @Environment(EnvType.CLIENT)
     public List<Particle> ParticlesFunnel = new ArrayList<Particle>();
 
+    @Override
+    public Identifier getID() {
+        return new Identifier("enhancedweather","cloud");
+    }
+
     public Cloud(Manager manager, Vec3d pos) {
         HostManager = manager;
         Position = pos;

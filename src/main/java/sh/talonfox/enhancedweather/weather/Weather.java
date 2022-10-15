@@ -10,10 +10,10 @@ import java.util.HashMap;
 import java.util.function.BiFunction;
 
 public abstract class Weather {
-    HashMap<Identifier, BiFunction<Manager, Vec3d, ? extends Weather>> RegisteredStorms = new HashMap<>();
+    static HashMap<Identifier, BiFunction<Manager, Vec3d, ? extends Weather>> RegisteredStorms = new HashMap<>();
     protected Manager HostManager;
     public Vec3d Position = null;
-    protected int Size = 1;
+    public int Size = 1;
     int MaxSize = 300;
 
     public void deconstructor() {
@@ -28,12 +28,23 @@ public abstract class Weather {
 
     }
 
-    public static void register(Identifier id, BiFunction<Manager, Vec3d, ? extends Weather> constructor) {
+    public Identifier getID() {
+        return new Identifier("enhancedweather","null");
+    }
 
+    public static void register(Identifier id, BiFunction<Manager, Vec3d, ? extends Weather> constructor) {
+        RegisteredStorms.put(id,constructor);
+    }
+
+    public static Weather constructStorm(Identifier id, Manager manager, Vec3d pos) {
+        if(RegisteredStorms.containsKey(id))
+            return RegisteredStorms.get(id).apply(manager, pos);
+        return null;
     }
 
     public NbtCompound generateUpdate() {
         NbtCompound data = new NbtCompound();
+        data.putString("Identifier",getID().toString());
         data.putDouble("X",Position.getX());
         data.putDouble("Y",Position.getY());
         data.putDouble("Z",Position.getZ());
@@ -48,6 +59,7 @@ public abstract class Weather {
 
     public JsonObject generateSaveDataJson() {
         JsonObject json = new JsonObject();
+        json.put("Identifier",new JsonPrimitive(getID().toString()));
         json.put("X",new JsonPrimitive(Position.getX()));
         json.put("Y",new JsonPrimitive(Position.getY()));
         json.put("Z",new JsonPrimitive(Position.getZ()));

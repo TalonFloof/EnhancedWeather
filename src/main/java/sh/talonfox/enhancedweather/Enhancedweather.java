@@ -9,6 +9,7 @@ import sh.talonfox.enhancedweather.network.NetworkRegister;
 import sh.talonfox.enhancedweather.common.particles.ParticleRegister;
 import sh.talonfox.enhancedweather.weather.ClientsideManager;
 import sh.talonfox.enhancedweather.weather.ServersideManager;
+import sh.talonfox.enhancedweather.weather.WeatherRegistry;
 import sh.talonfox.enhancedweather.wind.Wind;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +24,8 @@ public class Enhancedweather implements ModInitializer {
     public static EnhancedWeatherConfig CONFIG;
     public static final Logger LOGGER = LoggerFactory.getLogger("enhancedweather");
 
+    public static final long WEATHER_DATA_VERSION = 202241001;
+
     @Override
     public void onInitialize() {
         ConfigRegister.Initialize();
@@ -30,6 +33,7 @@ public class Enhancedweather implements ModInitializer {
         ItemGroupRegister.Initialize();
         ParticleRegister.Initialize();
         NetworkRegister.Initialize();
+        WeatherRegistry.Initialize();
         ServerEvents.Initialize();
         CommandsRegister.Initialize();
     }
