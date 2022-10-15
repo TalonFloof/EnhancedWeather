@@ -11,6 +11,10 @@ public abstract class Weather {
     int Size = 1;
     int MaxSize = 300;
 
+    public void deconstructor() {
+
+    }
+
     public void tickClient() {
 
     }

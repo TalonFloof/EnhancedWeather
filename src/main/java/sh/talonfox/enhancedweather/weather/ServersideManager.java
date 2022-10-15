@@ -78,9 +78,14 @@ public class ServersideManager extends Manager {
                         }
                     }
                     for (UUID j : Clouds.keySet()) {
-                        Cloud cloud = (Cloud)Clouds.get(j);
-                        var col = PlayerLookup.around(world.getServer().getOverworld(),new Vec3d(cloud.Position.x, 50, cloud.Position.z),1024.0D);
-                        if(col.isEmpty()) {
+                        var cloud = Clouds.get(j);
+                        var col = PlayerLookup.around(world.getServer().getOverworld(), new Vec3d(cloud.Position.x, 50, cloud.Position.z), 1024.0D);
+                        if (col.isEmpty()) {
+                            if(cloud instanceof Cloud) {
+                                if(((Cloud)cloud).SquallLineControlled)
+                                    continue;
+                            }
+                            cloud.deconstructor();
                             for (ServerPlayerEntity i : PlayerLookup.all(world.getServer())) {
                                 UpdateStorm.send(world.getServer(), j, null, i);
                             }
