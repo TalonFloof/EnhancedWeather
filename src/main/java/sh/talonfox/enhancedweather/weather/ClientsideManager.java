@@ -3,6 +3,7 @@ package sh.talonfox.enhancedweather.weather;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import sh.talonfox.enhancedweather.weather.weatherevents.Cloud;
 
 public class ClientsideManager extends Manager {
     public static float PrecipitationRate = 0F;
@@ -12,7 +13,7 @@ public class ClientsideManager extends Manager {
     @Override
     public void tick() {
         Ambience.HighWindExists = false;
-        for (Weather i : Clouds.values()) {
+        for (Weather i : Weathers.values()) {
             i.tickClient();
         }
         Ambience.tick();

@@ -1,4 +1,4 @@
-package sh.talonfox.enhancedweather.weather;
+package sh.talonfox.enhancedweather.weather.weatherevents;
 
 import blue.endless.jankson.JsonObject;
 import blue.endless.jankson.JsonPrimitive;
@@ -21,6 +21,10 @@ import net.minecraft.world.biome.Biome;
 import sh.talonfox.enhancedweather.Enhancedweather;
 import sh.talonfox.enhancedweather.common.particles.CloudParticle;
 import sh.talonfox.enhancedweather.common.particles.ParticleRegister;
+import sh.talonfox.enhancedweather.weather.Ambience;
+import sh.talonfox.enhancedweather.weather.FunnelParameters;
+import sh.talonfox.enhancedweather.weather.Manager;
+import sh.talonfox.enhancedweather.weather.Weather;
 
 import java.util.*;
 
@@ -32,7 +36,7 @@ public class Cloud extends Weather {
     public int HailIntensity = 0;
     public boolean Supercell = false;
     public boolean SquallLineControlled = false;
-    public int TornadoStage = Integer.MIN_VALUE;
+    public int TornadoStage;
     public boolean Placeholder = false;
     public boolean Expanding = true;
     public float Angle = Float.MIN_VALUE;
@@ -54,6 +58,7 @@ public class Cloud extends Weather {
         Size = 50;
         Thundering = false;
         Supercell = false;
+        TornadoStage = Integer.MIN_VALUE;
     }
 
     static {
@@ -140,7 +145,7 @@ public class Cloud extends Weather {
                 ParticlesCloud.add(newParticle);
             }
         }
-        if(TornadoStage != Integer.MIN_VALUE) {
+        if(TornadoStage >= 0) {
             int Intensity = this.TornadoStage+4;
             double dist = FunnelParametersList.get(Intensity-4).GrabDistance;
             PlayerEntity ent = MinecraftClient.getInstance().player;
@@ -212,7 +217,7 @@ public class Cloud extends Weather {
                 part.yaw = (float)(Math.atan2(var18, var16) * 180.0D / Math.PI) - 90.0F;
                 part.yaw += part.ID % 90;
                 part.pitch = -30F;
-                if(TornadoStage != Integer.MIN_VALUE) {
+                if(TornadoStage >= 0) {
                     spinParticle(part);
                 }
             }
@@ -225,7 +230,7 @@ public class Cloud extends Weather {
                 double curSpeed = Math.sqrt(velocityX * velocityX + velocityY * velocityY + velocityZ * velocityZ);
                 double curDist = new Vec3d(ent.getX(), Position.getY(), ent.getZ()).distanceTo(Position);
                 double spinSpeed;
-                if (Supercell && TornadoStage == Integer.MIN_VALUE) {
+                if (Supercell && TornadoStage < 0) {
                     spinSpeed = 0.4D * 0.05D;
                 } else {
                     spinSpeed = 0.4D * 0.2D;
@@ -245,7 +250,7 @@ public class Cloud extends Weather {
                     angle += 40;
                 }
                 if (ent.ID % 20 < 5) {
-                    if (TornadoStage != Integer.MIN_VALUE) {
+                    if (TornadoStage >= 0) {
                         angle += 30 + ((ent.ID % 5) * 4);
                     } else {
                         if (curDist > 150) {
@@ -304,7 +309,7 @@ public class Cloud extends Weather {
             }
         }
         if((ticks % 60) == 0 && !Placeholder) {
-            if(TornadoStage != Integer.MIN_VALUE) {
+            if(TornadoStage >= 0) {
                 GroundY = HostManager.getWorld().getTopY(Heightmap.Type.MOTION_BLOCKING, (int) Position.x, (int) Position.z);
                 if (GroundY == HostManager.getWorld().getBottomY())
                     GroundY = HostManager.getWorld().getSeaLevel() + 1;
@@ -354,7 +359,7 @@ public class Cloud extends Weather {
                 }
             }*/
         }
-        if(TornadoStage != Integer.MIN_VALUE) {
+        if(TornadoStage >= 0) {
             double dist = FunnelParametersList.get(this.TornadoStage).GrabDistance;
             Box box = new Box(Position.x-dist, GroundY, Position.z-dist, Position.x+dist, Position.y, Position.z+dist);
             List<Entity> list = HostManager.getWorld().getEntitiesByClass(Entity.class, box, EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR);
@@ -423,7 +428,7 @@ public class Cloud extends Weather {
     }
 
     public void spinEntity(Entity ent) {
-        FunnelParameters conf = FunnelParametersList.get(this.TornadoStage-4);
+        FunnelParameters conf = FunnelParametersList.get(this.TornadoStage);
         double radius = 10D;
         double scale = conf.WidthScale;
         double d1 = this.Position.x - ent.getX();
@@ -649,6 +654,7 @@ public class Cloud extends Weather {
         json.put("Layer",new JsonPrimitive(Layer));
         json.put("Water",new JsonPrimitive(Water));
         json.put("HailIntensity",new JsonPrimitive(HailIntensity));
+        json.put("TornadoStage",new JsonPrimitive(TornadoStage));
         json.put("Precipitating",new JsonPrimitive(Precipitating));
         json.put("Thundering",new JsonPrimitive(Thundering));
         json.put("Supercell",new JsonPrimitive(Supercell));
@@ -665,6 +671,7 @@ public class Cloud extends Weather {
         Layer = json.getInt("Layer",0);
         Water = json.getInt("Water",0);
         HailIntensity = json.getInt("HailIntensity",0);
+        TornadoStage = json.getInt("TorandoStage",Integer.MIN_VALUE);
         Precipitating = json.getBoolean("Precipitating",false);
         Thundering = json.getBoolean("Thundering",false);
         Supercell = json.getBoolean("Supercell",false);

@@ -3,12 +3,17 @@ package sh.talonfox.enhancedweather.weather;
 import blue.endless.jankson.JsonObject;
 import blue.endless.jankson.JsonPrimitive;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 
+import java.util.HashMap;
+import java.util.function.BiFunction;
+
 public abstract class Weather {
+    HashMap<Identifier, BiFunction<Manager, Vec3d, ? extends Weather>> RegisteredStorms = new HashMap<>();
     protected Manager HostManager;
     public Vec3d Position = null;
-    int Size = 1;
+    protected int Size = 1;
     int MaxSize = 300;
 
     public void deconstructor() {
@@ -20,6 +25,10 @@ public abstract class Weather {
     }
 
     public void tickServer() {
+
+    }
+
+    public static void register(Identifier id, BiFunction<Manager, Vec3d, ? extends Weather> constructor) {
 
     }
 
@@ -47,7 +56,7 @@ public abstract class Weather {
     }
 
     public void applySaveDataJson(JsonObject json) {
-        Position = new Vec3d(json.getDouble("X",0),json.getDouble("Y",0),json.getDouble("Z",0));
+        Position = new Vec3d(json.getDouble("X",0),json.getDouble("Y",200),json.getDouble("Z",0));
         Size = json.getInt("Size",0);
     }
 }

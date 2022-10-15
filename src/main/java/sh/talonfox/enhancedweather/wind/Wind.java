@@ -9,7 +9,7 @@ import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.math.Vec3d;
 import sh.talonfox.enhancedweather.Enhancedweather;
 import sh.talonfox.enhancedweather.network.WindSync;
-import sh.talonfox.enhancedweather.weather.Cloud;
+import sh.talonfox.enhancedweather.weather.weatherevents.Cloud;
 
 import java.io.*;
 import java.util.Random;

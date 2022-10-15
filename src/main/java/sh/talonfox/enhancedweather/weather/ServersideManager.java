@@ -15,6 +15,7 @@ import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 import sh.talonfox.enhancedweather.Enhancedweather;
 import sh.talonfox.enhancedweather.network.UpdateStorm;
+import sh.talonfox.enhancedweather.weather.weatherevents.Cloud;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -37,12 +38,18 @@ public class ServersideManager extends Manager {
 
     @Override
     public void tick() {
-        Clouds.values().stream().forEach(Weather::tickServer);
+        Weathers.values().forEach(Weather::tickServer);
         ticks++;
+        if(EnqueuedWeather.size() > 0) {
+            EnqueuedWeather.keySet().forEach((id) -> {
+                Weathers.put(id,EnqueuedWeather.get(id));
+            });
+            EnqueuedWeather.clear();
+        }
         if (ticks % 20 == 0) {
-            if (world.getServer().getCurrentPlayerCount() == 0 && !Clouds.isEmpty()) { // To prevent weather from despawning before entering a single player world
+            if (world.getServer().getCurrentPlayerCount() == 0 && !Weathers.isEmpty()) { // To prevent weather from despawning before entering a single player world
                 if(secondsSinceNoPlayers >= 15) {
-                    Clouds.clear();
+                    Weathers.clear();
                     secondsSinceNoPlayers = 0;
                 } else {
                     secondsSinceNoPlayers += 1;
@@ -54,15 +61,15 @@ public class ServersideManager extends Manager {
                         return;
                     if((long)Math.floor(world.getTimeOfDay()/24000F) != PreviousDay) {
                         PreviousDay = (long)Math.floor(world.getTimeOfDay()/24000F);
-                        var key_array = new ArrayList<UUID>(Clouds.keySet());
+                        var key_array = new ArrayList<UUID>(Weathers.keySet());
                         for (ServerPlayerEntity i : PlayerLookup.all(world.getServer())) {
-                            if(Clouds.keySet().size() == 0)
+                            if(Weathers.keySet().size() == 0)
                                 continue;
                             Cloud cloud = null;
                             int dist = Integer.MAX_VALUE;
                             while(dist >= 1024) {
-                                cloud = (Cloud)Clouds.get(key_array.get(rand.nextInt(key_array.size())));
-                                if(Clouds.keySet().size() == 0)
+                                cloud = (Cloud) Weathers.get(key_array.get(rand.nextInt(key_array.size())));
+                                if(Weathers.keySet().size() == 0)
                                     break;
                                 if(cloud != null)
                                     dist = (int)Math.floor(new Vec3d(i.getX(),200,i.getZ()).distanceTo(cloud.Position));
@@ -70,15 +77,15 @@ public class ServersideManager extends Manager {
                             if(new Random().nextInt(30) == 0 && cloud != null) {
                                 cloud.Thundering = true;
                                 cloud.HailIntensity = 0;
-                                cloud.Supercell = false;
+                                cloud.Supercell = true;
                                 cloud.Precipitating = true;
                                 cloud.Placeholder = false;
                                 cloud.aimAtPlayer(i);
                             }
                         }
                     }
-                    for (UUID j : Clouds.keySet()) {
-                        var cloud = Clouds.get(j);
+                    for (UUID j : Weathers.keySet()) {
+                        var cloud = Weathers.get(j);
                         var col = PlayerLookup.around(world.getServer().getOverworld(), new Vec3d(cloud.Position.x, 50, cloud.Position.z), 1024.0D);
                         if (col.isEmpty()) {
                             if(cloud instanceof Cloud) {
@@ -89,11 +96,11 @@ public class ServersideManager extends Manager {
                             for (ServerPlayerEntity i : PlayerLookup.all(world.getServer())) {
                                 UpdateStorm.send(world.getServer(), j, null, i);
                             }
-                            Clouds.remove(j);
+                            Weathers.remove(j);
                             break;
                         }
                         for (ServerPlayerEntity i : col) {
-                            UpdateStorm.send(world.getServer(), j, Clouds.get(j).generateUpdate(), i);
+                            UpdateStorm.send(world.getServer(), j, Weathers.get(j).generateUpdate(), i);
                         }
                     }
                 }
@@ -133,7 +140,7 @@ public class ServersideManager extends Manager {
         if (soClose == null) {
             Cloud so = new Cloud(this,Vec3d.ofCenter(tryPos));
             UUID id = UUID.randomUUID();
-            Clouds.put(id,so);
+            Weathers.put(id,so);
             for(ServerPlayerEntity i : PlayerLookup.all(world.getServer())) {
                 UpdateStorm.send(world.getServer(), id, so.generateUpdate(), i);
             }
@@ -153,11 +160,11 @@ public class ServersideManager extends Manager {
                 PreviousDay = jsonObject.getLong("previousDay",0);
                 JsonObject clouds = jsonObject.getObject("clouds");
                 if(clouds != null) {
-                    Clouds.clear();
+                    Weathers.clear();
                     for (String i : clouds.keySet()) {
                         Cloud cloud = new Cloud(this,new Vec3d(0,0,0));
                         cloud.applySaveDataJson(Objects.requireNonNull(clouds.getObject(i)));
-                        Clouds.put(UUID.fromString(i),cloud);
+                        Weathers.put(UUID.fromString(i),cloud);
                     }
                 }
             } catch (Exception e) {
@@ -170,8 +177,8 @@ public class ServersideManager extends Manager {
     public void save(MinecraftServer server) {
         JsonObject jsonObject = new JsonObject();
         JsonObject clouds = new JsonObject();
-        for(UUID i : Clouds.keySet()) {
-            clouds.put(i.toString(),Clouds.get(i).generateSaveDataJson());
+        for(UUID i : Weathers.keySet()) {
+            clouds.put(i.toString(), Weathers.get(i).generateSaveDataJson());
         }
         jsonObject.put("previousDay",new JsonPrimitive(PreviousDay));
         jsonObject.put("clouds",clouds);

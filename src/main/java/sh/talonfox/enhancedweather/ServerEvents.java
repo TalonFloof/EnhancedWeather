@@ -1,19 +1,15 @@
 package sh.talonfox.enhancedweather;
 
-import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
-import net.fabricmc.fabric.api.networking.v1.ServerLoginConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.world.dimension.DimensionTypes;
-import sh.talonfox.enhancedweather.weather.Cloud;
+import sh.talonfox.enhancedweather.weather.weatherevents.Cloud;
 import sh.talonfox.enhancedweather.weather.ServersideManager;
 import sh.talonfox.enhancedweather.wind.Wind;
 
 import java.util.Random;
-import java.util.stream.Collectors;
 
 public class ServerEvents {
     public static void Initialize() {
@@ -45,19 +41,19 @@ public class ServerEvents {
                     Enhancedweather.LOGGER.info("World will start out with clear weather");
                 } else if(num < 66) {
                     Enhancedweather.LOGGER.info("World will start out with rainy weather");
-                    while(Enhancedweather.SERVER_WEATHER.Clouds.size() < 20) {
+                    while(Enhancedweather.SERVER_WEATHER.Weathers.size() < 20) {
                         Enhancedweather.SERVER_WEATHER.attemptCloudSpawn(handler.getPlayer(), 200);
                     }
-                    Enhancedweather.SERVER_WEATHER.Clouds.values().stream().filter(so -> so instanceof Cloud).forEach((so) -> {
+                    Enhancedweather.SERVER_WEATHER.Weathers.values().stream().filter(so -> so instanceof Cloud).forEach((so) -> {
                         ((Cloud)so).Water = 400;
                         ((Cloud)so).Precipitating = true;
                     });
                 } else {
                     Enhancedweather.LOGGER.info("World will start out with stormy weather");
-                    while(Enhancedweather.SERVER_WEATHER.Clouds.size() < 20) {
+                    while(Enhancedweather.SERVER_WEATHER.Weathers.size() < 20) {
                         Enhancedweather.SERVER_WEATHER.attemptCloudSpawn(handler.getPlayer(), 200);
                     }
-                    Enhancedweather.SERVER_WEATHER.Clouds.values().stream().filter(so -> so instanceof Cloud).forEach((so) -> {
+                    Enhancedweather.SERVER_WEATHER.Weathers.values().stream().filter(so -> so instanceof Cloud).forEach((so) -> {
                         ((Cloud)so).Water = 400;
                         ((Cloud)so).Precipitating = true;
                         ((Cloud)so).Thundering = true;

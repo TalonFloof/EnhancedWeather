@@ -6,9 +6,8 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import sh.talonfox.enhancedweather.network.UpdateStorm;
 import sh.talonfox.enhancedweather.weather.Ambience;
-import sh.talonfox.enhancedweather.weather.Cloud;
-import sh.talonfox.enhancedweather.weather.ServersideManager;
-import sh.talonfox.enhancedweather.weather.frontal.SquallLine;
+import sh.talonfox.enhancedweather.weather.weatherevents.Cloud;
+import sh.talonfox.enhancedweather.weather.weatherevents.SquallLine;
 
 import java.util.UUID;
 
@@ -24,7 +23,7 @@ public class CommandsRegister {
                                 cloud.Water = Enhancedweather.CONFIG.Weather_MinimumWaterToPrecipitate*2;
                                 cloud.Precipitating = true;
                                 UUID id = UUID.randomUUID();
-                                Enhancedweather.SERVER_WEATHER.Clouds.put(id,cloud);
+                                Enhancedweather.SERVER_WEATHER.Weathers.put(id,cloud);
                                 for (ServerPlayerEntity j : PlayerLookup.all(context.getSource().getServer())) {
                                     UpdateStorm.send(context.getSource().getServer(), id, null, j);
                                 }
@@ -38,7 +37,7 @@ public class CommandsRegister {
                                         cloud.Water = Enhancedweather.CONFIG.Weather_MinimumWaterToPrecipitate*2;
                                         cloud.Precipitating = true;
                                         UUID id = UUID.randomUUID();
-                                        Enhancedweather.SERVER_WEATHER.Clouds.put(id,cloud);
+                                        Enhancedweather.SERVER_WEATHER.Weathers.put(id,cloud);
                                         for (ServerPlayerEntity j : PlayerLookup.all(context.getSource().getServer())) {
                                             UpdateStorm.send(context.getSource().getServer(), id, null, j);
                                         }
@@ -53,9 +52,9 @@ public class CommandsRegister {
                                         cloud.Water = Enhancedweather.CONFIG.Weather_MinimumWaterToPrecipitate*2;
                                         cloud.Precipitating = true;
                                         UUID id = UUID.randomUUID();
-                                        Enhancedweather.SERVER_WEATHER.Clouds.put(id,cloud);
+                                        Enhancedweather.SERVER_WEATHER.Weathers.put(id,cloud);
                                         for (ServerPlayerEntity j : PlayerLookup.all(context.getSource().getServer())) {
-                                            UpdateStorm.send(context.getSource().getServer(), id, null, j);
+                                            UpdateStorm.send(context.getSource().getServer(), id, cloud.generateUpdate(), j);
                                         }
                                         context.getSource().sendMessage(Text.literal("Summoning Supercell"));
                                         return 1;
@@ -63,17 +62,23 @@ public class CommandsRegister {
                             )
                             .then(literal("squallLine").executes(context -> {
                                     SquallLine sl = new SquallLine(Enhancedweather.SERVER_WEATHER,context.getSource().getPosition().multiply(1,0,1).add(0,200,0));
+                                    UUID id = UUID.randomUUID();
+                                    Enhancedweather.SERVER_WEATHER.Weathers.put(id,sl);
+                                    for (ServerPlayerEntity j : PlayerLookup.all(context.getSource().getServer())) {
+                                        UpdateStorm.send(context.getSource().getServer(), id, sl.generateUpdate(), j);
+                                    }
+                                    context.getSource().sendMessage(Text.literal("Summoning Squall Line"));
                                     return 1;
                                 })
                             )
                     )
                     .then(literal("killallOverworld").executes(context -> {
-                        for (UUID i : Enhancedweather.SERVER_WEATHER.Clouds.keySet()) {
+                        for (UUID i : Enhancedweather.SERVER_WEATHER.Weathers.keySet()) {
                             for (ServerPlayerEntity j : PlayerLookup.all(context.getSource().getServer())) {
                                 UpdateStorm.send(context.getSource().getServer(), i, null, j);
                             }
                         }
-                        Enhancedweather.SERVER_WEATHER.Clouds.clear();
+                        Enhancedweather.SERVER_WEATHER.Weathers.clear();
                         Ambience.HighWindExists = false;
                         context.getSource().sendMessage(Text.literal("Clearing all Weather"));
                         return 1;

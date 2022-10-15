@@ -12,7 +12,7 @@ public class ParticleRegister {
     public static final DefaultParticleType CLOUD = FabricParticleTypes.simple(true);
     public static final DefaultParticleType HAIL = FabricParticleTypes.simple(true);
     public static void Initialize() {
-        //Registry.register(Registry.PARTICLE_TYPE, new Identifier("enhancedweather", "cloud"), CLOUD);
+        Registry.register(Registry.PARTICLE_TYPE, new Identifier("enhancedweather", "cloud"), CLOUD);
         Registry.register(Registry.PARTICLE_TYPE, new Identifier("enhancedweather", "hail"), HAIL);
     }
     public static void InitializeClient() {

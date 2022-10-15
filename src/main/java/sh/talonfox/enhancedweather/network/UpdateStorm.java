@@ -13,7 +13,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 import sh.talonfox.enhancedweather.Enhancedweather;
 import sh.talonfox.enhancedweather.common.particles.CloudParticle;
-import sh.talonfox.enhancedweather.weather.Cloud;
+import sh.talonfox.enhancedweather.weather.weatherevents.Cloud;
 
 import java.util.UUID;
 
@@ -39,21 +39,21 @@ public class UpdateStorm {
         NbtCompound data = packetByteBuf.readNbt();
         client.executeSync(() -> {
             if(data == null) {
-                var storm = Enhancedweather.CLIENT_WEATHER.Clouds.get(id);
+                var storm = Enhancedweather.CLIENT_WEATHER.Weathers.get(id);
                 if(storm != null) {
                     if(storm instanceof Cloud) {
                         ((Cloud) storm).ParticlesCloud.forEach(i -> ((CloudParticle)i).setAge(i.getMaxAge()-50));
                         ((Cloud) storm).ParticlesFunnel.forEach(i -> ((CloudParticle)i).setAge(i.getMaxAge()-50));
                     }
-                    Enhancedweather.CLIENT_WEATHER.Clouds.remove(id);
+                    Enhancedweather.CLIENT_WEATHER.Weathers.remove(id);
                 }
             } else {
-                if(Enhancedweather.CLIENT_WEATHER.Clouds.containsKey(id)) {
-                    Enhancedweather.CLIENT_WEATHER.Clouds.get(id).applyUpdate(data);
+                if(Enhancedweather.CLIENT_WEATHER.Weathers.containsKey(id)) {
+                    Enhancedweather.CLIENT_WEATHER.Weathers.get(id).applyUpdate(data);
                 } else {
                     Cloud c = new Cloud(Enhancedweather.CLIENT_WEATHER,new Vec3d(0,0,0));
                     c.applyUpdate(data);
-                    Enhancedweather.CLIENT_WEATHER.Clouds.put(id,c);
+                    Enhancedweather.CLIENT_WEATHER.Weathers.put(id,c);
                 }
             }
         });
