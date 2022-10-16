@@ -9,6 +9,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
@@ -153,18 +154,18 @@ public class ServersideManager extends Manager {
     }
 
     public void load(MinecraftServer server) {
-        File file = new File(server.getSavePath(WorldSavePath.ROOT).toAbsolutePath() + "/enhancedweather/Clouds_DIM0.json5");
+        File file = new File(server.getSavePath(WorldSavePath.ROOT).toAbsolutePath() + "/enhancedweather/Weather_DIM0.json5");
         if(file.exists() && file.isFile()) {
             try {
                 JsonObject jsonObject = Jankson.builder().build().load(file);
                 PreviousDay = jsonObject.getLong("previousDay",0);
-                JsonObject clouds = jsonObject.getObject("clouds");
-                if(clouds != null) {
+                JsonObject storms = jsonObject.getObject("storms");
+                if(storms != null) {
                     Weathers.clear();
-                    for (String i : clouds.keySet()) {
-                        Cloud cloud = new Cloud(this,new Vec3d(0,0,0));
-                        cloud.applySaveDataJson(Objects.requireNonNull(clouds.getObject(i)));
-                        Weathers.put(UUID.fromString(i),cloud);
+                    for (String i : storms.keySet()) {
+                        Weather storm = Weather.constructStorm(new Identifier(((JsonPrimitive) Objects.requireNonNull(Objects.requireNonNull(storms.getObject(i)).get("Identifier"))).asString()),this,new Vec3d(0,0,0));
+                        storm.applySaveDataJson(Objects.requireNonNull(storms.getObject(i)));
+                        Weathers.put(UUID.fromString(i),storm);
                     }
                 }
             } catch (Exception e) {
@@ -176,14 +177,15 @@ public class ServersideManager extends Manager {
 
     public void save(MinecraftServer server) {
         JsonObject jsonObject = new JsonObject();
-        JsonObject clouds = new JsonObject();
+        JsonObject storms = new JsonObject();
         for(UUID i : Weathers.keySet()) {
-            clouds.put(i.toString(), Weathers.get(i).generateSaveDataJson());
+            storms.put(i.toString(), Weathers.get(i).generateSaveDataJson());
         }
+        jsonObject.put("DataFormat",new JsonPrimitive(Enhancedweather.WEATHER_DATA_VERSION));
         jsonObject.put("previousDay",new JsonPrimitive(PreviousDay));
-        jsonObject.put("clouds",clouds);
+        jsonObject.put("storms",storms);
         String data = jsonObject.toJson(true,true);
-        File file = new File(server.getSavePath(WorldSavePath.ROOT).toAbsolutePath() + "/enhancedweather/Clouds_DIM0.json5");
+        File file = new File(server.getSavePath(WorldSavePath.ROOT).toAbsolutePath() + "/enhancedweather/Weather_DIM0.json5");
         try {
             new File(file.getParent()).mkdir();
             file.delete();

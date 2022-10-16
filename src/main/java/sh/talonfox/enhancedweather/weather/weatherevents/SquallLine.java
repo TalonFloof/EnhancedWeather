@@ -68,6 +68,7 @@ public class SquallLine extends Weather {
             storm.Precipitating = true;
             storm.SquallLineControlled = true;
             storm.Size = 300;
+            storm.Angle = MovementAngle;
             HostManager.enqueueWeatherObject(uuid,storm);
             Storms.put(Storms.keySet().size(),uuid);
         }

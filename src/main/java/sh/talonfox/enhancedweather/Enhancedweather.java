@@ -24,7 +24,7 @@ public class Enhancedweather implements ModInitializer {
     public static EnhancedWeatherConfig CONFIG;
     public static final Logger LOGGER = LoggerFactory.getLogger("enhancedweather");
 
-    public static final long WEATHER_DATA_VERSION = 202241001;
+    public static final long WEATHER_DATA_VERSION = 202242001;
 
     @Override
     public void onInitialize() {
