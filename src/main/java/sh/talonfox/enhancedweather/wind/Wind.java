@@ -72,10 +72,10 @@ public class Wind {
             AngleGlobal += 360;
         if(AngleGlobal > 180)
             AngleGlobal -= 360;
-        if (SpeedGlobal < 0.00001F)
-            SpeedGlobal = 0.00001F;
-        if (SpeedGlobal > 1F)
-            SpeedGlobal = 1F;
+        if (SpeedGlobal < Math.max(0.00001F,((float)Enhancedweather.CONFIG.Wind_MinimumSpeed)/100F))
+            SpeedGlobal = Math.max(0.00001F,((float)Enhancedweather.CONFIG.Wind_MinimumSpeed)/100F);
+        if (SpeedGlobal > Math.max(0.00001F,((float)Enhancedweather.CONFIG.Wind_MaximumSpeed)/100F))
+            SpeedGlobal = Math.max(0.00001F,((float)Enhancedweather.CONFIG.Wind_MaximumSpeed)/100F);
         if((server.getTicks() % 40) == 0)
             WindSync.send(server, dimid);
     }

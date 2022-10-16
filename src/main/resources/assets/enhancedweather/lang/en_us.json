@@ -10,6 +10,8 @@
     "text.autoconfig.enhancedweather.option.Client_ParticleWind": "Particles move with Wind",
     "text.autoconfig.enhancedweather.option.Client_CloudParticleRenderDistance": "Cloud Particle Render Distance",
 
+    "text.autoconfig.enhancedweather.option.Wind_MinimumSpeed": "Minimum Global Wind Speed",
+    "text.autoconfig.enhancedweather.option.Wind_MaximumSpeed": "Maximum Global Wind Speed",
     "text.autoconfig.enhancedweather.option.Wind_LowWindStartChance": "Chance of Low Wind Event Triggering",
     "text.autoconfig.enhancedweather.option.Wind_HighWindStartChance": "Chance of High Wind Event Triggering",
     "text.autoconfig.enhancedweather.option.Wind_LowWindDurationBase": "Base Duration of Low Wind Event",

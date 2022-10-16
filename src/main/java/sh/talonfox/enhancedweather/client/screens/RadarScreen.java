@@ -6,6 +6,8 @@ import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 
 public class RadarScreen extends Screen {
+    protected long ticks = 0;
+
     public RadarScreen() {
         super(Text.literal("Radar Screen"));
     }
@@ -24,5 +26,11 @@ public class RadarScreen extends Screen {
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        ticks += 1;
     }
 }
