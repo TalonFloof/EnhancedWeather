@@ -154,10 +154,14 @@ public class ServersideManager extends Manager {
     }
 
     public void load(MinecraftServer server) {
+        new File(server.getSavePath(WorldSavePath.ROOT).toAbsolutePath() + "/enhancedweather/Clouds_DIM0.json5").delete();
         File file = new File(server.getSavePath(WorldSavePath.ROOT).toAbsolutePath() + "/enhancedweather/Weather_DIM0.json5");
         if(file.exists() && file.isFile()) {
             try {
                 JsonObject jsonObject = Jankson.builder().build().load(file);
+                if(jsonObject.getLong("DataFormat",0L) != Enhancedweather.WEATHER_DATA_VERSION) {
+                    return;
+                }
                 PreviousDay = jsonObject.getLong("previousDay",0);
                 JsonObject storms = jsonObject.getObject("storms");
                 if(storms != null) {

@@ -6,14 +6,15 @@
   "mixins": [
     "MixinLightningEntity",
     "MixinWorld",
+    "server.MixinEntityDetectRain",
+    "server.MixinEntityDetectStorm",
     "server.MixinLevelProperties",
     "server.MixinServerWorld"
   ],
   "client": [
     "MixinWorld",
     "client.MixinBackgroundRenderer",
-    "client.MixinParticle",
-    "client.MixinWorldEntry"
+    "client.MixinParticle"
   ],
   "injectors": {
     "defaultRequire": 1

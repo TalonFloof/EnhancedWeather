@@ -69,6 +69,9 @@ public class SquallLine extends Weather {
             storm.SquallLineControlled = true;
             storm.Size = 300;
             storm.Angle = MovementAngle;
+            if(Intensity == 0 && Storms.size() % 2 == 1) {
+                storm.Placeholder = true;
+            }
             HostManager.enqueueWeatherObject(uuid,storm);
             Storms.put(Storms.keySet().size(),uuid);
         }
@@ -77,12 +80,15 @@ public class SquallLine extends Weather {
             for(int i : Storms.keySet()) {
                 if(HostManager.Weathers.containsKey(Storms.get(i))) {
                     HostManager.Weathers.get(Storms.get(i)).Position = calculateCellPosition(i);
+                    if(Intensity == 1 && i % 2 == 1) {
+                        ((Cloud)HostManager.Weathers.get(Storms.get(i))).Placeholder = false;
+                    }
                 }
             }
         }
         double vecX = -Math.sin(Math.toRadians(MovementAngle));
         double vecZ = Math.cos(Math.toRadians(MovementAngle));
-        Vec3d motion = new Vec3d(vecX * (0.2F * 0.2F), 0, vecZ * (0.2F * 0.2F));
+        Vec3d motion = new Vec3d((vecX * (0.2F * 0.2F))/2, 0, (vecZ * (0.2F * 0.2F))/2);
         Position = Position.add(motion);
     }
 
