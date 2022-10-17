@@ -21,10 +21,6 @@ public class MixinServerWorld {
     private boolean isThundering(ServerWorld instance) {
         return true;
     }
-    @Redirect(method = "tickChunk", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/biome/Biome;canSetSnow(Lnet/minecraft/world/WorldView;Lnet/minecraft/util/math/BlockPos;)Z"))
-    private boolean isSnowingAt(Biome instance, WorldView world, BlockPos pos) {
-        return false;
-    }
     @Redirect(method = "tickChunk", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerWorld;hasRain(Lnet/minecraft/util/math/BlockPos;)Z"))
     private boolean canSpawnLightning(ServerWorld instance, BlockPos blockPos) {
         Biome biome = instance.getBiome(blockPos).value();

@@ -27,12 +27,12 @@
     "text.autoconfig.enhancedweather.option.Weather_WaterCollectionFromNothingChance": "Chance of Cloud Water Collection from Nothing",
     "text.autoconfig.enhancedweather.option.Weather_WaterCollectionFromBiomeChance": "Chance of Cloud Water Collection from Biome",
     "text.autoconfig.enhancedweather.option.Weather_PrecipitationChance": "Chance of Cloud Precipitation",
+    "text.autoconfig.enhancedweather.option.Weather_SupercellChance": "Chance of Supercell Spawning",
+    "text.autoconfig.enhancedweather.option.Weather_SquallLineChance": "Chance of Squall Line Spawning",
 
-    "block.enhancedweather.radar": "Doppler Radar",
+    "block.enhancedweather.radar_tier1": "Tier 1 Doppler Radar",
+    "block.enhancedweather.radar_tier2": "Tier 2 Doppler Radar",
+    "block.enhancedweather.radar_tier3": "Tier 3 Doppler Radar",
     "itemGroup.enhancedweather.enhancedweather_itemgroup": "Enhanced Weather",
-    "item.enhancedweather.itemgroup_icon": "§r§lIt's a secret to everybody.§r",
-
-    "text.enhancedweather.outdated_warning.header": "WARNING",
-    "text.enhancedweather.outdated_warning.line1": "This world uses an outdated weather data format.",
-    "text.enhancedweather.outdated_warning.line2": "If you proceed, all weather data will be deleted."
+    "item.enhancedweather.itemgroup_icon": "§r§lIt's a secret to everybody.§r"
 }

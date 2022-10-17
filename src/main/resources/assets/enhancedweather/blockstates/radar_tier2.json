@@ -1,0 +1,5 @@
+{
+  "variants": {
+    "": { "model": "enhancedweather:block/radar_tier2" }
+  }
+}

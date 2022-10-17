@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import sh.talonfox.enhancedweather.Enhancedweather;
 
-@Mixin(targets = {"net.minecraft.entity.passive.FoxEntity","net.minecraft.entity.passive.FoxEntity$AvoidDaylightGoal","net.minecraft.entity.passive.PandaEntity"})
+@Mixin(targets = {"net.minecraft.entity.passive.FoxEntity","net.minecraft.entity.passive.PandaEntity"})
 public class MixinEntityDetectStorm {
     @Redirect(method = "*", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;isThundering()Z"))
     public boolean localizeIsThundering(World world) {

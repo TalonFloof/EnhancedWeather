@@ -17,6 +17,7 @@ import net.minecraft.world.World;
 import sh.talonfox.enhancedweather.Enhancedweather;
 import sh.talonfox.enhancedweather.network.UpdateStorm;
 import sh.talonfox.enhancedweather.weather.weatherevents.Cloud;
+import sh.talonfox.enhancedweather.weather.weatherevents.SquallLine;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -62,26 +63,41 @@ public class ServersideManager extends Manager {
                         return;
                     if((long)Math.floor(world.getTimeOfDay()/24000F) != PreviousDay) {
                         PreviousDay = (long)Math.floor(world.getTimeOfDay()/24000F);
-                        var key_array = new ArrayList<UUID>(Weathers.keySet());
-                        for (ServerPlayerEntity i : PlayerLookup.all(world.getServer())) {
-                            if(Weathers.keySet().size() == 0)
-                                continue;
-                            Cloud cloud = null;
-                            int dist = Integer.MAX_VALUE;
-                            while(dist >= 1024) {
-                                cloud = (Cloud) Weathers.get(key_array.get(rand.nextInt(key_array.size())));
-                                if(Weathers.keySet().size() == 0)
-                                    break;
-                                if(cloud != null)
-                                    dist = (int)Math.floor(new Vec3d(i.getX(),200,i.getZ()).distanceTo(cloud.Position));
+                        if(new Random().nextInt(Enhancedweather.CONFIG.Weather_SquallLineChance) == 0) {
+                            var player = world.getRandomAlivePlayer();
+                            var squallLinePos = player.getPos().multiply(1,0,1).add(rand.nextInt(2048)-1024,200,rand.nextInt(2048)-1024);
+                            SquallLine so = new SquallLine(this,Vec3d.ofCenter(new Vec3i(squallLinePos.getX(),squallLinePos.getY(),squallLinePos.getZ())));
+                            UUID id = UUID.randomUUID();
+                            Weathers.put(id,so);
+                            for(ServerPlayerEntity i : PlayerLookup.all(world.getServer())) {
+                                UpdateStorm.send(world.getServer(), id, so.generateUpdate(), i);
                             }
-                            if(new Random().nextInt(30) == 0 && cloud != null) {
-                                cloud.Thundering = true;
-                                cloud.HailIntensity = 0;
-                                cloud.Supercell = true;
-                                cloud.Precipitating = true;
-                                cloud.Placeholder = false;
-                                cloud.aimAtPlayer(i);
+                        } else {
+                            var key_array = new ArrayList<UUID>(Weathers.keySet());
+                            for (ServerPlayerEntity i : PlayerLookup.all(world.getServer())) {
+                                if (Weathers.keySet().size() == 0)
+                                    continue;
+                                Cloud cloud = null;
+                                int dist = Integer.MAX_VALUE;
+                                while (dist >= 1024) {
+                                    var storm = Weathers.get(key_array.get(rand.nextInt(key_array.size())));
+                                    if(!(storm instanceof Cloud))
+                                        continue;
+                                    cloud = (Cloud)storm;
+                                    if (Weathers.keySet().size() == 0)
+                                        break;
+                                    dist = (int) Math.floor(new Vec3d(i.getX(), 200, i.getZ()).distanceTo(cloud.Position));
+                                }
+                                if (new Random().nextInt(Enhancedweather.CONFIG.Weather_SupercellChance) == 0) {
+                                    if(cloud.SquallLineControlled)
+                                        continue;
+                                    cloud.Thundering = true;
+                                    cloud.HailIntensity = 0;
+                                    cloud.Supercell = true;
+                                    cloud.Precipitating = true;
+                                    cloud.Placeholder = false;
+                                    cloud.aimAtPlayer(i);
+                                }
                             }
                         }
                     }

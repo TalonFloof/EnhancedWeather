@@ -53,6 +53,10 @@ public class EnhancedWeatherConfig implements ConfigData {
     public int Weather_WaterCollectionFromBiomeChance = 15;
     @ConfigEntry.Category("weather")
     public int Weather_PrecipitationChance = 50;
+    @ConfigEntry.Category("weather")
+    public int Weather_SupercellChance = 15;
+    @ConfigEntry.Category("weather")
+    public int Weather_SquallLineChance = 15;
 
     public static Screen buildScreen(Screen parent) {
         return AutoConfig.getConfigScreen(EnhancedWeatherConfig.class, parent).get();

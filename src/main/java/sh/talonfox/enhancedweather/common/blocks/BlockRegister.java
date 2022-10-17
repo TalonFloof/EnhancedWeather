@@ -13,12 +13,16 @@ import net.minecraft.util.registry.Registry;
 import sh.talonfox.enhancedweather.common.ItemGroupRegister;
 
 public class BlockRegister {
-    public static final Block RADAR_BLOCK = new RadarBlock(FabricBlockSettings.of(Material.METAL).strength(2.0f).sounds(BlockSoundGroup.NETHERITE));
-    public static BlockEntityType<RadarBlockEntity> RADAR_BLOCK_ENTITY;
+    public static final Block RADAR_TIER1_BLOCK = new RadarTier1Block(FabricBlockSettings.of(Material.METAL).strength(2.0f).sounds(BlockSoundGroup.NETHERITE));
+    public static final Block RADAR_TIER2_BLOCK = new RadarTier2Block(FabricBlockSettings.of(Material.METAL).strength(2.0f).sounds(BlockSoundGroup.NETHERITE));
+    public static final Block RADAR_TIER3_BLOCK = new RadarTier3Block(FabricBlockSettings.of(Material.METAL).strength(2.0f).sounds(BlockSoundGroup.NETHERITE));
 
     public static void Initialize() {
-        Registry.register(Registry.BLOCK, new Identifier("enhancedweather","radar"), RADAR_BLOCK);
-        Registry.register(Registry.ITEM, new Identifier("enhancedweather","radar"), new BlockItem(RADAR_BLOCK, new Item.Settings().group(ItemGroupRegister.ITEM_GROUP)));
-        RADAR_BLOCK_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, new Identifier("enhancedweather","radar"), FabricBlockEntityTypeBuilder.create(RadarBlockEntity::new, RADAR_BLOCK).build(null));
+        Registry.register(Registry.BLOCK, new Identifier("enhancedweather","radar_tier1"), RADAR_TIER1_BLOCK);
+        Registry.register(Registry.ITEM, new Identifier("enhancedweather","radar_tier1"), new BlockItem(RADAR_TIER1_BLOCK, new Item.Settings().group(ItemGroupRegister.ITEM_GROUP)));
+        Registry.register(Registry.BLOCK, new Identifier("enhancedweather","radar_tier2"), RADAR_TIER2_BLOCK);
+        Registry.register(Registry.ITEM, new Identifier("enhancedweather","radar_tier2"), new BlockItem(RADAR_TIER2_BLOCK, new Item.Settings().group(ItemGroupRegister.ITEM_GROUP)));
+        Registry.register(Registry.BLOCK, new Identifier("enhancedweather","radar_tier3"), RADAR_TIER3_BLOCK);
+        Registry.register(Registry.ITEM, new Identifier("enhancedweather","radar_tier3"), new BlockItem(RADAR_TIER3_BLOCK, new Item.Settings().group(ItemGroupRegister.ITEM_GROUP)));
     }
 }

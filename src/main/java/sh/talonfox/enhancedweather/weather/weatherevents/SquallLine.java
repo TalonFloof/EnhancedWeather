@@ -93,7 +93,7 @@ public class SquallLine extends Weather {
     }
 
     public Vec3d calculateCellPosition(int index) {
-        return new Vec3d(-Math.sin(Math.toRadians(MovementAngle-90)),0, Math.cos(Math.toRadians(MovementAngle-90))).multiply((150*index)-75-(150*3)).add(Position);
+        return new Vec3d(-Math.sin(Math.toRadians(MovementAngle-90)),0, Math.cos(Math.toRadians(MovementAngle-90))).multiply((300*index)-150-(300*3)).add(Position);
     }
 
     @Override

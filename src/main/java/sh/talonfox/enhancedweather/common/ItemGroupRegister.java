@@ -20,7 +20,9 @@ public class ItemGroupRegister {
             new Identifier("enhancedweather", "enhancedweather_itemgroup"))
             .icon(() -> new ItemStack(ITEMGROUP_ICON))
             .appendItems(stacks -> {
-                    stacks.add(new ItemStack(BlockRegister.RADAR_BLOCK));
+                stacks.add(new ItemStack(BlockRegister.RADAR_TIER1_BLOCK));
+                stacks.add(new ItemStack(BlockRegister.RADAR_TIER2_BLOCK));
+                stacks.add(new ItemStack(BlockRegister.RADAR_TIER3_BLOCK));
             })
             .build();
 }
