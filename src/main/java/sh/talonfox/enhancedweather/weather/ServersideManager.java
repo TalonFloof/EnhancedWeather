@@ -122,14 +122,13 @@ public class ServersideManager extends Manager {
                     }
                 }
             }
-            // Temporary
-            /*for (ServerPlayerEntity ent : PlayerLookup.all(Objects.requireNonNull(getWorld().getServer()))) {
-                if (Clouds.size() < 20 * getWorld().getServer().getCurrentPlayerCount()) {
+            for (ServerPlayerEntity ent : PlayerLookup.all(Objects.requireNonNull(getWorld().getServer()))) {
+                if (Weathers.size() < 20 * getWorld().getServer().getCurrentPlayerCount()) {
                     if (rand.nextInt(5) == 0) {
                         attemptCloudSpawn(ent, 200);
                     }
                 }
-            }*/
+            }
         }
     }
 

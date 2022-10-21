@@ -34,6 +34,7 @@ public class Cloud extends Weather {
     public boolean Precipitating = false;
     public boolean Thundering = false;
     public int HailIntensity = 0;
+    public int WindIntensity = 0;
     public boolean Supercell = false;
     public boolean SquallLineControlled = false;
     public int TornadoStage;
@@ -633,6 +634,7 @@ public class Cloud extends Weather {
         data.putInt("Water",Water);
         data.putInt("TornadoStage",TornadoStage);
         data.putInt("HailIntensity",HailIntensity);
+        data.putInt("WindIntensity",WindIntensity);
         data.putBoolean("Precipitating",Precipitating);
         data.putBoolean("Thundering",Thundering);
         data.putBoolean("Supercell", Supercell);
@@ -649,6 +651,7 @@ public class Cloud extends Weather {
         Water = data.getInt("Water");
         TornadoStage = data.getInt("TornadoStage");
         HailIntensity = data.getInt("HailIntensity");
+        WindIntensity = data.getInt("WindIntensity");
         Precipitating = data.getBoolean("Precipitating");
         Thundering = data.getBoolean("Thundering");
         Supercell = data.getBoolean("Supercell");
@@ -663,6 +666,7 @@ public class Cloud extends Weather {
         json.put("Layer",new JsonPrimitive(Layer));
         json.put("Water",new JsonPrimitive(Water));
         json.put("HailIntensity",new JsonPrimitive(HailIntensity));
+        json.put("WindIntensity",new JsonPrimitive(WindIntensity));
         json.put("TornadoStage",new JsonPrimitive(TornadoStage));
         json.put("Precipitating",new JsonPrimitive(Precipitating));
         json.put("Thundering",new JsonPrimitive(Thundering));
@@ -680,6 +684,7 @@ public class Cloud extends Weather {
         Layer = json.getInt("Layer",0);
         Water = json.getInt("Water",0);
         HailIntensity = json.getInt("HailIntensity",0);
+        WindIntensity = json.getInt("WindIntensity",0);
         TornadoStage = json.getInt("TorandoStage",Integer.MIN_VALUE);
         Precipitating = json.getBoolean("Precipitating",false);
         Thundering = json.getBoolean("Thundering",false);

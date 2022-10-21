@@ -24,6 +24,7 @@ public class SquallLine extends Weather {
      */
     public int Intensity = 0;
     public int MaxIntensity = 0;
+    public float IntensityProgression = 0F;
     public boolean PeakedIntensity = false;
     public float MovementAngle;
     protected int ticks;
@@ -77,11 +78,23 @@ public class SquallLine extends Weather {
         }
         ticks++;
         if(ticks % 60 == 0) {
+            if(Intensity != MaxIntensity) {
+                if(Intensity >= MaxIntensity) {
+                    PeakedIntensity = true;
+                }
+                IntensityProgression += 0.02F;
+                if (IntensityProgression >= 0.6F) {
+                    Intensity += 1;
+                    IntensityProgression = 0;
+                }
+            }
             for(int i : Storms.keySet()) {
                 if(HostManager.Weathers.containsKey(Storms.get(i))) {
                     HostManager.Weathers.get(Storms.get(i)).Position = calculateCellPosition(i);
-                    if(Intensity == 1 && i % 2 == 1) {
+                    if(Intensity >= 1 && i % 2 == 1) {
                         ((Cloud)HostManager.Weathers.get(Storms.get(i))).Placeholder = false;
+                    } else if(Intensity == 0 && i % 2 == 1) {
+                        ((Cloud)HostManager.Weathers.get(Storms.get(i))).Placeholder = true;
                     }
                 }
             }
@@ -101,6 +114,7 @@ public class SquallLine extends Weather {
         NbtCompound data = super.generateUpdate();
         data.putInt("Intensity",Intensity);
         data.putInt("MaxIntensity",MaxIntensity);
+        data.putFloat("IntensityProgression",IntensityProgression);
         data.putBoolean("PeakedIntensity",PeakedIntensity);
         data.putFloat("MovementAngle",MovementAngle);
         return data;
@@ -111,6 +125,7 @@ public class SquallLine extends Weather {
         super.applyUpdate(data);
         Intensity = data.getInt("Intensity");
         MaxIntensity = data.getInt("MaxIntensity");
+        IntensityProgression = data.getFloat("IntensityProgression");
         PeakedIntensity = data.getBoolean("PeakedIntensity");
         MovementAngle = data.getFloat("MovementAngle");
     }
@@ -120,6 +135,7 @@ public class SquallLine extends Weather {
         JsonObject json = super.generateSaveDataJson();
         json.put("Intensity", new JsonPrimitive(Intensity));
         json.put("MaxIntensity", new JsonPrimitive(MaxIntensity));
+        json.put("IntensityProgression",new JsonPrimitive(IntensityProgression));
         json.put("PeakedIntensity",new JsonPrimitive(PeakedIntensity));
         json.put("MovementAngle",new JsonPrimitive(MovementAngle));
         var storms = new JsonObject();
@@ -135,6 +151,7 @@ public class SquallLine extends Weather {
         super.applySaveDataJson(json);
         Intensity = json.getInt("Intensity",0);
         MaxIntensity = json.getInt("MaxIntensity",0);
+        IntensityProgression = json.getFloat("IntensityProgression",0);
         PeakedIntensity = json.getBoolean("PeakedIntensity",false);
         MovementAngle = json.getFloat("MovementAngle",0);
         var storms = json.getObject("Storms");

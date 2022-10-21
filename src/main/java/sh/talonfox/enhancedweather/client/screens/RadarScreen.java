@@ -23,6 +23,10 @@ public class RadarScreen extends Screen {
     protected static final Identifier DOPPLER_RADAR_OVERLAY = new Identifier("enhancedweather","textures/gui/doppler_radar_circle.png");
     protected static final Identifier RAIN_INDICATOR = new Identifier("enhancedweather","textures/gui/rain_symbol.png");
     protected static final Identifier LIGHTNING_INDICATOR = new Identifier("enhancedweather","textures/gui/lightning_symbol.png");
+    protected static final Identifier LOW_HAIL_INDICATOR = new Identifier("enhancedweather","textures/gui/low_hail_symbol.png");
+    protected static final Identifier HIGH_HAIL_INDICATOR = new Identifier("enhancedweather","textures/gui/high_hail_symbol.png");
+    protected static final Identifier SUPERCELL_INDICATOR = new Identifier("enhancedweather","textures/gui/supercell_symbol.png");
+    protected static final Identifier WIND_INDICATOR = new Identifier("enhancedweather","textures/gui/wind_symbol.png");
     protected static HashMap<UUID, Long> WeatherListTiming = new HashMap<>();
     protected static HashMap<UUID, JsonObject> WeatherListData = new HashMap<>();
     protected static BlockPos Pos = null;
@@ -108,7 +112,9 @@ public class RadarScreen extends Screen {
             switch (((JsonPrimitive) Objects.requireNonNull(data.get("Identifier"))).asString()) {
                 case "enhancedweather:cloud" -> {
                     if(data.getBoolean("Precipitating",false) && !data.getBoolean("Placeholder",false)) {
-                        var icon = data.getBoolean("Thundering", false) ? LIGHTNING_INDICATOR : RAIN_INDICATOR;
+                        var icon = data.getInt("HailIntensity",0) == 2 ? HIGH_HAIL_INDICATOR : (data.getInt("HailIntensity",0) == 1 ? LOW_HAIL_INDICATOR : (data.getBoolean("Thundering", false) ? LIGHTNING_INDICATOR : RAIN_INDICATOR));
+                        //⚠
+                        var wind_icon = data.getBoolean("Supercell",false) ? SUPERCELL_INDICATOR : (data.getInt("WindIntensity",0) > 0 ? WIND_INDICATOR : null);
                         RenderSystem.setShader(GameRenderer::getPositionTexShader);
                         RenderSystem.enableBlend();
                         RenderSystem.setShaderTexture(0, icon);
@@ -117,6 +123,10 @@ public class RadarScreen extends Screen {
                         var finalX = (int)(relativeX+(width/2));
                         var finalZ = (int)(relativeZ+(height/2));
                         drawTexture(matrices,finalX,finalZ,16,16,0F,0F,16,16,16,16);
+                        if(wind_icon != null) {
+                            RenderSystem.setShaderTexture(0, wind_icon);
+                            drawTexture(matrices, finalX, finalZ, 16, 16, 0F, 0F, 16, 16, 16, 16);
+                        }
                     }
                 }
                 case "enhancedweather:squall_line" -> {
