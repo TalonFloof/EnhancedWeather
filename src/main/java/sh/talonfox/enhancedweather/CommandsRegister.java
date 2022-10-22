@@ -1,5 +1,6 @@
 package sh.talonfox.enhancedweather;
 
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -31,11 +32,20 @@ public class CommandsRegister {
                                 return 1;
                                     })
                             )
-                            .then(literal("thunder").executes(context -> {
+                            .then(literal("thunder")
+                                    .then(argument("hailIntensity", IntegerArgumentType.integer(0,2))
+                                    .then(argument("maxHailIntensity", IntegerArgumentType.integer(-1,2))
+                                    .then(argument("windIntensity", IntegerArgumentType.integer(0,3))
+                                    .then(argument("maxWindIntensity", IntegerArgumentType.integer(-1,3)).executes(context -> {
                                         Cloud cloud = new Cloud(Enhancedweather.SERVER_WEATHER,context.getSource().getPosition().multiply(1,0,1).add(0,200,0));
                                         cloud.Thundering = true;
                                         cloud.Water = Enhancedweather.CONFIG.Weather_MinimumWaterToPrecipitate*2;
                                         cloud.Precipitating = true;
+                                        cloud.HailIntensity = context.getArgument("hailIntensity",Integer.class);
+                                        if(context.getArgument("maxHailIntensity",Integer.class) != -1) {
+                                            cloud.MaxHailIntensity = Math.max(cloud.HailIntensity,context.getArgument("maxHailIntensity",Integer.class));
+                                        }
+                                        cloud.WindIntensity = context.getArgument("windIntensity",Integer.class);
                                         UUID id = UUID.randomUUID();
                                         Enhancedweather.SERVER_WEATHER.Weathers.put(id,cloud);
                                         for (ServerPlayerEntity j : PlayerLookup.all(context.getSource().getServer())) {
@@ -44,8 +54,9 @@ public class CommandsRegister {
                                         context.getSource().sendMessage(Text.literal("Summoning Thunder Storm"));
                                         return 1;
                                     })
-                            )
-                            .then(literal("supercell").executes(context -> {
+                            )))))
+                            .then(literal("supercell")
+                                    .executes(context -> {
                                         Cloud cloud = new Cloud(Enhancedweather.SERVER_WEATHER,context.getSource().getPosition().multiply(1,0,1).add(0,200,0));
                                         cloud.Supercell = true;
                                         cloud.Thundering = true;
@@ -60,7 +71,8 @@ public class CommandsRegister {
                                         return 1;
                                     })
                             )
-                            .then(literal("squallLine").executes(context -> {
+                            .then(literal("squallLine")
+                                    .then(argument("intensity", IntegerArgumentType.integer(0, 2))).executes(context -> {
                                     SquallLine sl = new SquallLine(Enhancedweather.SERVER_WEATHER,context.getSource().getPosition().multiply(1,0,1).add(0,200,0));
                                     UUID id = UUID.randomUUID();
                                     Enhancedweather.SERVER_WEATHER.Weathers.put(id,sl);

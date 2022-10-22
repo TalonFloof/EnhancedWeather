@@ -24,8 +24,8 @@ import static com.mojang.blaze3d.platform.GlConst.*;
 public class RadarScreen extends Screen {
     protected long ticks = 0;
     protected static final Identifier DOPPLER_RADAR_OVERLAY = new Identifier("enhancedweather","textures/gui/doppler_radar_circle.png");
+    public static final Identifier UNKNOWN_INDICATOR = new Identifier("enhancedweather","textures/gui/unknown_symbol.png");
     public static final Identifier RAIN_INDICATOR = new Identifier("enhancedweather","textures/gui/rain_symbol.png");
-    public static final Identifier RAIN2_INDICATOR = new Identifier("enhancedweather","textures/gui/rain2_symbol.png");
     public static final Identifier LIGHTNING_INDICATOR = new Identifier("enhancedweather","textures/gui/lightning_symbol.png");
     public static final Identifier LOW_HAIL_INDICATOR = new Identifier("enhancedweather","textures/gui/low_hail_symbol.png");
     public static final Identifier HIGH_HAIL_INDICATOR = new Identifier("enhancedweather","textures/gui/high_hail_symbol.png");
@@ -34,16 +34,19 @@ public class RadarScreen extends Screen {
     protected static HashMap<UUID, Long> WeatherListTiming = new HashMap<>();
     protected static HashMap<UUID, JsonObject> WeatherListData = new HashMap<>();
     protected static BlockPos Pos = null;
-    protected static double scanSpeed = 600D;
+    protected static final double scanSpeed = 200D;
+    protected static boolean Accurate = false;
+    protected static boolean Range = false;
 
-    public RadarScreen(BlockPos position, boolean hasAccuracy, boolean hasSpeed) {
+    public RadarScreen(BlockPos position, boolean hasAccuracy, boolean increasedRange) {
         super(Text.literal("Radar Screen"));
         Pos = position;
         assert MinecraftClient.getInstance().world != null;
         ticks = MinecraftClient.getInstance().world.getTime();
         WeatherListTiming.clear();
         WeatherListData.clear();
-        scanSpeed = hasSpeed?200D:600D;
+        Accurate = hasAccuracy;
+        Range = increasedRange;
     }
 
     protected void castLine(int x1, int y1, int x2, int y2, BiConsumer<Integer, Integer> func) {
@@ -118,17 +121,16 @@ public class RadarScreen extends Screen {
             switch (((JsonPrimitive) Objects.requireNonNull(data.get("Identifier"))).asString()) {
                 case "enhancedweather:cloud" -> {
                     if(data.getBoolean("Precipitating",false) && !data.getBoolean("Placeholder",false)) {
-                        var icon = data.getInt("HailIntensity",0) == 2 ? HIGH_HAIL_INDICATOR : (data.getInt("HailIntensity",0) == 1 ? LOW_HAIL_INDICATOR : (data.getBoolean("Thundering", false) ? LIGHTNING_INDICATOR : RAIN_INDICATOR));
+                        var icon = !Accurate ? UNKNOWN_INDICATOR : (data.getInt("HailIntensity",0) == 2 ? HIGH_HAIL_INDICATOR : (data.getInt("HailIntensity",0) == 1 ? LOW_HAIL_INDICATOR : (data.getBoolean("Thundering", false) ? LIGHTNING_INDICATOR : RAIN_INDICATOR)));
                         //⚠
-                        var wind_icon = data.getBoolean("Supercell",false) ? SUPERCELL_INDICATOR : (data.getInt("WindIntensity",0) > 0 ? WIND_INDICATOR : null);
+                        var wind_icon = !Accurate ? null : (data.getBoolean("Supercell",false) ? SUPERCELL_INDICATOR : (data.getInt("WindIntensity",0) > 0 ? WIND_INDICATOR : null));
                         RenderSystem.setShader(GameRenderer::getPositionTexShader);
                         RenderSystem.enableBlend();
                         RenderSystem.texParameter(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
                         RenderSystem.texParameter(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
                         RenderSystem.setShaderTexture(0, icon);
-
-                        var relativeX = (data.getDouble("X",0D)-Pos.getX())/(2048/192)-8;
-                        var relativeZ = (data.getDouble("Z",0D)-Pos.getZ())/(2048/192)-8;
+                        var relativeX = (data.getDouble("X",0D)-Pos.getX())/((Range?2048:1024)/192)-8;
+                        var relativeZ = (data.getDouble("Z",0D)-Pos.getZ())/((Range?2048:1024)/192)-8;
                         var finalX = (int)(relativeX+(width/2));
                         var finalZ = (int)(relativeZ+(height/2));
                         drawTexture(matrices,finalX,finalZ,16,16,0F,0F,128,128,128,128);
@@ -161,15 +163,15 @@ public class RadarScreen extends Screen {
         var stormKeys = WeatherListData.keySet().stream().toList();
         for(UUID id : stormKeys) {
             var data = WeatherListData.get(id);
-            if(!(new Vec3d(Pos.getX(),200,Pos.getZ()).isInRange(new Vec3d(data.getDouble("X",0D),200D,data.getDouble("Z",0D)),1024D))) {
+            if(!(new Vec3d(Pos.getX(),200,Pos.getZ()).isInRange(new Vec3d(data.getDouble("X",0D),200D,data.getDouble("Z",0D)),(Range?1024D:512D)))) {
                 WeatherListData.remove(id);
                 WeatherListTiming.remove(id);
                 continue;
             }
         }
-        castLine(Pos.getX(),Pos.getZ(),Pos.getX()-(int)(Math.sin(Math.toRadians(angle))*1024),Pos.getZ()+(int)(Math.cos(Math.toRadians(angle))*1024),(x,y) -> {
+        castLine(Pos.getX(),Pos.getZ(),Pos.getX()-(int)(Math.sin(Math.toRadians(angle))*(Range?1024:512)),Pos.getZ()+(int)(Math.cos(Math.toRadians(angle))*(Range?1024:512)),(x,y) -> {
             Enhancedweather.CLIENT_WEATHER.Weathers.forEach((id, data) -> {
-                if(new Vec3d(x,200,y).isInRange(data.Position,scanSpeed!=600D?32D:10D)) {
+                if(new Vec3d(x,200,y).isInRange(data.Position, 32D)) {
                     if(WeatherListTiming.containsKey(id)) {
                         if(WeatherListTiming.get(id) >= 40L) {
                             WeatherListData.replace(id,data.generateSaveDataJson());
@@ -184,7 +186,7 @@ public class RadarScreen extends Screen {
             var keys = WeatherListData.keySet().stream().toList();
             for(UUID id : keys) {
                 var data = WeatherListData.get(id);
-                if(new Vec3d(x,200,y).isInRange(new Vec3d(data.getDouble("X",0D),200D,data.getDouble("Z",0D)),scanSpeed!=600D?32D:10D)) {
+                if(new Vec3d(x,200,y).isInRange(new Vec3d(data.getDouble("X",0D),200D,data.getDouble("Z",0D)), 32D)) {
                     if(WeatherListTiming.get(id) >= 40) {
                         WeatherListData.remove(id);
                         WeatherListTiming.remove(id);

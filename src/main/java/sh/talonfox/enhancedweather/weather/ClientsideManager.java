@@ -23,7 +23,7 @@ public class ClientsideManager extends Manager {
                 Cloud cloud = this.getClosestCloud(new Vec3d(MinecraftClient.getInstance().player.getX(),200,MinecraftClient.getInstance().player.getZ()),384,true, false, false, false, -1);
                 if(cloud != null) {
                     PrecipitationRateTarget = 1F;
-                    PrecipitationIntensity = cloud.TornadoStage>=0?cloud.TornadoStage+4:(cloud.Thundering?1:0);
+                    PrecipitationIntensity = cloud.TornadoStage>=0?cloud.TornadoStage+4:(cloud.WindIntensity>=2?4:(cloud.Thundering?1:0));
                 } else {
                     PrecipitationRateTarget = 0F;
                 }

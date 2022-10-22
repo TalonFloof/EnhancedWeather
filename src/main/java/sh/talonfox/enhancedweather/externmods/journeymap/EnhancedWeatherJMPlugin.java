@@ -56,7 +56,7 @@ public class EnhancedWeatherJMPlugin implements IClientPlugin {
             Enhancedweather.CLIENT_WEATHER.Weathers.forEach((id, val) -> {
                 if(val instanceof Cloud cloud) {
                     if (!cloud.Placeholder && cloud.Precipitating) {
-                        var backImage = new MapImage(cloud.HailIntensity == 2 ? RadarScreen.HIGH_HAIL_INDICATOR : (cloud.HailIntensity == 1 ? RadarScreen.LOW_HAIL_INDICATOR : (cloud.Thundering ? RadarScreen.LIGHTNING_INDICATOR : RadarScreen.RAIN2_INDICATOR)),16,16);
+                        var backImage = new MapImage(cloud.HailIntensity == 2 ? RadarScreen.HIGH_HAIL_INDICATOR : (cloud.HailIntensity == 1 ? RadarScreen.LOW_HAIL_INDICATOR : (cloud.Thundering ? RadarScreen.LIGHTNING_INDICATOR : RadarScreen.RAIN_INDICATOR)),16,16);
                         backImage.setOpacity(1F);
                         backImage.setDisplayWidth(128);
                         backImage.setDisplayHeight(128);

@@ -95,6 +95,12 @@ public class Wind {
                 AngleEvent = -((float)Math.atan2(var11, var15)) * 180.0F / (float)Math.PI;
                 SpeedEvent = 2F;
             }
+            cloud = Enhancedweather.CLIENT_WEATHER.getClosestCloud(new Vec3d(MinecraftClient.getInstance().player.getX(),200,MinecraftClient.getInstance().player.getZ()),256,false,false,true,false,0);
+            if(cloud != null) {
+                TimeEvent = 80;
+                AngleEvent = cloud.Angle;
+                SpeedEvent = 2F;
+            }
         }
         if (this.TimeGust == 0) {
             SpeedGust = 0;

@@ -23,7 +23,7 @@ public class SquallLine extends Weather {
     Intensity 2: Severe Squall Line (All cells have strong wind, potential of supercell forming tornado)
      */
     public int Intensity = 0;
-    public int MaxIntensity = 0;
+    public int MaxIntensity = 1;
     public float IntensityProgression = 0F;
     public boolean PeakedIntensity = false;
     public float MovementAngle;
@@ -38,6 +38,7 @@ public class SquallLine extends Weather {
         HostManager = manager;
         Position = pos;
         MovementAngle = new Random().nextFloat(360);
+        MaxIntensity = new Random().nextInt(1,3);
         ticks = 0;
     }
 
@@ -86,6 +87,13 @@ public class SquallLine extends Weather {
                 if (IntensityProgression >= 0.6F) {
                     Intensity += 1;
                     IntensityProgression = 0;
+                    if(Intensity == 1) {
+                        for(int i : Storms.keySet()) {
+                            if(HostManager.Weathers.containsKey(Storms.get(i)) && new Random().nextFloat() <= 0.75F) {
+                                ((Cloud)HostManager.Weathers.get(Storms.get(i))).WindIntensity = 1;
+                            }
+                        }
+                    }
                 }
             }
             for(int i : Storms.keySet()) {
@@ -95,6 +103,8 @@ public class SquallLine extends Weather {
                         ((Cloud)HostManager.Weathers.get(Storms.get(i))).Placeholder = false;
                     } else if(Intensity == 0 && i % 2 == 1) {
                         ((Cloud)HostManager.Weathers.get(Storms.get(i))).Placeholder = true;
+                    } else if(Intensity == 0 && i % 2 == 0) {
+                        ((Cloud)HostManager.Weathers.get(Storms.get(i))).Placeholder = false;
                     }
                 }
             }

@@ -28,12 +28,11 @@ Global Winds will flow around the Overworld and Nether. These winds can move the
 
 <img src="https://raw.githubusercontent.com/Talon396/EnhancedWeather/main/docs/Storm.gif" width="640">
 
-**Animation of a High Wind Storm Forming**
+**Animation of a Supercell Storm Forming**
 
 ---
 
-Enhanced Weather has storms systems that work similar to the original Weather2 Mod. Every day, each player has a 1/30 chance of a severe storm spawning, these storms contain violent winds, and heavy lightning.
-
+Enhanced Weather contains a weather system that is very different from the original weather system. Every day there is a 1/15 chance (this is configurable) that either a squall line or an isolated supercell will spawn nearby a random player. These storms are severe, and dangerous to travel through. 
 Rain Clouds can also form from water being collected from humid biomes, releasing the water as rain.
 
 ### Tornadoes
@@ -43,6 +42,8 @@ Rain Clouds can also form from water being collected from humid biomes, releasin
 **Animation of a Tornado moving across a Plains and Forest Biome**
 
 ---
+
+# Tornadoes have been temporarily disabled in v1.0-Beta4-Alpha1, it will be re-enabled in the near future. Use v1.0-Beta3 if you want tornadoes.
 
 The key feature of this mod! Like in Weather2, Enhanced Weather has tornadoes.
 Tornadoes form when a storm gets powerful enough to create a violent funnel cloud.
