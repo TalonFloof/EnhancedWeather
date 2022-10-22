@@ -1,6 +1,7 @@
 plugins {
     id 'fabric-loom' version '1.0-SNAPSHOT'
     id 'maven-publish'
+    id "com.modrinth.minotaur" version "2.+"
 }
 
 version = project.mod_version
@@ -19,6 +20,19 @@ repositories {
     // for more information about repositories.
     maven { url "https://maven.shedaniel.me/" }
     maven { url "https://maven.terraformersmc.com/releases/" }
+    maven {
+        url "https://jm.gserv.me/repository/maven-public/"
+        content {
+            includeGroup "info.journeymap"
+        }
+    }
+    maven {
+        name = "Modrinth"
+        url = "https://api.modrinth.com/maven"
+        content {
+            includeGroup "maven.modrinth"
+        }
+    }
 }
 
 dependencies {
@@ -39,6 +53,9 @@ dependencies {
     }
 
     implementation include("blue.endless:jankson:1.2.0")
+
+    modApi group: 'info.journeymap', name: 'journeymap-api', version: '1.19.1-1.9-fabric-SNAPSHOT', changing: true
+    modRuntimeOnly "maven.modrinth:journeymap:1.19.1-5.9.0beta2-fabric"
 }
 
 processResources {
