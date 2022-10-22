@@ -55,7 +55,7 @@ dependencies {
     implementation include("blue.endless:jankson:1.2.0")
 
     modApi group: 'info.journeymap', name: 'journeymap-api', version: '1.19.1-1.9-fabric-SNAPSHOT', changing: true
-    modRuntimeOnly "maven.modrinth:journeymap:1.19.1-5.9.0beta2-fabric"
+    //modRuntimeOnly "maven.modrinth:journeymap:1.19.1-5.9.0beta2-fabric" // Will uncomment when beta3 is available (thx @mysticdrew)
 }
 
 processResources {

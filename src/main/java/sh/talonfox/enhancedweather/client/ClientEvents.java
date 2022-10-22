@@ -3,6 +3,8 @@ package sh.talonfox.enhancedweather.client;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import sh.talonfox.enhancedweather.Enhancedweather;
+import sh.talonfox.enhancedweather.externmods.ExternalModRegistry;
+import sh.talonfox.enhancedweather.externmods.journeymap.EnhancedWeatherJMPlugin;
 import sh.talonfox.enhancedweather.weather.ClientsideManager;
 
 public class ClientEvents {
@@ -15,6 +17,9 @@ public class ClientEvents {
             Enhancedweather.CLIENT_WIND.tickClient();
             Enhancedweather.NETHER_CLIENT_WIND.tickClient();
             Enhancedweather.CLIENT_WEATHER.tick();
+            if(ExternalModRegistry.containsExternalMod("journeymap")) {
+                EnhancedWeatherJMPlugin.clientTickStart(client);
+            }
         });
         ClientPlayConnectionEvents.DISCONNECT.register((handler,client) -> {
             Enhancedweather.LOGGER.info("Client Disconnecting!");

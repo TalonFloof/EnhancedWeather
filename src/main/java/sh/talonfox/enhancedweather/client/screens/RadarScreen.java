@@ -11,6 +11,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import org.lwjgl.opengl.GL30;
 import sh.talonfox.enhancedweather.Enhancedweather;
 
 import java.util.HashMap;
@@ -18,15 +19,18 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 
+import static com.mojang.blaze3d.platform.GlConst.*;
+
 public class RadarScreen extends Screen {
     protected long ticks = 0;
     protected static final Identifier DOPPLER_RADAR_OVERLAY = new Identifier("enhancedweather","textures/gui/doppler_radar_circle.png");
-    protected static final Identifier RAIN_INDICATOR = new Identifier("enhancedweather","textures/gui/rain_symbol.png");
-    protected static final Identifier LIGHTNING_INDICATOR = new Identifier("enhancedweather","textures/gui/lightning_symbol.png");
-    protected static final Identifier LOW_HAIL_INDICATOR = new Identifier("enhancedweather","textures/gui/low_hail_symbol.png");
-    protected static final Identifier HIGH_HAIL_INDICATOR = new Identifier("enhancedweather","textures/gui/high_hail_symbol.png");
-    protected static final Identifier SUPERCELL_INDICATOR = new Identifier("enhancedweather","textures/gui/supercell_symbol.png");
-    protected static final Identifier WIND_INDICATOR = new Identifier("enhancedweather","textures/gui/wind_symbol.png");
+    public static final Identifier RAIN_INDICATOR = new Identifier("enhancedweather","textures/gui/rain_symbol.png");
+    public static final Identifier RAIN2_INDICATOR = new Identifier("enhancedweather","textures/gui/rain2_symbol.png");
+    public static final Identifier LIGHTNING_INDICATOR = new Identifier("enhancedweather","textures/gui/lightning_symbol.png");
+    public static final Identifier LOW_HAIL_INDICATOR = new Identifier("enhancedweather","textures/gui/low_hail_symbol.png");
+    public static final Identifier HIGH_HAIL_INDICATOR = new Identifier("enhancedweather","textures/gui/high_hail_symbol.png");
+    public static final Identifier SUPERCELL_INDICATOR = new Identifier("enhancedweather","textures/gui/supercell_symbol.png");
+    public static final Identifier WIND_INDICATOR = new Identifier("enhancedweather","textures/gui/wind_symbol.png");
     protected static HashMap<UUID, Long> WeatherListTiming = new HashMap<>();
     protected static HashMap<UUID, JsonObject> WeatherListData = new HashMap<>();
     protected static BlockPos Pos = null;
@@ -103,6 +107,8 @@ public class RadarScreen extends Screen {
         this.renderBackground(matrices);
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderTexture(0, DOPPLER_RADAR_OVERLAY);
+        RenderSystem.texParameter(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+        RenderSystem.texParameter(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
         drawTexture(matrices,(width/2)-96,(height/2)-96,192,192,0F,0F,64,64,64,64);
         double angle = (((double)ticks % scanSpeed) / scanSpeed) * 360D;
         castLine(width/2,height/2,(width/2)-(int)(Math.sin(Math.toRadians(angle))*96),(height/2)+(int)(Math.cos(Math.toRadians(angle))*96),(x,y) -> {
@@ -117,15 +123,18 @@ public class RadarScreen extends Screen {
                         var wind_icon = data.getBoolean("Supercell",false) ? SUPERCELL_INDICATOR : (data.getInt("WindIntensity",0) > 0 ? WIND_INDICATOR : null);
                         RenderSystem.setShader(GameRenderer::getPositionTexShader);
                         RenderSystem.enableBlend();
+                        RenderSystem.texParameter(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+                        RenderSystem.texParameter(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
                         RenderSystem.setShaderTexture(0, icon);
+
                         var relativeX = (data.getDouble("X",0D)-Pos.getX())/(2048/192)-8;
                         var relativeZ = (data.getDouble("Z",0D)-Pos.getZ())/(2048/192)-8;
                         var finalX = (int)(relativeX+(width/2));
                         var finalZ = (int)(relativeZ+(height/2));
-                        drawTexture(matrices,finalX,finalZ,16,16,0F,0F,16,16,16,16);
+                        drawTexture(matrices,finalX,finalZ,16,16,0F,0F,128,128,128,128);
                         if(wind_icon != null) {
                             RenderSystem.setShaderTexture(0, wind_icon);
-                            drawTexture(matrices, finalX, finalZ, 16, 16, 0F, 0F, 16, 16, 16, 16);
+                            drawTexture(matrices, finalX, finalZ, 16, 16, 0F, 0F, 128, 128, 128, 128);
                         }
                     }
                 }

@@ -34,6 +34,7 @@ public class Cloud extends Weather {
     public boolean Precipitating = false;
     public boolean Thundering = false;
     public int HailIntensity = 0;
+    public float HailProgression = 0F;
     public int WindIntensity = 0;
     public boolean Supercell = false;
     public boolean SquallLineControlled = false;
