@@ -24,6 +24,9 @@
         ],
         "modmenu": [
             "sh.talonfox.enhancedweather.common.config.ModMenuIntegration"
+        ],
+        "journeymap": [
+            "sh.talonfox.enhancedweather.externmods.journeymap.EnhancedWeatherJMPlugin"
         ]
     },
     "mixins": [
