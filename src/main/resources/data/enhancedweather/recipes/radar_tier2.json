@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " # ",
+    "#R#",
+    " # "
+  ],
+  "key": {
+    "#": {"item": "minecraft:gold_ingot"},
+    "R": {"item": "enhancedweather:radar_tier1"}
+  },
+  "result": {
+    "item": "enhancedweather:radar_tier2",
+    "count": 1
+  }
+}
