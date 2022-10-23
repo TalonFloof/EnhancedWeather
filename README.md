@@ -43,8 +43,6 @@ Rain Clouds can also form from water being collected from humid biomes, releasin
 
 ---
 
-# Tornadoes have been temporarily disabled in v1.0-Beta4-Alpha1, it will be re-enabled in the near future. Use v1.0-Beta3 if you want tornadoes.
-
 The key feature of this mod! Like in Weather2, Enhanced Weather has tornadoes.
 Tornadoes form when a storm gets powerful enough to create a violent funnel cloud.
 Tornadoes can pick up entities, though it doesn't destroy blocks yet.
