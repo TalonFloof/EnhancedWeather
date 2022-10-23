@@ -26,9 +26,9 @@ jobs:
                   arguments: build
             - name: Prepare for Artifact Upload
               run: |
-                  mv build/libs/enhancedweather*.jar build/libs/enhancedweather-INDEV-${{ github.sha }}.jar
+                  mv build/libs/enhancedweather*.jar build/libs/enhancedweather-INDEV-$(echo ${{ github.sha }} | head --bytes=16).jar
             - name: Upload Artifact
               uses: actions/upload-artifact@v3
               with:
-                  name: EnhancedWeather-INDEV-${{ github.sha }}
-                  path: build/libs/enhancedweather-INDEV-${{ github.sha }}.jar
+                  name: EnhancedWeather-INDEV
+                  path: build/libs/enhancedweather-INDEV-*.jar
