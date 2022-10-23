@@ -31,6 +31,7 @@ public class RadarScreen extends Screen {
     public static final Identifier HIGH_HAIL_INDICATOR = new Identifier("enhancedweather","textures/gui/high_hail_symbol.png");
     public static final Identifier SUPERCELL_INDICATOR = new Identifier("enhancedweather","textures/gui/supercell_symbol.png");
     public static final Identifier WIND_INDICATOR = new Identifier("enhancedweather","textures/gui/wind_symbol.png");
+    public static final Identifier TORNADO_INDICATOR = new Identifier("enhancedweather","textures/gui/tornado_symbol.png");
     protected static HashMap<UUID, Long> WeatherListTiming = new HashMap<>();
     protected static HashMap<UUID, JsonObject> WeatherListData = new HashMap<>();
     protected static BlockPos Pos = null;
@@ -121,9 +122,9 @@ public class RadarScreen extends Screen {
             switch (((JsonPrimitive) Objects.requireNonNull(data.get("Identifier"))).asString()) {
                 case "enhancedweather:cloud" -> {
                     if(data.getBoolean("Precipitating",false) && !data.getBoolean("Placeholder",false)) {
-                        var icon = !Accurate ? UNKNOWN_INDICATOR : (data.getInt("HailIntensity",0) == 2 ? HIGH_HAIL_INDICATOR : (data.getInt("HailIntensity",0) == 1 ? LOW_HAIL_INDICATOR : (data.getBoolean("Thundering", false) ? LIGHTNING_INDICATOR : RAIN_INDICATOR)));
+                        var icon = !Accurate ? UNKNOWN_INDICATOR : (data.getInt("TornadoStage",0) >= 0 ? TORNADO_INDICATOR : data.getInt("HailIntensity",0) == 2 ? HIGH_HAIL_INDICATOR : (data.getInt("HailIntensity",0) == 1 ? LOW_HAIL_INDICATOR : (data.getBoolean("Thundering", false) ? LIGHTNING_INDICATOR : RAIN_INDICATOR)));
                         //⚠
-                        var wind_icon = !Accurate ? null : (data.getBoolean("Supercell",false) ? SUPERCELL_INDICATOR : (data.getInt("WindIntensity",0) > 0 ? WIND_INDICATOR : null));
+                        var wind_icon = !Accurate ? null : (data.getInt("TornadoStage",0) >= 0 ? null : data.getBoolean("Supercell",false) ? SUPERCELL_INDICATOR : (data.getInt("WindIntensity",0) > 0 ? WIND_INDICATOR : null));
                         RenderSystem.setShader(GameRenderer::getPositionTexShader);
                         RenderSystem.enableBlend();
                         RenderSystem.texParameter(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
@@ -137,6 +138,11 @@ public class RadarScreen extends Screen {
                         if(wind_icon != null) {
                             RenderSystem.setShaderTexture(0, wind_icon);
                             drawTexture(matrices, finalX, finalZ, 16, 16, 0F, 0F, 128, 128, 128, 128);
+                        }
+                        if(data.getInt("TornadoStage",0) >= 0 && Accurate) {
+                            drawCenteredText(matrices,textRenderer,"EF"+data.getInt("TornadoStage", 0),finalX+8,finalZ-8,0xFFFFFF);
+                        } else if(data.getInt("WindIntensity",0) > 1 && Accurate) {
+                            drawCenteredText(matrices,textRenderer,data.getInt("WindIntensity",0) == 3 ? "⚠⚠" : "⚠",finalX+8,finalZ-8,0xFF0000);
                         }
                     }
                 }

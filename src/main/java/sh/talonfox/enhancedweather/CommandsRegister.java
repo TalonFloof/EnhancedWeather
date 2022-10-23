@@ -71,6 +71,7 @@ public class CommandsRegister {
                                         if(context.getArgument("maxHailIntensity",Integer.class) != -1) {
                                             cloud.MaxHailIntensity = Math.max(cloud.HailIntensity,context.getArgument("maxHailIntensity",Integer.class));
                                         }
+                                        cloud.MaxTornadoStage = Integer.MIN_VALUE;
                                         UUID id = UUID.randomUUID();
                                         Enhancedweather.SERVER_WEATHER.Weathers.put(id,cloud);
                                         for (ServerPlayerEntity j : PlayerLookup.all(context.getSource().getServer())) {
@@ -86,7 +87,27 @@ public class CommandsRegister {
                                 .then(argument("hailIntensity",IntegerArgumentType.integer(0,2))
                                 .then(argument("maxHailIntensity",IntegerArgumentType.integer(-1,2))
                                     .executes(context -> {
-
+                                        Cloud cloud = new Cloud(Enhancedweather.SERVER_WEATHER,context.getSource().getPosition().multiply(1,0,1).add(0,200,0));
+                                        cloud.Supercell = true;
+                                        cloud.Thundering = true;
+                                        cloud.Water = Enhancedweather.CONFIG.Weather_MinimumWaterToPrecipitate*2;
+                                        cloud.Precipitating = true;
+                                        cloud.HailIntensity = context.getArgument("hailIntensity",Integer.class);
+                                        if(context.getArgument("maxHailIntensity",Integer.class) != -1) {
+                                            cloud.MaxHailIntensity = Math.max(cloud.HailIntensity,context.getArgument("maxHailIntensity",Integer.class));
+                                        }
+                                        cloud.TornadoStage = context.getArgument("intensity",Integer.class);
+                                        if(context.getArgument("maxIntensity",Integer.class) != -1) {
+                                            cloud.MaxTornadoStage = context.getArgument("maxIntensity",Integer.class);
+                                        } else {
+                                            cloud.MaxTornadoStage = Math.max(cloud.MaxTornadoStage,context.getArgument("intensity",Integer.class));
+                                        }
+                                        UUID id = UUID.randomUUID();
+                                        Enhancedweather.SERVER_WEATHER.Weathers.put(id,cloud);
+                                        for (ServerPlayerEntity j : PlayerLookup.all(context.getSource().getServer())) {
+                                            UpdateStorm.send(context.getSource().getServer(), id, cloud.generateUpdate(), j);
+                                        }
+                                        context.getSource().sendMessage(Text.literal("Summoning Tornado"));
                                         return 1;
                                     })))))
                             )
