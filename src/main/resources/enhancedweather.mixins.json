@@ -6,7 +6,6 @@
   "mixins": [
     "MixinBiome",
     "MixinLightningEntity",
-    "MixinWorld",
     "server.MixinEntityDetectRain",
     "server.MixinEntityDetectStorm",
     "server.MixinLevelProperties",
@@ -16,6 +15,9 @@
     "MixinWorld",
     "client.MixinBackgroundRenderer",
     "client.MixinParticle"
+  ],
+  "server": [
+    "MixinWorldServer"
   ],
   "injectors": {
     "defaultRequire": 1
