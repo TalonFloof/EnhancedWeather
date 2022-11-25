@@ -33,6 +33,7 @@ repositories {
             includeGroup "maven.modrinth"
         }
     }
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
@@ -43,19 +44,17 @@ dependencies {
 
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-    // Cloth Config
-    modApi("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_version}") {
-        exclude(group: "net.fabricmc.fabric-api")
-    }
     // Mod Menu
     modImplementation("com.terraformersmc:modmenu:${project.modmenu_version}") {
         exclude(group: "net.fabricmc.fabric-api")
     }
 
     implementation include("blue.endless:jankson:1.2.0")
+    modImplementation include("com.github.Draylar.omega-config:omega-config-base:1.2.3-1.18.1")
+    modImplementation include("com.github.Draylar.omega-config:omega-config-gui:1.2.3-1.18.1")
 
     modApi group: 'info.journeymap', name: 'journeymap-api', version: '1.19.1-1.9-fabric-SNAPSHOT', changing: true
-    //modRuntimeOnly "maven.modrinth:journeymap:1.19.1-5.9.0beta2-fabric" // Will uncomment when beta3 is available (thx @mysticdrew)
+    modRuntimeOnly "maven.modrinth:journeymap:1.19.2-5.9.0beta3-fabric" // thx @mysticdrew for fixing the issue with Beta 2
 }
 
 processResources {

@@ -139,6 +139,7 @@ public class Cloud extends Weather {
         FunnelParametersList.add(fConf);
     }
 
+    @Environment(EnvType.CLIENT)
     public void tickClient() {
         if (Placeholder)
             return;

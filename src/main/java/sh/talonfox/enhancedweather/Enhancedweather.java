@@ -1,5 +1,6 @@
 package sh.talonfox.enhancedweather;
 
+import draylar.omegaconfig.OmegaConfig;
 import net.fabricmc.api.ModInitializer;
 import sh.talonfox.enhancedweather.common.ItemGroupRegister;
 import sh.talonfox.enhancedweather.common.blocks.BlockRegister;
@@ -21,18 +22,16 @@ public class Enhancedweather implements ModInitializer {
     public static Wind NETHER_CLIENT_WIND = new Wind();
     public static ServersideManager SERVER_WEATHER = null;
     public static ClientsideManager CLIENT_WEATHER = null;
-    public static EnhancedWeatherConfig CONFIG;
+    public static EnhancedWeatherConfig CONFIG = OmegaConfig.register(EnhancedWeatherConfig.class);
     public static final Logger LOGGER = LoggerFactory.getLogger("enhancedweather");
 
     public static final long WEATHER_DATA_VERSION = 202242001;
 
     @Override
     public void onInitialize() {
-        ConfigRegister.Initialize();
         BlockRegister.Initialize();
         ItemGroupRegister.Initialize();
         ParticleRegister.Initialize();
-        NetworkRegister.Initialize();
         WeatherRegistry.Initialize();
         ServerEvents.Initialize();
         CommandsRegister.Initialize();

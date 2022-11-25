@@ -57,6 +57,9 @@ public class ServerEvents {
                         ((Cloud)so).Water = 400;
                         ((Cloud)so).Precipitating = true;
                         ((Cloud)so).Thundering = true;
+                        ((Cloud)so).MaxHailIntensity = 0;
+                        ((Cloud)so).MaxTornadoStage = 0;
+                        ((Cloud)so).Supercell = false;
                     });
                 }
             }
