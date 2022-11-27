@@ -5,7 +5,6 @@ import net.minecraft.client.sound.BiomeEffectSoundPlayer.MusicLoop;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.dimension.DimensionTypes;
-import sh.talonfox.enhancedweather.Enhancedweather;
 
 public class Ambience {
     public static MusicLoop DistantWinds = new MusicLoop(new SoundEvent(new Identifier("enhancedweather:ambience.distant_winds")));

@@ -11,7 +11,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
-import sh.talonfox.enhancedweather.Enhancedweather;
+import sh.talonfox.enhancedweather.EnhancedWeather;
 import sh.talonfox.enhancedweather.common.particles.CloudParticle;
 import sh.talonfox.enhancedweather.weather.Weather;
 import sh.talonfox.enhancedweather.weather.weatherevents.Cloud;
@@ -40,21 +40,21 @@ public class UpdateStorm {
         NbtCompound data = packetByteBuf.readNbt();
         client.executeSync(() -> {
             if(data == null) {
-                var storm = Enhancedweather.CLIENT_WEATHER.Weathers.get(id);
+                var storm = EnhancedWeather.CLIENT_WEATHER.Weathers.get(id);
                 if(storm != null) {
                     if(storm instanceof Cloud) {
                         ((Cloud) storm).ParticlesCloud.forEach(i -> ((CloudParticle)i).setAge(i.getMaxAge()-50));
                         ((Cloud) storm).ParticlesFunnel.forEach(i -> ((CloudParticle)i).setAge(i.getMaxAge()-50));
                     }
-                    Enhancedweather.CLIENT_WEATHER.Weathers.remove(id);
+                    EnhancedWeather.CLIENT_WEATHER.Weathers.remove(id);
                 }
             } else {
-                if(Enhancedweather.CLIENT_WEATHER.Weathers.containsKey(id)) {
-                    Enhancedweather.CLIENT_WEATHER.Weathers.get(id).applyUpdate(data);
+                if(EnhancedWeather.CLIENT_WEATHER.Weathers.containsKey(id)) {
+                    EnhancedWeather.CLIENT_WEATHER.Weathers.get(id).applyUpdate(data);
                 } else {
-                    Weather c = Weather.constructStorm(new Identifier(data.getString("Identifier")),Enhancedweather.CLIENT_WEATHER,new Vec3d(0,0,0));
+                    Weather c = Weather.constructStorm(new Identifier(data.getString("Identifier")), EnhancedWeather.CLIENT_WEATHER,new Vec3d(0,0,0));
                     c.applyUpdate(data);
-                    Enhancedweather.CLIENT_WEATHER.Weathers.put(id,c);
+                    EnhancedWeather.CLIENT_WEATHER.Weathers.put(id,c);
                 }
             }
         });

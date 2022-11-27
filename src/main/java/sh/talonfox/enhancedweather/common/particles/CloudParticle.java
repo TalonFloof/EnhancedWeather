@@ -10,7 +10,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3f;
-import sh.talonfox.enhancedweather.Enhancedweather;
+import sh.talonfox.enhancedweather.EnhancedWeather;
 
 import java.util.Random;
 
@@ -37,7 +37,7 @@ public class CloudParticle extends SpriteBillboardParticle {
         this.setAlpha(0.0F);
         this.yaw = Math.round(Math.random()*360);
         this.pitch = -90+Math.round(Math.random()*50)-Math.round(Math.random()*50);
-        this.isOpaque = (r >= 1 || !Enhancedweather.CONFIG.Client_TranslucentClouds);
+        this.isOpaque = (r >= 1 || !EnhancedWeather.CONFIG.Client_TranslucentClouds);
     }
 
     @Override

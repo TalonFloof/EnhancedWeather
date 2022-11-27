@@ -10,7 +10,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
-import sh.talonfox.enhancedweather.Enhancedweather;
+import sh.talonfox.enhancedweather.EnhancedWeather;
 
 public class WindSync {
     public static Identifier PACKET_ID = new Identifier("enhancedweather","wind_s2c_sync");
@@ -26,15 +26,15 @@ public class WindSync {
         PacketByteBuf buf = PacketByteBufs.create();
         buf.writeInt(dimid);
         if(dimid == 0) {
-            buf.writeFloat(Enhancedweather.WIND.AngleGlobal);
-            buf.writeFloat(Enhancedweather.WIND.SpeedGlobal);
-            buf.writeInt(Enhancedweather.WIND.LowWindTimer);
-            buf.writeInt(Enhancedweather.WIND.HighWindTimer);
+            buf.writeFloat(EnhancedWeather.WIND.AngleGlobal);
+            buf.writeFloat(EnhancedWeather.WIND.SpeedGlobal);
+            buf.writeInt(EnhancedWeather.WIND.LowWindTimer);
+            buf.writeInt(EnhancedWeather.WIND.HighWindTimer);
         } else if(dimid == -1) {
-            buf.writeFloat(Enhancedweather.NETHER_WIND.AngleGlobal);
-            buf.writeFloat(Enhancedweather.NETHER_WIND.SpeedGlobal);
-            buf.writeInt(Enhancedweather.WIND.LowWindTimer);
-            buf.writeInt(Enhancedweather.WIND.HighWindTimer);
+            buf.writeFloat(EnhancedWeather.NETHER_WIND.AngleGlobal);
+            buf.writeFloat(EnhancedWeather.NETHER_WIND.SpeedGlobal);
+            buf.writeInt(EnhancedWeather.WIND.LowWindTimer);
+            buf.writeInt(EnhancedWeather.WIND.HighWindTimer);
         }
         for (ServerPlayerEntity player : PlayerLookup.all(server)) {
             ServerPlayNetworking.send(player, PACKET_ID, buf);
@@ -43,15 +43,15 @@ public class WindSync {
     public static void onReceive(MinecraftClient client, ClientPlayNetworkHandler clientPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
         int dimid = packetByteBuf.readInt();
         if(dimid == 0) {
-            Enhancedweather.CLIENT_WIND.AngleGlobal = packetByteBuf.readFloat();
-            Enhancedweather.CLIENT_WIND.SpeedGlobal = packetByteBuf.readFloat();
-            Enhancedweather.CLIENT_WIND.LowWindTimer = packetByteBuf.readInt();
-            Enhancedweather.CLIENT_WIND.HighWindTimer = packetByteBuf.readInt();
+            EnhancedWeather.CLIENT_WIND.AngleGlobal = packetByteBuf.readFloat();
+            EnhancedWeather.CLIENT_WIND.SpeedGlobal = packetByteBuf.readFloat();
+            EnhancedWeather.CLIENT_WIND.LowWindTimer = packetByteBuf.readInt();
+            EnhancedWeather.CLIENT_WIND.HighWindTimer = packetByteBuf.readInt();
         } else if(dimid == -1) {
-            Enhancedweather.NETHER_CLIENT_WIND.AngleGlobal = packetByteBuf.readFloat();
-            Enhancedweather.NETHER_CLIENT_WIND.SpeedGlobal = packetByteBuf.readFloat();
-            Enhancedweather.NETHER_CLIENT_WIND.LowWindTimer = packetByteBuf.readInt();
-            Enhancedweather.NETHER_CLIENT_WIND.HighWindTimer = packetByteBuf.readInt();
+            EnhancedWeather.NETHER_CLIENT_WIND.AngleGlobal = packetByteBuf.readFloat();
+            EnhancedWeather.NETHER_CLIENT_WIND.SpeedGlobal = packetByteBuf.readFloat();
+            EnhancedWeather.NETHER_CLIENT_WIND.LowWindTimer = packetByteBuf.readInt();
+            EnhancedWeather.NETHER_CLIENT_WIND.HighWindTimer = packetByteBuf.readInt();
         }
     }
 }

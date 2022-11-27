@@ -1,10 +1,12 @@
 package sh.talonfox.enhancedweather.common.config;
 
-import draylar.omegaconfiggui.OmegaConfigGui;
-import sh.talonfox.enhancedweather.Enhancedweather;
+import me.shedaniel.autoconfig.AutoConfig;
+import me.shedaniel.autoconfig.serializer.JanksonConfigSerializer;
+import sh.talonfox.enhancedweather.EnhancedWeather;
 
 public class ConfigRegister {
     public static void Initialize() {
-        OmegaConfigGui.registerConfigScreen(Enhancedweather.CONFIG);
+        AutoConfig.register(EnhancedWeatherConfig.class, JanksonConfigSerializer::new);
+        EnhancedWeather.CONFIG = AutoConfig.getConfigHolder(EnhancedWeatherConfig.class).getConfig();
     }
 }

@@ -10,7 +10,7 @@ import journeymap.client.api.model.MapImage;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
-import sh.talonfox.enhancedweather.Enhancedweather;
+import sh.talonfox.enhancedweather.EnhancedWeather;
 import sh.talonfox.enhancedweather.client.screens.RadarScreen;
 import sh.talonfox.enhancedweather.externmods.ExternalModRegistry;
 import sh.talonfox.enhancedweather.weather.weatherevents.Cloud;
@@ -23,7 +23,7 @@ public class EnhancedWeatherJMPlugin implements IClientPlugin {
     @Override
     public void initialize(IClientAPI jmClientApi) {
         JMApi = jmClientApi;
-        Enhancedweather.LOGGER.info("Enhanced Weather by TalonFox, JourneyMap Plugin Initialized!");
+        EnhancedWeather.LOGGER.info("Enhanced Weather by TalonFox, JourneyMap Plugin Initialized!");
         ExternalModRegistry.registerExternalMod("journeymap");
         FabricEvents.ADDON_BUTTON_DISPLAY_EVENT.register(EnhancedWeatherJMPlugin::onButtonDisplay);
     }
@@ -53,7 +53,7 @@ public class EnhancedWeatherJMPlugin implements IClientPlugin {
             if (JMApi == null)
                 return;
             JMApi.removeAll("enhancedweather");
-            Enhancedweather.CLIENT_WEATHER.Weathers.forEach((id, val) -> {
+            EnhancedWeather.CLIENT_WEATHER.Weathers.forEach((id, val) -> {
                 if(val instanceof Cloud cloud) {
                     if (!cloud.Placeholder && cloud.Precipitating) {
                         var backImage = new MapImage(cloud.TornadoStage >= 0 ? RadarScreen.TORNADO_INDICATOR : cloud.HailIntensity == 2 ? RadarScreen.HIGH_HAIL_INDICATOR : (cloud.HailIntensity == 1 ? RadarScreen.LOW_HAIL_INDICATOR : (cloud.Thundering ? RadarScreen.LIGHTNING_INDICATOR : RadarScreen.RAIN_INDICATOR)),16,16);

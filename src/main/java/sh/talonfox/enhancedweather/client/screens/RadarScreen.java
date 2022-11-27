@@ -11,8 +11,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import org.lwjgl.opengl.GL30;
-import sh.talonfox.enhancedweather.Enhancedweather;
+import sh.talonfox.enhancedweather.EnhancedWeather;
 
 import java.util.HashMap;
 import java.util.Objects;
@@ -176,7 +175,7 @@ public class RadarScreen extends Screen {
             }
         }
         castLine(Pos.getX(),Pos.getZ(),Pos.getX()-(int)(Math.sin(Math.toRadians(angle))*(Range?1024:512)),Pos.getZ()+(int)(Math.cos(Math.toRadians(angle))*(Range?1024:512)),(x,y) -> {
-            Enhancedweather.CLIENT_WEATHER.Weathers.forEach((id, data) -> {
+            EnhancedWeather.CLIENT_WEATHER.Weathers.forEach((id, data) -> {
                 if(new Vec3d(x,200,y).isInRange(data.Position, 32D)) {
                     if(WeatherListTiming.containsKey(id)) {
                         if(WeatherListTiming.get(id) >= 40L) {

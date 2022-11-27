@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import sh.talonfox.enhancedweather.Enhancedweather;
+import sh.talonfox.enhancedweather.EnhancedWeather;
 
 @Mixin(Particle.class)
 public class MixinParticle {
@@ -35,18 +35,18 @@ public class MixinParticle {
     protected double velocityZ;
     @Inject(at = @At("TAIL"), method = "tick")
     private void applyWind(CallbackInfo ci) {
-        if(Enhancedweather.CONFIG.Client_ParticleWind) {
+        if(EnhancedWeather.CONFIG.Client_ParticleWind) {
             if (world.getDimensionKey().equals(DimensionTypes.OVERWORLD)) {
                 if (collidesWithWorld) {
                     if(world.getTopPosition(Heightmap.Type.MOTION_BLOCKING,new BlockPos(prevPosX,prevPosY,prevPosZ)).getY() <= prevPosY) {
-                        Vec3d result = Enhancedweather.CLIENT_WIND.ApplyWindForce(new Vec3d(velocityX, velocityY, velocityZ), 1F, 1F / 20F, 0.5F);
+                        Vec3d result = EnhancedWeather.CLIENT_WIND.ApplyWindForce(new Vec3d(velocityX, velocityY, velocityZ), 1F, 1F / 20F, 0.5F);
                         velocityX = result.x;
                         velocityZ = result.z;
                     }
                 }
             } else if (world.getDimensionKey().equals(DimensionTypes.THE_NETHER)) {
                 if (collidesWithWorld) {
-                    Vec3d result = Enhancedweather.NETHER_CLIENT_WIND.ApplyWindForce(new Vec3d(velocityX, velocityY, velocityZ), 1F, 1F / 20F, 0.5F);
+                    Vec3d result = EnhancedWeather.NETHER_CLIENT_WIND.ApplyWindForce(new Vec3d(velocityX, velocityY, velocityZ), 1F, 1F / 20F, 0.5F);
                     velocityX = result.x;
                     velocityZ = result.z;
                 }

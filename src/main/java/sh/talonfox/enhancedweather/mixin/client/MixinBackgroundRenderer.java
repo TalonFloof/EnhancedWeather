@@ -12,14 +12,14 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import sh.talonfox.enhancedweather.Enhancedweather;
+import sh.talonfox.enhancedweather.EnhancedWeather;
 import sh.talonfox.enhancedweather.weather.ClientsideManager;
 
 @Mixin(BackgroundRenderer.class)
 public class MixinBackgroundRenderer {
     @Inject(method = "applyFog", at = @At(value = "RETURN"))
     private static void addWeatherFog(Camera camera, BackgroundRenderer.FogType fogType, float viewDistance, boolean thickFog, float tickDelta, CallbackInfo ci) {
-        if(Enhancedweather.CONFIG.Client_PrecipitationFog) {
+        if(EnhancedWeather.CONFIG.Client_PrecipitationFog) {
             if (MinecraftClient.getInstance().world.getDimensionKey().equals(DimensionTypes.OVERWORLD)) {
                 if (MinecraftClient.getInstance().gameRenderer.getCamera().getSubmersionType().equals(CameraSubmersionType.NONE)) {
                     assert MinecraftClient.getInstance().player != null;

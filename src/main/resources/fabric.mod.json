@@ -17,10 +17,13 @@
     "environment": "*",
     "entrypoints": {
         "client": [
-            "sh.talonfox.enhancedweather.client.EnhancedweatherClient"
+            "sh.talonfox.enhancedweather.client.EnhancedWeatherClient"
         ],
         "main": [
-            "sh.talonfox.enhancedweather.Enhancedweather"
+            "sh.talonfox.enhancedweather.EnhancedWeather"
+        ],
+        "modmenu": [
+            "sh.talonfox.enhancedweather.common.config.ModMenuIntegration"
         ],
         "journeymap": [
             "sh.talonfox.enhancedweather.externmods.journeymap.EnhancedWeatherJMPlugin"
@@ -32,6 +35,7 @@
     "depends": {
         "fabricloader": ">=0.14.9",
         "fabric": "*",
-        "minecraft": ">=1.19"
+        "minecraft": ">=1.19",
+        "cloth-config": ">=8.2.88"
     }
 }

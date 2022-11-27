@@ -7,7 +7,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.math.Vec3d;
-import sh.talonfox.enhancedweather.Enhancedweather;
+import sh.talonfox.enhancedweather.EnhancedWeather;
 import sh.talonfox.enhancedweather.network.WindSync;
 import sh.talonfox.enhancedweather.weather.weatherevents.Cloud;
 
@@ -49,15 +49,15 @@ public class Wind {
                     SpeedGlobal += (rand.nextDouble() * SpeedGlobalChangeRate);
                 SpeedGlobalRandChangeTimer = SpeedGlobalRandChangeDelay;
                 if (HighWindTimer <= 0)
-                    if (rand.nextInt(Enhancedweather.CONFIG.Wind_LowWindStartChance) == 0) {
-                        LowWindTimer = Enhancedweather.CONFIG.Wind_LowWindDurationBase + rand.nextInt(Enhancedweather.CONFIG.Wind_LowWindDurationExtra);
-                        Enhancedweather.LOGGER.info("Low Wind for {} ticks", LowWindTimer);
+                    if (rand.nextInt(EnhancedWeather.CONFIG.Wind_LowWindStartChance) == 0) {
+                        LowWindTimer = EnhancedWeather.CONFIG.Wind_LowWindDurationBase + rand.nextInt(EnhancedWeather.CONFIG.Wind_LowWindDurationExtra);
+                        EnhancedWeather.LOGGER.info("Low Wind for {} ticks", LowWindTimer);
                     } else
                         LowWindTimer = 0;
                 if (HighWindTimer <= 0)
-                    if (rand.nextInt(Enhancedweather.CONFIG.Wind_HighWindStartChance) == 0) {
-                        HighWindTimer = Enhancedweather.CONFIG.Wind_HighWindDurationBase + rand.nextInt(Enhancedweather.CONFIG.Wind_HighWindDurationExtra);
-                        Enhancedweather.LOGGER.info("High Wind for {} ticks", HighWindTimer);
+                    if (rand.nextInt(EnhancedWeather.CONFIG.Wind_HighWindStartChance) == 0) {
+                        HighWindTimer = EnhancedWeather.CONFIG.Wind_HighWindDurationBase + rand.nextInt(EnhancedWeather.CONFIG.Wind_HighWindDurationExtra);
+                        EnhancedWeather.LOGGER.info("High Wind for {} ticks", HighWindTimer);
                     }
             }
         } else {
@@ -72,10 +72,10 @@ public class Wind {
             AngleGlobal += 360;
         if(AngleGlobal > 180)
             AngleGlobal -= 360;
-        if (SpeedGlobal < Math.max(0.00001F,((float)Enhancedweather.CONFIG.Wind_MinimumSpeed)/100F))
-            SpeedGlobal = Math.max(0.00001F,((float)Enhancedweather.CONFIG.Wind_MinimumSpeed)/100F);
-        if (SpeedGlobal > Math.max(0.00001F,((float)Enhancedweather.CONFIG.Wind_MaximumSpeed)/100F))
-            SpeedGlobal = Math.max(0.00001F,((float)Enhancedweather.CONFIG.Wind_MaximumSpeed)/100F);
+        if (SpeedGlobal < Math.max(0.00001F,((float) EnhancedWeather.CONFIG.Wind_MinimumSpeed)/100F))
+            SpeedGlobal = Math.max(0.00001F,((float) EnhancedWeather.CONFIG.Wind_MinimumSpeed)/100F);
+        if (SpeedGlobal > Math.max(0.00001F,((float) EnhancedWeather.CONFIG.Wind_MaximumSpeed)/100F))
+            SpeedGlobal = Math.max(0.00001F,((float) EnhancedWeather.CONFIG.Wind_MaximumSpeed)/100F);
         if((server.getTicks() % 40) == 0)
             WindSync.send(server, dimid);
     }
@@ -87,7 +87,7 @@ public class Wind {
             TimeEvent--;
         }
         if(clientTicks % 10 == 0) {
-            Cloud cloud = Enhancedweather.CLIENT_WEATHER.getClosestCloud(new Vec3d(MinecraftClient.getInstance().player.getX(),200,MinecraftClient.getInstance().player.getZ()),256,false,false,false,true,0);
+            Cloud cloud = EnhancedWeather.CLIENT_WEATHER.getClosestCloud(new Vec3d(MinecraftClient.getInstance().player.getX(),200,MinecraftClient.getInstance().player.getZ()),256,false,false,false,true,0);
             if(cloud != null) {
                 TimeEvent = 80;
                 double var11 = cloud.Position.getX() - MinecraftClient.getInstance().player.getX();
@@ -95,7 +95,7 @@ public class Wind {
                 AngleEvent = -((float)Math.atan2(var11, var15)) * 180.0F / (float)Math.PI;
                 SpeedEvent = 2F;
             }
-            cloud = Enhancedweather.CLIENT_WEATHER.getClosestCloud(new Vec3d(MinecraftClient.getInstance().player.getX(),200,MinecraftClient.getInstance().player.getZ()),256,false,false,true,false,0);
+            cloud = EnhancedWeather.CLIENT_WEATHER.getClosestCloud(new Vec3d(MinecraftClient.getInstance().player.getX(),200,MinecraftClient.getInstance().player.getZ()),256,false,false,true,false,0);
             if(cloud != null) {
                 TimeEvent = 80;
                 AngleEvent = cloud.Angle;
@@ -171,8 +171,8 @@ public class Wind {
             stream.write(data);
             stream.close();
         } catch (Exception e) {
-            Enhancedweather.LOGGER.error("Failed to save Wind Data for Dimension #"+dimid);
-            Enhancedweather.LOGGER.error("Reason: "+e.toString());
+            EnhancedWeather.LOGGER.error("Failed to save Wind Data for Dimension #"+dimid);
+            EnhancedWeather.LOGGER.error("Reason: "+e.toString());
         }
     }
     public void load(MinecraftServer server, int dimid) {
@@ -186,8 +186,8 @@ public class Wind {
                 LowWindTimer = jsonObject.getInt("LowWindTimer",0);
                 HighWindTimer = jsonObject.getInt("HighWindTimer",0);
             } catch (Exception e) {
-                Enhancedweather.LOGGER.error("Failed to load Wind Data for Dimension #"+dimid);
-                Enhancedweather.LOGGER.error("Reason: "+e.toString());
+                EnhancedWeather.LOGGER.error("Failed to load Wind Data for Dimension #"+dimid);
+                EnhancedWeather.LOGGER.error("Reason: "+e.toString());
             }
         }
     }

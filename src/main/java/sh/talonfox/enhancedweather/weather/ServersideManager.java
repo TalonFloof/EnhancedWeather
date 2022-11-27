@@ -14,7 +14,7 @@ import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
-import sh.talonfox.enhancedweather.Enhancedweather;
+import sh.talonfox.enhancedweather.EnhancedWeather;
 import sh.talonfox.enhancedweather.network.UpdateStorm;
 import sh.talonfox.enhancedweather.weather.weatherevents.Cloud;
 import sh.talonfox.enhancedweather.weather.weatherevents.SquallLine;
@@ -63,7 +63,7 @@ public class ServersideManager extends Manager {
                         return;
                     if((long)Math.floor(world.getTimeOfDay()/24000F) != PreviousDay) {
                         PreviousDay = (long)Math.floor(world.getTimeOfDay()/24000F);
-                        if(new Random().nextInt(Enhancedweather.CONFIG.Weather_SquallLineChance) == 0) {
+                        if(new Random().nextInt(EnhancedWeather.CONFIG.Weather_SquallLineChance) == 0) {
                             var player = world.getRandomAlivePlayer();
                             var squallLinePos = player.getPos().multiply(1,0,1).add(rand.nextInt(2048)-1024,200,rand.nextInt(2048)-1024);
                             SquallLine so = new SquallLine(this,Vec3d.ofCenter(new Vec3i(squallLinePos.getX(),squallLinePos.getY(),squallLinePos.getZ())));
@@ -88,7 +88,7 @@ public class ServersideManager extends Manager {
                                         break;
                                     dist = (int) Math.floor(new Vec3d(i.getX(), 200, i.getZ()).distanceTo(cloud.Position));
                                 }
-                                if (new Random().nextInt(Enhancedweather.CONFIG.Weather_SupercellChance) == 0) {
+                                if (new Random().nextInt(EnhancedWeather.CONFIG.Weather_SupercellChance) == 0) {
                                     if(cloud.SquallLineControlled)
                                         continue;
                                     cloud.Thundering = true;
@@ -143,7 +143,7 @@ public class ServersideManager extends Manager {
 
         int closestToPlayer = 128;
         float windOffsetDist = Math.min(256, 1124 / 4 * 3);
-        float angle = Enhancedweather.WIND.AngleGlobal;
+        float angle = EnhancedWeather.WIND.AngleGlobal;
         double vecX = -Math.sin(angle) * windOffsetDist;
         double vecZ = Math.cos(angle) * windOffsetDist;
         while (tryCountCur++ == 0 || (tryCountCur < tryCountMax && (soClose != null || playerClose != null))) {
@@ -174,7 +174,7 @@ public class ServersideManager extends Manager {
         if(file.exists() && file.isFile()) {
             try {
                 JsonObject jsonObject = Jankson.builder().build().load(file);
-                if(jsonObject.getLong("DataFormat",0L) != Enhancedweather.WEATHER_DATA_VERSION) {
+                if(jsonObject.getLong("DataFormat",0L) != EnhancedWeather.WEATHER_DATA_VERSION) {
                     return;
                 }
                 PreviousDay = jsonObject.getLong("previousDay",0);
@@ -188,8 +188,8 @@ public class ServersideManager extends Manager {
                     }
                 }
             } catch (Exception e) {
-                Enhancedweather.LOGGER.error("Failed to load Cloud Data for Dimension #0");
-                Enhancedweather.LOGGER.error("Reason: "+e.toString());
+                EnhancedWeather.LOGGER.error("Failed to load Cloud Data for Dimension #0");
+                EnhancedWeather.LOGGER.error("Reason: "+e.toString());
             }
         }
     }
@@ -200,7 +200,7 @@ public class ServersideManager extends Manager {
         for(UUID i : Weathers.keySet()) {
             storms.put(i.toString(), Weathers.get(i).generateSaveDataJson());
         }
-        jsonObject.put("DataFormat",new JsonPrimitive(Enhancedweather.WEATHER_DATA_VERSION));
+        jsonObject.put("DataFormat",new JsonPrimitive(EnhancedWeather.WEATHER_DATA_VERSION));
         jsonObject.put("previousDay",new JsonPrimitive(PreviousDay));
         jsonObject.put("storms",storms);
         String data = jsonObject.toJson(true,true);
@@ -213,8 +213,8 @@ public class ServersideManager extends Manager {
             stream.write(data);
             stream.close();
         } catch (Exception e) {
-            Enhancedweather.LOGGER.error("Failed to save Cloud Data for Dimension #0");
-            Enhancedweather.LOGGER.error("Reason: "+e.toString());
+            EnhancedWeather.LOGGER.error("Failed to save Cloud Data for Dimension #0");
+            EnhancedWeather.LOGGER.error("Reason: "+e.toString());
         }
     }
 }

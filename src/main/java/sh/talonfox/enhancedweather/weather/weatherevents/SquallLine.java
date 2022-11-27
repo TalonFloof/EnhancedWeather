@@ -7,7 +7,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
-import sh.talonfox.enhancedweather.Enhancedweather;
+import sh.talonfox.enhancedweather.EnhancedWeather;
 import sh.talonfox.enhancedweather.network.UpdateStorm;
 import sh.talonfox.enhancedweather.weather.Manager;
 import sh.talonfox.enhancedweather.weather.Weather;
@@ -66,7 +66,7 @@ public class SquallLine extends Weather {
             assert storm.Position.y == 200;
             var uuid = UUID.randomUUID();
             storm.Thundering = true;
-            storm.Water = Enhancedweather.CONFIG.Weather_MinimumWaterToPrecipitate*2;
+            storm.Water = EnhancedWeather.CONFIG.Weather_MinimumWaterToPrecipitate*2;
             storm.Precipitating = true;
             storm.SquallLineControlled = true;
             storm.Size = 300;

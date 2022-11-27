@@ -15,22 +15,22 @@ public class ServerEvents {
     public static void Initialize() {
         ServerWorldEvents.LOAD.register((server,world) -> {
             if(world.getDimensionKey().equals(DimensionTypes.OVERWORLD)) {
-                Enhancedweather.LOGGER.info("Server starting!");
-                Enhancedweather.LOGGER.info("Initializing Wind...");
-                Enhancedweather.WIND = new Wind();
-                Enhancedweather.NETHER_WIND = new Wind();
-                Enhancedweather.WIND.load(server, 0);
-                Enhancedweather.NETHER_WIND.load(server, -1);
-                Enhancedweather.LOGGER.info("Initializing Server-side Weather Manager...");
-                Enhancedweather.SERVER_WEATHER = new ServersideManager(world);
-                Enhancedweather.SERVER_WEATHER.load(server);
+                EnhancedWeather.LOGGER.info("Server starting!");
+                EnhancedWeather.LOGGER.info("Initializing Wind...");
+                EnhancedWeather.WIND = new Wind();
+                EnhancedWeather.NETHER_WIND = new Wind();
+                EnhancedWeather.WIND.load(server, 0);
+                EnhancedWeather.NETHER_WIND.load(server, -1);
+                EnhancedWeather.LOGGER.info("Initializing Server-side Weather Manager...");
+                EnhancedWeather.SERVER_WEATHER = new ServersideManager(world);
+                EnhancedWeather.SERVER_WEATHER.load(server);
                 world.setWeather(Integer.MAX_VALUE,Integer.MAX_VALUE,false,false);
             }
         });
         ServerTickEvents.START_SERVER_TICK.register((server) -> {
-            Enhancedweather.WIND.tick(server, 0);
-            Enhancedweather.NETHER_WIND.tick(server, -1);
-            Enhancedweather.SERVER_WEATHER.tick();
+            EnhancedWeather.WIND.tick(server, 0);
+            EnhancedWeather.NETHER_WIND.tick(server, -1);
+            EnhancedWeather.SERVER_WEATHER.tick();
         });
         ServerPlayConnectionEvents.JOIN.register((handler, packetSender, server) -> {
             if(ServersideManager.IsNewWorld) {
@@ -38,22 +38,22 @@ public class ServerEvents {
                 Random rand = new Random();
                 int num = rand.nextInt(100);
                 if(num < 33) {
-                    Enhancedweather.LOGGER.info("World will start out with clear weather");
+                    EnhancedWeather.LOGGER.info("World will start out with clear weather");
                 } else if(num < 66) {
-                    Enhancedweather.LOGGER.info("World will start out with rainy weather");
-                    while(Enhancedweather.SERVER_WEATHER.Weathers.size() < 20) {
-                        Enhancedweather.SERVER_WEATHER.attemptCloudSpawn(handler.getPlayer(), 200);
+                    EnhancedWeather.LOGGER.info("World will start out with rainy weather");
+                    while(EnhancedWeather.SERVER_WEATHER.Weathers.size() < 20) {
+                        EnhancedWeather.SERVER_WEATHER.attemptCloudSpawn(handler.getPlayer(), 200);
                     }
-                    Enhancedweather.SERVER_WEATHER.Weathers.values().stream().filter(so -> so instanceof Cloud).forEach((so) -> {
+                    EnhancedWeather.SERVER_WEATHER.Weathers.values().stream().filter(so -> so instanceof Cloud).forEach((so) -> {
                         ((Cloud)so).Water = 400;
                         ((Cloud)so).Precipitating = true;
                     });
                 } else {
-                    Enhancedweather.LOGGER.info("World will start out with stormy weather");
-                    while(Enhancedweather.SERVER_WEATHER.Weathers.size() < 20) {
-                        Enhancedweather.SERVER_WEATHER.attemptCloudSpawn(handler.getPlayer(), 200);
+                    EnhancedWeather.LOGGER.info("World will start out with stormy weather");
+                    while(EnhancedWeather.SERVER_WEATHER.Weathers.size() < 20) {
+                        EnhancedWeather.SERVER_WEATHER.attemptCloudSpawn(handler.getPlayer(), 200);
                     }
-                    Enhancedweather.SERVER_WEATHER.Weathers.values().stream().filter(so -> so instanceof Cloud).forEach((so) -> {
+                    EnhancedWeather.SERVER_WEATHER.Weathers.values().stream().filter(so -> so instanceof Cloud).forEach((so) -> {
                         ((Cloud)so).Water = 400;
                         ((Cloud)so).Precipitating = true;
                         ((Cloud)so).Thundering = true;
@@ -65,14 +65,14 @@ public class ServerEvents {
             }
         });
         ServerLifecycleEvents.SERVER_STOPPING.register((server) -> {
-            Enhancedweather.LOGGER.info("Server stopping!");
-            Enhancedweather.LOGGER.info("Saving Enhanced Weather Data to world");
-            Enhancedweather.WIND.save(server,0);
-            Enhancedweather.NETHER_WIND.save(server,-1);
-            Enhancedweather.SERVER_WEATHER.save(server);
-            Enhancedweather.SERVER_WEATHER = null;
-            Enhancedweather.NETHER_WIND = null;
-            Enhancedweather.WIND = null;
+            EnhancedWeather.LOGGER.info("Server stopping!");
+            EnhancedWeather.LOGGER.info("Saving Enhanced Weather Data to world");
+            EnhancedWeather.WIND.save(server,0);
+            EnhancedWeather.NETHER_WIND.save(server,-1);
+            EnhancedWeather.SERVER_WEATHER.save(server);
+            EnhancedWeather.SERVER_WEATHER = null;
+            EnhancedWeather.NETHER_WIND = null;
+            EnhancedWeather.WIND = null;
             ServersideManager.IsNewWorld = false;
         });
     }

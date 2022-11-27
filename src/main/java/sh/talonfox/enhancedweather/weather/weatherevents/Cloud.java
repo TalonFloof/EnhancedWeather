@@ -18,7 +18,7 @@ import net.minecraft.util.math.*;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
-import sh.talonfox.enhancedweather.Enhancedweather;
+import sh.talonfox.enhancedweather.EnhancedWeather;
 import sh.talonfox.enhancedweather.common.particles.CloudParticle;
 import sh.talonfox.enhancedweather.common.particles.ParticleRegister;
 import sh.talonfox.enhancedweather.weather.Ambience;
@@ -71,7 +71,7 @@ public class Cloud extends Weather {
         Supercell = false;
         TornadoStage = Integer.MIN_VALUE;
         MaxHailIntensity = rand.nextInt(0,3);
-        MaxTornadoStage = Enhancedweather.CONFIG.Weather_TornadoesCanSpawn ? rand.nextInt(-1,6) : -1;
+        MaxTornadoStage = EnhancedWeather.CONFIG.Weather_TornadoesCanSpawn ? rand.nextInt(-1,6) : -1;
         if(MaxTornadoStage == -1)
             MaxTornadoStage = Integer.MIN_VALUE;
     }
@@ -148,14 +148,14 @@ public class Cloud extends Weather {
         Vec3i playerPos = new Vec3i(MinecraftClient.getInstance().player.getX(), Position.y, MinecraftClient.getInstance().player.getZ());
         if ((ticksClient % ((Math.max(1, (int)(100F / Size))))) == 0) {
             Vec3i spawnPos = new Vec3i(Position.x + (Math.random() * Size) - (Math.random() * Size), Position.y, Position.z + (Math.random() * Size) - (Math.random() * Size));
-            if (ParticlesCloud.size() < Size && playerPos.getManhattanDistance(spawnPos) < Enhancedweather.CONFIG.Client_CloudParticleRenderDistance) {
-                float baseBright = Thundering?0.2F:MathHelper.lerp(Math.max(0F,Math.min(1F,((float)Water)/((float)Enhancedweather.CONFIG.Weather_MinimumWaterToPrecipitate))),1.0F,0.5F);
+            if (ParticlesCloud.size() < Size && playerPos.getManhattanDistance(spawnPos) < EnhancedWeather.CONFIG.Client_CloudParticleRenderDistance) {
+                float baseBright = Thundering?0.2F:MathHelper.lerp(Math.max(0F,Math.min(1F,((float)Water)/((float) EnhancedWeather.CONFIG.Weather_MinimumWaterToPrecipitate))),1.0F,0.5F);
                 CloudParticle newParticle = (CloudParticle) MinecraftClient.getInstance().particleManager.addParticle(ParticleRegister.CLOUD, spawnPos.getX(), spawnPos.getY(), spawnPos.getZ(), Thundering?1:0, Math.min(1F, baseBright), Math.min(1F, baseBright));
                 assert newParticle != null;
                 if(Angle != Float.MIN_VALUE) {
                     newParticle.setVelocity(-Math.sin(Math.toRadians(Angle)) * 0.1D, 0D, Math.cos(Math.toRadians(Angle)) * 0.1D);
                 } else {
-                    newParticle.setVelocity(-Math.sin(Math.toRadians(Enhancedweather.CLIENT_WIND.AngleGlobal)) * Enhancedweather.CLIENT_WIND.SpeedGlobal * 0.1D, 0D, Math.cos(Math.toRadians(Enhancedweather.CLIENT_WIND.AngleGlobal)) * Enhancedweather.CLIENT_WIND.SpeedGlobal * 0.1D);
+                    newParticle.setVelocity(-Math.sin(Math.toRadians(EnhancedWeather.CLIENT_WIND.AngleGlobal)) * EnhancedWeather.CLIENT_WIND.SpeedGlobal * 0.1D, 0D, Math.cos(Math.toRadians(EnhancedWeather.CLIENT_WIND.AngleGlobal)) * EnhancedWeather.CLIENT_WIND.SpeedGlobal * 0.1D);
                 }
                 if(Supercell && newParticle.ID % 20 < 5) {
                     newParticle.setMaxAge(Size+rand.nextInt(100));
@@ -190,7 +190,7 @@ public class Cloud extends Weather {
                     }
                     if (ParticlesFunnel.size() < maxParticles) {
                         Vec3d tryPos = new Vec3d(Position.x + (rand.nextDouble() * spawnRad) - (rand.nextDouble() * spawnRad), MathHelper.lerp(formationProgress, Position.y, currentY), Position.z + (rand.nextDouble() * spawnRad) - (rand.nextDouble() * spawnRad));
-                        if (tryPos.distanceTo(Vec3d.ofCenter(playerPos)) < Enhancedweather.CONFIG.Client_CloudParticleRenderDistance) {
+                        if (tryPos.distanceTo(Vec3d.ofCenter(playerPos)) < EnhancedWeather.CONFIG.Client_CloudParticleRenderDistance) {
                             CloudParticle newParticle = (CloudParticle) MinecraftClient.getInstance().particleManager.addParticle(ParticleRegister.CLOUD, tryPos.getX(), tryPos.getY(), tryPos.getZ(), 1F, 0.3F, 0.3F);
                             assert newParticle != null;
                             newParticle.setMaxAge(150 + ((Intensity - 1) * 100) + rand.nextInt(100));
@@ -288,8 +288,8 @@ public class Cloud extends Weather {
                 } else {
                     float cloudMoveAmp = 0.2F * (1 + Layer);
 
-                    speed = Enhancedweather.CLIENT_WIND.SpeedGlobal * cloudMoveAmp;
-                    angle = Enhancedweather.CLIENT_WIND.AngleGlobal;
+                    speed = EnhancedWeather.CLIENT_WIND.SpeedGlobal * cloudMoveAmp;
+                    angle = EnhancedWeather.CLIENT_WIND.AngleGlobal;
 
                     if (ent.ID % 20 < 5) {
                         extraDropCalc = ((ent.ID % 20) * 5F);
@@ -337,11 +337,11 @@ public class Cloud extends Weather {
                     GroundY = HostManager.getWorld().getSeaLevel() + 1;
             }
             boolean waterCollected = false;
-            if (rand.nextInt(Enhancedweather.CONFIG.Weather_WaterCollectionFromNothingChance) == 0) {
+            if (rand.nextInt(EnhancedWeather.CONFIG.Weather_WaterCollectionFromNothingChance) == 0) {
                 Water += 10;
                 waterCollected = true;
             }
-            if(rand.nextInt(Enhancedweather.CONFIG.Weather_WaterCollectionFromBiomeChance) == 0 && !waterCollected) {
+            if(rand.nextInt(EnhancedWeather.CONFIG.Weather_WaterCollectionFromBiomeChance) == 0 && !waterCollected) {
                 RegistryEntry<Biome> biome = this.HostManager.getWorld().getBiome(new BlockPos(Position.x, Position.y, Position.z));
                 if(biome.isIn(BiomeTags.IS_JUNGLE) || biome.matchesId(new Identifier("minecraft:swamp")) || biome.matchesId(new Identifier("minecraft:mangrove_swamp")) || biome.isIn(BiomeTags.IS_RIVER) || biome.isIn(BiomeTags.IS_OCEAN) || biome.isIn(BiomeTags.IS_DEEP_OCEAN)) {
                     Water += 10;
@@ -358,7 +358,7 @@ public class Cloud extends Weather {
             } else if(Thundering) {
                 Precipitating = true;
             } else {
-                if ((Water >= Enhancedweather.CONFIG.Weather_MinimumWaterToPrecipitate && rand.nextInt(Enhancedweather.CONFIG.Weather_PrecipitationChance) == 0)) {
+                if ((Water >= EnhancedWeather.CONFIG.Weather_MinimumWaterToPrecipitate && rand.nextInt(EnhancedWeather.CONFIG.Weather_PrecipitationChance) == 0)) {
                     Precipitating = true;
                 }
             }
@@ -415,7 +415,7 @@ public class Cloud extends Weather {
         if(SquallLineControlled)
             return;
         if(Angle == Float.MIN_VALUE) {
-            float angle = Enhancedweather.WIND.SpeedGlobal;
+            float angle = EnhancedWeather.WIND.SpeedGlobal;
             Random rand = new Random();
             angle += (rand.nextFloat() - rand.nextFloat()) * 0.15F;
             float angleAdjust = Math.max(10, Math.min(45, 45F * 0 * 0.2F));
@@ -427,7 +427,7 @@ public class Cloud extends Weather {
             }
             double vecX = -Math.sin(Math.toRadians(angle));
             double vecZ = Math.cos(Math.toRadians(angle));
-            Vec3d motion = new Vec3d(vecX * (Enhancedweather.WIND.SpeedGlobal * 0.2F), 0, vecZ * (Enhancedweather.WIND.SpeedGlobal * 0.2F));
+            Vec3d motion = new Vec3d(vecX * (EnhancedWeather.WIND.SpeedGlobal * 0.2F), 0, vecZ * (EnhancedWeather.WIND.SpeedGlobal * 0.2F));
             Position = Position.add(motion);
         } else {
             double vecX = -Math.sin(Math.toRadians(Angle));
