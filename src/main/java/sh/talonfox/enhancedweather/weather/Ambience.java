@@ -7,8 +7,8 @@ import net.minecraft.util.Identifier;
 import net.minecraft.world.dimension.DimensionTypes;
 
 public class Ambience {
-    public static MusicLoop DistantWinds = new MusicLoop(new SoundEvent(new Identifier("enhancedweather:ambience.distant_winds")));
-    public static MusicLoop CloseWinds = new MusicLoop(new SoundEvent(new Identifier("enhancedweather:ambience.close_winds")));
+    public static MusicLoop DistantWinds = new MusicLoop(SoundEvent.of(new Identifier("enhancedweather:ambience.distant_winds")));
+    public static MusicLoop CloseWinds = new MusicLoop(SoundEvent.of(new Identifier("enhancedweather:ambience.close_winds")));
     public static int CurrentAmbientSound = 0;
     public static boolean HighWindExists = false;
     public static boolean InOverworld = false;
@@ -24,13 +24,13 @@ public class Ambience {
             }
         }
         if(HighWindExists && CurrentAmbientSound != 1 && ClientsideManager.PrecipitationIntensity <= 3 && InOverworld) {
-            DistantWinds = new MusicLoop(new SoundEvent(new Identifier("enhancedweather:ambience.distant_winds")));
+            DistantWinds = new MusicLoop(SoundEvent.of(new Identifier("enhancedweather:ambience.distant_winds")));
             MinecraftClient.getInstance().getSoundManager().play(DistantWinds);
             DistantWinds.fadeIn();
             CloseWinds.fadeOut();
             CurrentAmbientSound = 1;
         } else if(CurrentAmbientSound != 2 && ClientsideManager.PrecipitationIntensity > 3 && InOverworld) {
-            CloseWinds = new MusicLoop(new SoundEvent(new Identifier("enhancedweather:ambience.close_winds")));
+            CloseWinds = new MusicLoop(SoundEvent.of(new Identifier("enhancedweather:ambience.close_winds")));
             MinecraftClient.getInstance().getSoundManager().play(CloseWinds);
             DistantWinds.fadeOut();
             CloseWinds.fadeIn();

@@ -7,9 +7,9 @@ import net.minecraft.client.render.*;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Quaternion;
+import org.joml.Quaternionf;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3f;
+import org.joml.Vector3f;
 import sh.talonfox.enhancedweather.EnhancedWeather;
 
 import java.util.Random;
@@ -56,18 +56,18 @@ public class CloudParticle extends SpriteBillboardParticle {
         float f = (float)(MathHelper.lerp((double)tickDelta, this.prevPosX, this.x) - vec3d.getX());
         float g = (float)(MathHelper.lerp((double)tickDelta, this.prevPosY, this.y) - vec3d.getY());
         float h = (float)(MathHelper.lerp((double)tickDelta, this.prevPosZ, this.z) - vec3d.getZ());
-        Quaternion quaternion;
-        quaternion = new Quaternion(0, 0, 0, 1);
-        quaternion.hamiltonProduct(Vec3f.POSITIVE_Y.getDegreesQuaternion(this.yaw));
-        quaternion.hamiltonProduct(Vec3f.POSITIVE_X.getDegreesQuaternion(pit));
-        Vec3f[] vec3fs = new Vec3f[]{new Vec3f(-1.0F, -1.0F, 0.0F), new Vec3f(-1.0F, 1.0F, 0.0F), new Vec3f(1.0F, 1.0F, 0.0F), new Vec3f(1.0F, -1.0F, 0.0F)};
-        float j = this.getSize(tickDelta);
+        Quaternionf quaternion;
+        quaternion = new Quaternionf(0, 0, 0, 1);
+        quaternion.rotateY((float)Math.toRadians(this.yaw));
+        quaternion.rotateX((float)Math.toRadians(pit));
+        Vector3f[] vector3fs = new Vector3f[]{new Vector3f(-1.0F, -1.0F, 0.0F), new Vector3f(-1.0F, 1.0F, 0.0F), new Vector3f(1.0F, 1.0F, 0.0F), new Vector3f(1.0F, -1.0F, 0.0F)};
+        float i = this.getSize(tickDelta);
 
-        for(int k = 0; k < 4; ++k) {
-            Vec3f vec3f2 = vec3fs[k];
-            vec3f2.rotate(quaternion);
-            vec3f2.scale(j);
-            vec3f2.add(f, g, h);
+        for(int j = 0; j < 4; ++j) {
+            Vector3f vector3f = vector3fs[j];
+            vector3f.rotate(quaternion);
+            vector3f.mul(i);
+            vector3f.add(f, g, h);
         }
 
         float l = this.getMinU();
@@ -75,10 +75,10 @@ public class CloudParticle extends SpriteBillboardParticle {
         float n = this.getMinV();
         float o = this.getMaxV();
         int p = this.getBrightness(tickDelta);
-        vertexConsumer.vertex(vec3fs[0].getX(), vec3fs[0].getY(), vec3fs[0].getZ()).texture(m, o).color(this.red, this.green, this.blue, this.alpha).light(p).next();
-        vertexConsumer.vertex(vec3fs[1].getX(), vec3fs[1].getY(), vec3fs[1].getZ()).texture(m, n).color(this.red, this.green, this.blue, this.alpha).light(p).next();
-        vertexConsumer.vertex(vec3fs[2].getX(), vec3fs[2].getY(), vec3fs[2].getZ()).texture(l, n).color(this.red, this.green, this.blue, this.alpha).light(p).next();
-        vertexConsumer.vertex(vec3fs[3].getX(), vec3fs[3].getY(), vec3fs[3].getZ()).texture(l, o).color(this.red, this.green, this.blue, this.alpha).light(p).next();
+        vertexConsumer.vertex(vector3fs[0].x, vector3fs[0].y, vector3fs[0].z).texture(m, o).color(this.red, this.green, this.blue, this.alpha).light(p).next();
+        vertexConsumer.vertex(vector3fs[1].x, vector3fs[1].y, vector3fs[1].z).texture(m, n).color(this.red, this.green, this.blue, this.alpha).light(p).next();
+        vertexConsumer.vertex(vector3fs[2].x, vector3fs[2].y, vector3fs[2].z).texture(l, n).color(this.red, this.green, this.blue, this.alpha).light(p).next();
+        vertexConsumer.vertex(vector3fs[3].x, vector3fs[3].y, vector3fs[3].z).texture(l, o).color(this.red, this.green, this.blue, this.alpha).light(p).next();
     }
 
     @Override

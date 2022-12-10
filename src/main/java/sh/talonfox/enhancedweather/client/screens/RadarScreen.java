@@ -108,7 +108,7 @@ public class RadarScreen extends Screen {
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.setShaderTexture(0, DOPPLER_RADAR_OVERLAY);
         RenderSystem.texParameter(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
         RenderSystem.texParameter(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
@@ -124,7 +124,7 @@ public class RadarScreen extends Screen {
                         var icon = !Accurate ? UNKNOWN_INDICATOR : (data.getInt("TornadoStage",0) >= 0 ? TORNADO_INDICATOR : data.getInt("HailIntensity",0) == 2 ? HIGH_HAIL_INDICATOR : (data.getInt("HailIntensity",0) == 1 ? LOW_HAIL_INDICATOR : (data.getBoolean("Thundering", false) ? LIGHTNING_INDICATOR : RAIN_INDICATOR)));
                         //⚠
                         var wind_icon = !Accurate ? null : (data.getInt("TornadoStage",0) >= 0 ? null : data.getBoolean("Supercell",false) ? SUPERCELL_INDICATOR : (data.getInt("WindIntensity",0) > 0 ? WIND_INDICATOR : null));
-                        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+                        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
                         RenderSystem.enableBlend();
                         RenderSystem.texParameter(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
                         RenderSystem.texParameter(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);

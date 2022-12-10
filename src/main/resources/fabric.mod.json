@@ -33,9 +33,8 @@
         "enhancedweather.mixins.json"
     ],
     "depends": {
-        "fabricloader": ">=0.14.9",
         "fabric": "*",
-        "minecraft": ">=1.19",
-        "cloth-config": ">=8.2.88"
+        "minecraft": ">=1.19.3",
+        "cloth-config": ">=9.0.94"
     }
 }

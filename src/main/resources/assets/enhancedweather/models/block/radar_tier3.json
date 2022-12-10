@@ -1,8 +1,8 @@
 {
 	"credit": "Made with Blockbench by TalonFox",
 	"textures": {
-		"0": "enhancedweather:blocks/radar_tier3",
-		"particle": "enhancedweather:blocks/radar_tier3"
+		"0": "enhancedweather:block/radar_tier3",
+		"particle": "enhancedweather:block/radar_tier3"
 	},
 	"elements": [
 		{
