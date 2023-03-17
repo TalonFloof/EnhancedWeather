@@ -20,7 +20,7 @@ public class ItemGroupRegister {
     public static final ItemGroup ITEM_GROUP = FabricItemGroup.builder(
             new Identifier("enhancedweather", "enhancedweather_itemgroup"))
             .icon(() -> new ItemStack(ITEMGROUP_ICON))
-            .entries((enabledFeatures, entries, operatorEnabled) -> {
+            .entries((context, entries) -> {
                 entries.add(new ItemStack(BlockRegister.RADAR_TIER1_BLOCK));
                 entries.add(new ItemStack(BlockRegister.RADAR_TIER2_BLOCK));
                 entries.add(new ItemStack(BlockRegister.RADAR_TIER3_BLOCK));

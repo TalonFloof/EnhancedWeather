@@ -16,6 +16,6 @@ public class MixinEntityDetectRain {
         var pos = ((Entity)(Object)this).getBlockPos();
         Biome biome = world.getBiome(pos).value();
         return EnhancedWeather.SERVER_WEATHER.getClosestCloud(new Vec3d(pos.getX(), 200, pos.getZ()), 384, true, false, false, false, -1) != null
-                && biome.getPrecipitation() == Biome.Precipitation.RAIN && biome.doesNotSnow(pos);
+                && biome.getPrecipitation(pos) == Biome.Precipitation.RAIN && biome.doesNotSnow(pos);
     }
 }

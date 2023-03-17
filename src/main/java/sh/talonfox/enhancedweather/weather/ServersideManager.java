@@ -66,7 +66,7 @@ public class ServersideManager extends Manager {
                         if(new Random().nextInt(EnhancedWeather.CONFIG.Weather_SquallLineChance) == 0) {
                             var player = world.getRandomAlivePlayer();
                             var squallLinePos = player.getPos().multiply(1,0,1).add(rand.nextInt(2048)-1024,200,rand.nextInt(2048)-1024);
-                            SquallLine so = new SquallLine(this,Vec3d.ofCenter(new Vec3i(squallLinePos.getX(),squallLinePos.getY(),squallLinePos.getZ())));
+                            SquallLine so = new SquallLine(this,Vec3d.ofCenter(new Vec3i((int)squallLinePos.getX(),(int)squallLinePos.getY(),(int)squallLinePos.getZ())));
                             UUID id = UUID.randomUUID();
                             Weathers.put(id,so);
                             for(ServerPlayerEntity i : PlayerLookup.all(world.getServer())) {

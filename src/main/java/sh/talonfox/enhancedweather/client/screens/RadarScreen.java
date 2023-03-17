@@ -139,9 +139,9 @@ public class RadarScreen extends Screen {
                             drawTexture(matrices, finalX, finalZ, 16, 16, 0F, 0F, 128, 128, 128, 128);
                         }
                         if(data.getInt("TornadoStage",0) >= 0 && Accurate) {
-                            drawCenteredText(matrices,textRenderer,"EF"+data.getInt("TornadoStage", 0),finalX+8,finalZ-8,0xFFFFFF);
+                            drawCenteredTextWithShadow(matrices,textRenderer,"EF"+data.getInt("TornadoStage", 0),finalX+8,finalZ-8,0xFFFFFF);
                         } else if(data.getInt("WindIntensity",0) > 1 && Accurate) {
-                            drawCenteredText(matrices,textRenderer,data.getInt("WindIntensity",0) == 3 ? "⚠⚠" : "⚠",finalX+8,finalZ-8,0xFF0000);
+                            drawCenteredTextWithShadow(matrices,textRenderer,data.getInt("WindIntensity",0) == 3 ? "⚠⚠" : "⚠",finalX+8,finalZ-8,0xFF0000);
                         }
                     }
                 }

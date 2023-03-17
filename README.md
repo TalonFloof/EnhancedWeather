@@ -1,10 +1,10 @@
-<img src="https://raw.githubusercontent.com/Talon396/EnhancedWeather/main/src/main/resources/assets/enhancedweather/icon.png" alt="Enhanced Weather Logo" width="128">
+<img src="https://raw.githubusercontent.com/TalonFox/EnhancedWeather/main/src/main/resources/assets/enhancedweather/icon.png" alt="Enhanced Weather Logo" width="128">
 
 # Enhanced Weather
 
 ## About
 
-<img src="https://raw.githubusercontent.com/Talon396/EnhancedWeather/main/docs/Clouds.gif" width="640">
+<img src="https://raw.githubusercontent.com/TalonFox/EnhancedWeather/main/docs/Clouds.gif" width="640">
 
 **Animation of Clouds moving in Minecraft**
 
@@ -16,7 +16,7 @@ Enhanced Weather is a reimagining of Corosauce's Weather2 Mod. The original Weat
 
 ### Wind
 
-<img src="https://raw.githubusercontent.com/Talon396/EnhancedWeather/main/docs/Wind.gif" width="640">
+<img src="https://raw.githubusercontent.com/TalonFox/EnhancedWeather/main/docs/Wind.gif" width="640">
 
 **Animation of Torch Particles moving with the wind**
 
@@ -26,7 +26,7 @@ Global Winds will flow around the Overworld and Nether. These winds can move the
 
 ### Storms
 
-<img src="https://raw.githubusercontent.com/Talon396/EnhancedWeather/main/docs/Storm.gif" width="640">
+<img src="https://raw.githubusercontent.com/TalonFox/EnhancedWeather/main/docs/Storm.gif" width="640">
 
 **Animation of a Supercell Storm Forming**
 
@@ -37,7 +37,7 @@ Rain Clouds can also form from water being collected from humid biomes, releasin
 
 ### Tornadoes
 
-<img src="https://raw.githubusercontent.com/Talon396/EnhancedWeather/main/docs/Tornado.gif" width="640">
+<img src="https://raw.githubusercontent.com/TalonFox/EnhancedWeather/main/docs/Tornado.gif" width="640">
 
 **Animation of a Tornado moving across a Plains and Forest Biome**
 
@@ -50,5 +50,5 @@ Tornadoes can pick up entities, though it doesn't destroy blocks yet.
 ### More Weather is expected to come in later Betas
 
 ## License & Attribution
-This mod is licensed under the GNU Lesser General Public License version 3.0 (or later). The original license text can be found [here](https://github.com/Talon396/EnhancedWeather/blob/main/LICENSE).    
+This mod is licensed under the GNU Lesser General Public License version 3.0 (or later). The original license text can be found [here](https://github.com/TalonFox/EnhancedWeather/blob/main/LICENSE).    
 This mod contains code that was used in Corosauce's Weather2 Mod. The original source code can be found [here](https://github.com/Corosauce/weather2/tree/1.18). Weather2 is licensed under the GNU Lesser General Public License version 2.1 (or later).

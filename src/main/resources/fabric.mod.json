@@ -8,9 +8,9 @@
         "TalonFox"
     ],
     "contact": {
-        "sources": "https://github.com/Talon396/EnhancedWeather",
-        "homepage": "https://github.com/Talon396/EnhancedWeather",
-        "issues": "https://github.com/Talon396/EnhancedWeather/issues"
+        "sources": "https://github.com/TalonFox/EnhancedWeather",
+        "homepage": "https://github.com/TalonFox/EnhancedWeather",
+        "issues": "https://github.com/TalonFox/EnhancedWeather/issues"
     },
     "license": "LGPL-3.0",
     "icon": "assets/enhancedweather/icon.png",
@@ -34,7 +34,7 @@
     ],
     "depends": {
         "fabric": "*",
-        "minecraft": ">=1.19.3",
-        "cloth-config": ">=9.0.94"
+        "minecraft": ">=1.19.4",
+        "cloth-config": ">=10.0.96"
     }
 }

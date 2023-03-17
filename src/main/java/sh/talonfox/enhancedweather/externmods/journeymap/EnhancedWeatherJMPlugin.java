@@ -60,7 +60,7 @@ public class EnhancedWeatherJMPlugin implements IClientPlugin {
                         backImage.setOpacity(1F);
                         backImage.setDisplayWidth(128);
                         backImage.setDisplayHeight(128);
-                        var backOverlay = new ImageOverlay("enhancedweather", "back_overlay_"+id.toString(), new BlockPos(val.Position).add(new Vec3i(-64, 0, -64)), new BlockPos(val.Position).add(new Vec3i(64, 0, 64)),backImage);
+                        var backOverlay = new ImageOverlay("enhancedweather", "back_overlay_"+id.toString(), BlockPos.ofFloored(val.Position).add(new Vec3i(-64, 0, -64)), BlockPos.ofFloored(val.Position).add(new Vec3i(64, 0, 64)),backImage);
                         backOverlay.setDimension(world.getRegistryKey());
                         backOverlay.setDisplayOrder(Integer.MAX_VALUE-1);
                         try {
@@ -70,7 +70,7 @@ public class EnhancedWeatherJMPlugin implements IClientPlugin {
                                 frontImage.setOpacity(1F);
                                 frontImage.setDisplayWidth(128);
                                 frontImage.setDisplayHeight(128);
-                                var frontOverlay = new ImageOverlay("enhancedweather", "front_overlay_"+id.toString(), new BlockPos(val.Position).add(new Vec3i(-64, 0, -64)), new BlockPos(val.Position).add(new Vec3i(64, 0, 64)),frontImage);
+                                var frontOverlay = new ImageOverlay("enhancedweather", "front_overlay_"+id.toString(), BlockPos.ofFloored(val.Position).add(new Vec3i(-64, 0, -64)), BlockPos.ofFloored(val.Position).add(new Vec3i(64, 0, 64)),frontImage);
                                 frontOverlay.setDimension(world.getRegistryKey());
                                 frontOverlay.setDisplayOrder(Integer.MAX_VALUE);
                                 JMApi.show(frontOverlay);

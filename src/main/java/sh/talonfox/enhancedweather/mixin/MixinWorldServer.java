@@ -27,7 +27,7 @@ public class MixinWorldServer {
                 if(EnhancedWeather.SERVER_WEATHER.getClosestCloud(new Vec3d(pos.getX(), 200, pos.getZ()), 384, true, false, false, false, 0) == null)
                     return false;
                 Biome biome = world.getBiome(pos).value();
-                return biome.getPrecipitation() == Biome.Precipitation.RAIN && biome.doesNotSnow(pos);
+                return biome.getPrecipitation(pos) == Biome.Precipitation.RAIN && biome.doesNotSnow(pos);
             }
         }
         return false;

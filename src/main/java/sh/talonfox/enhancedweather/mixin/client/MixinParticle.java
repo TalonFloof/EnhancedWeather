@@ -38,7 +38,7 @@ public class MixinParticle {
         if(EnhancedWeather.CONFIG.Client_ParticleWind) {
             if (world.getDimensionKey().equals(DimensionTypes.OVERWORLD)) {
                 if (collidesWithWorld) {
-                    if(world.getTopPosition(Heightmap.Type.MOTION_BLOCKING,new BlockPos(prevPosX,prevPosY,prevPosZ)).getY() <= prevPosY) {
+                    if(world.getTopPosition(Heightmap.Type.MOTION_BLOCKING,new BlockPos((int)prevPosX,(int)prevPosY,(int)prevPosZ)).getY() <= prevPosY) {
                         Vec3d result = EnhancedWeather.CLIENT_WIND.ApplyWindForce(new Vec3d(velocityX, velocityY, velocityZ), 1F, 1F / 20F, 0.5F);
                         velocityX = result.x;
                         velocityZ = result.z;

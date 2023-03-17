@@ -25,7 +25,7 @@ public class MixinBackgroundRenderer {
                     assert MinecraftClient.getInstance().player != null;
                     double yPos = MinecraftClient.getInstance().player.getY();
                     Biome biome = MinecraftClient.getInstance().world.getBiome(MinecraftClient.getInstance().player.getBlockPos()).value();
-                    if (biome.getPrecipitation().equals(Biome.Precipitation.RAIN) && ClientsideManager.PrecipitationRate > 0 && ClientsideManager.PrecipitationIntensity == 0 && yPos < 200 && yPos > 0) {
+                    if (biome.getPrecipitation(MinecraftClient.getInstance().player.getBlockPos()).equals(Biome.Precipitation.RAIN) && ClientsideManager.PrecipitationRate > 0 && ClientsideManager.PrecipitationIntensity == 0 && yPos < 200 && yPos > 0) {
                         RenderSystem.setShaderFogStart(0F);
                         RenderSystem.setShaderFogEnd(MathHelper.lerp(ClientsideManager.PrecipitationRate, viewDistance, 32F));
                     }

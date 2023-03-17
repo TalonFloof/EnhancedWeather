@@ -145,9 +145,9 @@ public class Cloud extends Weather {
             return;
         ticksClient += 1;
         assert MinecraftClient.getInstance().player != null;
-        Vec3i playerPos = new Vec3i(MinecraftClient.getInstance().player.getX(), Position.y, MinecraftClient.getInstance().player.getZ());
+        Vec3i playerPos = new Vec3i((int)MinecraftClient.getInstance().player.getX(), (int)Position.y, (int)MinecraftClient.getInstance().player.getZ());
         if ((ticksClient % ((Math.max(1, (int)(100F / Size))))) == 0) {
-            Vec3i spawnPos = new Vec3i(Position.x + (Math.random() * Size) - (Math.random() * Size), Position.y, Position.z + (Math.random() * Size) - (Math.random() * Size));
+            Vec3i spawnPos = new Vec3i((int)(Position.x + (Math.random() * Size) - (Math.random() * Size)), (int)Position.y, (int)(Position.z + (Math.random() * Size) - (Math.random() * Size)));
             if (ParticlesCloud.size() < Size && playerPos.getManhattanDistance(spawnPos) < EnhancedWeather.CONFIG.Client_CloudParticleRenderDistance) {
                 float baseBright = Thundering?0.2F:MathHelper.lerp(Math.max(0F,Math.min(1F,((float)Water)/((float) EnhancedWeather.CONFIG.Weather_MinimumWaterToPrecipitate))),1.0F,0.5F);
                 CloudParticle newParticle = (CloudParticle) MinecraftClient.getInstance().particleManager.addParticle(ParticleRegister.CLOUD, spawnPos.getX(), spawnPos.getY(), spawnPos.getZ(), Thundering?1:0, Math.min(1F, baseBright), Math.min(1F, baseBright));
@@ -342,7 +342,7 @@ public class Cloud extends Weather {
                 waterCollected = true;
             }
             if(rand.nextInt(EnhancedWeather.CONFIG.Weather_WaterCollectionFromBiomeChance) == 0 && !waterCollected) {
-                RegistryEntry<Biome> biome = this.HostManager.getWorld().getBiome(new BlockPos(Position.x, Position.y, Position.z));
+                RegistryEntry<Biome> biome = this.HostManager.getWorld().getBiome(new BlockPos((int)Position.x, (int)Position.y, (int)Position.z));
                 if(biome.isIn(BiomeTags.IS_JUNGLE) || biome.matchesId(new Identifier("minecraft:swamp")) || biome.matchesId(new Identifier("minecraft:mangrove_swamp")) || biome.isIn(BiomeTags.IS_RIVER) || biome.isIn(BiomeTags.IS_OCEAN) || biome.isIn(BiomeTags.IS_DEEP_OCEAN)) {
                     Water += 10;
                     waterCollected = true;

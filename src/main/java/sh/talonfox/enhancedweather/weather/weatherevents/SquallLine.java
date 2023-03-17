@@ -2,6 +2,8 @@ package sh.talonfox.enhancedweather.weather.weatherevents;
 
 import blue.endless.jankson.JsonObject;
 import blue.endless.jankson.JsonPrimitive;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -54,7 +56,7 @@ public class SquallLine extends Weather {
         }
     }
 
-    @Override
+    @Environment(EnvType.CLIENT)
     public void tickClient() {
 
     }

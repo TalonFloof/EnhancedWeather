@@ -68,7 +68,7 @@ public class MixinWorld {
                         return false;
                 }
                 Biome biome = world.getBiome(pos).value();
-                return biome.getPrecipitation() == Biome.Precipitation.RAIN && biome.doesNotSnow(pos);
+                return biome.getPrecipitation(pos) == Biome.Precipitation.RAIN && biome.doesNotSnow(pos);
             }
         }
         return false;
