@@ -4,6 +4,7 @@ import blue.endless.jankson.JsonObject;
 import blue.endless.jankson.JsonPrimitive;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
@@ -106,16 +107,12 @@ public class RadarScreen extends Screen {
     }
 
     @Override
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        this.renderBackground(matrices);
-        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
-        RenderSystem.setShaderTexture(0, DOPPLER_RADAR_OVERLAY);
-        RenderSystem.texParameter(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-        RenderSystem.texParameter(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-        drawTexture(matrices,(width/2)-96,(height/2)-96,192,192,0F,0F,64,64,64,64);
+    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        this.renderBackground(context);
+        context.drawTexture(DOPPLER_RADAR_OVERLAY,(width/2)-96,(height/2)-96,192,192,0F,0F,64,64,64,64);
         double angle = (((double)ticks % scanSpeed) / scanSpeed) * 360D;
         castLine(width/2,height/2,(width/2)-(int)(Math.sin(Math.toRadians(angle))*96),(height/2)+(int)(Math.cos(Math.toRadians(angle))*96),(x,y) -> {
-            fill(matrices,x,y,x+1,y+1,0xFFFFFFFF);
+            context.fill(x,y,x+1,y+1,0xFFFFFFFF);
         });
         WeatherListData.forEach((id, data) -> {
             switch (((JsonPrimitive) Objects.requireNonNull(data.get("Identifier"))).asString()) {
@@ -124,24 +121,18 @@ public class RadarScreen extends Screen {
                         var icon = !Accurate ? UNKNOWN_INDICATOR : (data.getInt("TornadoStage",0) >= 0 ? TORNADO_INDICATOR : data.getInt("HailIntensity",0) == 2 ? HIGH_HAIL_INDICATOR : (data.getInt("HailIntensity",0) == 1 ? LOW_HAIL_INDICATOR : (data.getBoolean("Thundering", false) ? LIGHTNING_INDICATOR : RAIN_INDICATOR)));
                         //⚠
                         var wind_icon = !Accurate ? null : (data.getInt("TornadoStage",0) >= 0 ? null : data.getBoolean("Supercell",false) ? SUPERCELL_INDICATOR : (data.getInt("WindIntensity",0) > 0 ? WIND_INDICATOR : null));
-                        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
-                        RenderSystem.enableBlend();
-                        RenderSystem.texParameter(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-                        RenderSystem.texParameter(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-                        RenderSystem.setShaderTexture(0, icon);
                         var relativeX = (data.getDouble("X",0D)-Pos.getX())/((Range?2048:1024)/192)-8;
                         var relativeZ = (data.getDouble("Z",0D)-Pos.getZ())/((Range?2048:1024)/192)-8;
                         var finalX = (int)(relativeX+(width/2));
                         var finalZ = (int)(relativeZ+(height/2));
-                        drawTexture(matrices,finalX,finalZ,16,16,0F,0F,128,128,128,128);
+                        context.drawTexture(icon,finalX,finalZ,16,16,0F,0F,128,128,128,128);
                         if(wind_icon != null) {
-                            RenderSystem.setShaderTexture(0, wind_icon);
-                            drawTexture(matrices, finalX, finalZ, 16, 16, 0F, 0F, 128, 128, 128, 128);
+                            context.drawTexture(wind_icon,finalX, finalZ, 16, 16, 0F, 0F, 128, 128, 128, 128);
                         }
                         if(data.getInt("TornadoStage",0) >= 0 && Accurate) {
-                            drawCenteredTextWithShadow(matrices,textRenderer,"EF"+data.getInt("TornadoStage", 0),finalX+8,finalZ-8,0xFFFFFF);
+                            context.drawCenteredTextWithShadow(textRenderer,"EF"+data.getInt("TornadoStage", 0),finalX+8,finalZ-8,0xFFFFFF);
                         } else if(data.getInt("WindIntensity",0) > 1 && Accurate) {
-                            drawCenteredTextWithShadow(matrices,textRenderer,data.getInt("WindIntensity",0) == 3 ? "⚠⚠" : "⚠",finalX+8,finalZ-8,0xFF0000);
+                            context.drawCenteredTextWithShadow(textRenderer,data.getInt("WindIntensity",0) == 3 ? "⚠⚠" : "⚠",finalX+8,finalZ-8,0xFF0000);
                         }
                     }
                 }
