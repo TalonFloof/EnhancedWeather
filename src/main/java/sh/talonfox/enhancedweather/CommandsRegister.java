@@ -128,7 +128,7 @@ public class CommandsRegister {
                             }
                         }
                         EnhancedWeather.SERVER_WEATHER.Weathers.clear();
-                        Ambience.HighWindExists = false;
+                        //Ambience.HighWindExists = false; // Oops...
                         context.getSource().sendMessage(Text.literal("Clearing all Weather"));
                         return 1;
                     })));
