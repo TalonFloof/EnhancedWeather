@@ -4,8 +4,8 @@
   "package": "sh.talonfox.enhancedweather.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "MixinBiome",
     "MixinLightningEntity",
+    "MixinServerWorld",
     "server.MixinEntityDetectRain",
     "server.MixinEntityDetectStorm",
     "server.MixinLevelProperties",
