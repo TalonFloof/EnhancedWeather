@@ -1,25 +1,11 @@
 {
   "required": true,
-  "minVersion": "0.8",
   "package": "sh.talonfox.enhancedweather.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "MixinLightningEntity",
-    "MixinServerWorld",
-    "server.MixinEntityDetectRain",
-    "server.MixinEntityDetectStorm",
-    "server.MixinLevelProperties",
-    "server.MixinServerWorld"
-  ],
-  "client": [
-    "MixinWorld",
-    "client.MixinBackgroundRenderer",
-    "client.MixinParticle"
-  ],
-  "server": [
-    "MixinWorldServer"
+    "ServerWorldMixin"
   ],
   "injectors": {
     "defaultRequire": 1
-  }
+	}
 }

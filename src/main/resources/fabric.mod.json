@@ -1,40 +1,39 @@
 {
-    "schemaVersion": 1,
-    "id": "enhancedweather",
-    "version": "${version}",
-    "name": "Enhanced Weather",
-    "description": "Revamps Minecraft's Weather by adding localized weather systems that move and grow over time.",
-    "authors": [
-        "TalonFox"
-    ],
-    "contact": {
-        "sources": "https://github.com/TalonFox/EnhancedWeather",
-        "homepage": "https://github.com/TalonFox/EnhancedWeather",
-        "issues": "https://github.com/TalonFox/EnhancedWeather/issues"
-    },
-    "license": "LGPL-3.0",
-    "icon": "assets/enhancedweather/icon.png",
-    "environment": "*",
-    "entrypoints": {
-        "client": [
-            "sh.talonfox.enhancedweather.client.EnhancedWeatherClient"
-        ],
-        "main": [
-            "sh.talonfox.enhancedweather.EnhancedWeather"
-        ],
-        "modmenu": [
-            "sh.talonfox.enhancedweather.common.config.ModMenuIntegration"
-        ],
-        "journeymap": [
-            "sh.talonfox.enhancedweather.externmods.journeymap.EnhancedWeatherJMPlugin"
-        ]
-    },
-    "mixins": [
-        "enhancedweather.mixins.json"
-    ],
-    "depends": {
-        "fabric": "*",
-        "minecraft": ">=1.20",
-        "cloth-config": ">=11.1.106"
-    }
+	"schemaVersion": 1,
+	"id": "enhancedweather",
+	"version": "${version}",
+	"name": "Enhanced Weather",
+	"description": "This is an example description! Tell everyone what your mod is about!",
+	"authors": [
+		"Me!"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/enhancedweather/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+          "sh.talonfox.enhancedweather.EnhancedWeather"
+		],
+		"client": [
+			"sh.talonfox.enhancedweather.EnhancedWeatherClient"
+		]
+	},
+	"mixins": [
+		"enhancedweather.mixins.json",
+		{
+			"config": "enhancedweather.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"accessWidener": "enhancedweather.accesswidener",
+	"depends": {
+		"fabricloader": ">=0.14.22",
+		"minecraft": "~1.20.1",
+		"java": ">=17",
+		"fabric-api": "*"
+	}
 }
