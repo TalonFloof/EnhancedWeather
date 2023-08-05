@@ -14,6 +14,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,11 +51,11 @@ public class EnhancedWeather implements ModInitializer {
 		return base * time * ((heatNoise.GetNoise((float) (world.getTime() / 100),0)*0.3F)+1f);
 	}
 
-	public static float getBaseHumidity(ServerWorld world, int x, int z) {
+	public static float getBaseHumidity(World world, int x, int z) {
 		return world.getBiome(new BlockPos(x,64,z)).value().weather.downfall()*100F;
 	}
 
-	public static float getHumidity(ServerWorld world, int x, int z) {
+	public static float getHumidity(World world, int x, int z) {
 		return (getBaseHumidity(world,x,z) * 0.7F + 40 * 0.3F) * (humidityNoise.GetNoise((float) (world.getTime() / 100),0)+1f);
 	}
 

@@ -3,7 +3,10 @@
   "package": "sh.talonfox.enhancedweather.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "ServerWorldMixin"
+    "FireBlockMixin",
+    "LightningEntityMixin",
+    "ServerWorldMixin",
+    "WorldMixin"
   ],
   "injectors": {
     "defaultRequire": 1

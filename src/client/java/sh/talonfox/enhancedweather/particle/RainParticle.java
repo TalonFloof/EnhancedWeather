@@ -58,11 +58,11 @@ public class RainParticle extends SpriteBillboardParticle {
         float z = (float) (MathHelper.lerp(f, this.prevPosZ, this.z) - vec3.z);
         Quaternionf quaternion = new Quaternionf(0,0,0,1);
         if(EnhancedWeatherClient.rainDest == 1F) {
-            quaternion.mul(RotationAxis.POSITIVE_Z.rotationDegrees((EnhancedWeatherClient.windZ/2F) * 17.5F));
-            quaternion.mul(RotationAxis.NEGATIVE_X.rotationDegrees((EnhancedWeatherClient.windX/2F) * 17.5F));
+            quaternion.mul(RotationAxis.NEGATIVE_Z.rotationDegrees((EnhancedWeatherClient.windZ/2F) * 17.5F));
+            quaternion.mul(RotationAxis.POSITIVE_X.rotationDegrees((EnhancedWeatherClient.windX/2F) * 17.5F));
         } else {
-            quaternion.mul(RotationAxis.POSITIVE_Z.rotationDegrees((EnhancedWeatherClient.windZ/2F) * 10F));
-            quaternion.mul(RotationAxis.NEGATIVE_X.rotationDegrees((EnhancedWeatherClient.windX/2F) * 10F));
+            quaternion.mul(RotationAxis.NEGATIVE_Z.rotationDegrees((EnhancedWeatherClient.windZ/2F) * 10F));
+            quaternion.mul(RotationAxis.POSITIVE_X.rotationDegrees((EnhancedWeatherClient.windX/2F) * 10F));
             /*quaternion.mul(RotationAxis.NEGATIVE_X.rotationDegrees(camera.getPitch()));
             quaternion.mul(RotationAxis.POSITIVE_Y.rotationDegrees(camera.getYaw()));*/
         }
