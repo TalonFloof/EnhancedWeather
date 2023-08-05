@@ -15,6 +15,8 @@ public class UpdateConditionsClient {
     public static void onReceive(MinecraftClient client, ClientPlayNetworkHandler clientPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
         EnhancedWeatherClient.heat = packetByteBuf.readFloat();
         EnhancedWeatherClient.humidity = packetByteBuf.readFloat();
+        EnhancedWeatherClient.windX = packetByteBuf.readFloat();
+        EnhancedWeatherClient.windZ = packetByteBuf.readFloat();
         EnhancedWeather.LOGGER.info("Heat: {}, Humidity: {}%", EnhancedWeatherClient.heat, Math.floor(EnhancedWeatherClient.humidity*100)/100);
         if(EnhancedWeatherClient.humidity > 50 && EnhancedWeatherClient.humidity < 65) {
             EnhancedWeatherClient.cloudDest = 1F;

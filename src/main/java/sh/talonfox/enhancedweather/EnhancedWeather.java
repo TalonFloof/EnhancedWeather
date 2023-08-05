@@ -25,6 +25,8 @@ public class EnhancedWeather implements ModInitializer {
 	// It is considered best practice to use your mod id as the logger's name.
 	// That way, it's clear which mod wrote info, warnings, and errors.
     public static final Logger LOGGER = LoggerFactory.getLogger("enhancedweather");
+	public static FastNoiseLite windXNoise = new FastNoiseLite();
+	public static FastNoiseLite windZNoise = new FastNoiseLite();
 	public static FastNoiseLite heatNoise = new FastNoiseLite();
 	public static FastNoiseLite humidityNoise = new FastNoiseLite();
 	public static long noiseTick = 0;
@@ -42,7 +44,7 @@ public class EnhancedWeather implements ModInitializer {
 	public static float getHeat(ServerWorld world, int x, int z) {
 		float base = getBaseHeat(world,x,z);
 		float time = (float)(Math.cos((2 * (((float)((world.getTimeOfDay()+6000)%24000))/24000F) + 1) * Math.PI) / 2 + 0.5) * 0.6F + 0.7F;
-		return base * time * (heatNoise.GetNoise((float) (world.getTime() / 100),0)+1f);
+		return base * time * ((heatNoise.GetNoise((float) (world.getTime() / 100),0)*0.3F)+1f);
 	}
 
 	public static float getBaseHumidity(ServerWorld world, int x, int z) {
@@ -53,6 +55,14 @@ public class EnhancedWeather implements ModInitializer {
 		return (getBaseHumidity(world,x,z) * 0.7F + 40 * 0.3F) * (humidityNoise.GetNoise((float) (world.getTime() / 100),0)+1f);
 	}
 
+	public static float getWindX(ServerWorld world) {
+		return windXNoise.GetNoise((float) (world.getTime() / 600),0) * 2F;
+	}
+
+	public static float getWindZ(ServerWorld world) {
+		return windZNoise.GetNoise((float) (world.getTime() / 600),0) * 2F;
+	}
+
 	@Override
 	public void onInitialize() {
 		Registry.register(Registries.PARTICLE_TYPE, new Identifier("enhancedweather", "rain"), EW_RAIN);
@@ -60,9 +70,15 @@ public class EnhancedWeather implements ModInitializer {
 		humidityNoise.SetNoiseType(FastNoiseLite.NoiseType.Perlin);
 		heatNoise.SetFractalOctaves(2);
 		humidityNoise.SetFractalOctaves(2);
+		windXNoise.SetNoiseType(FastNoiseLite.NoiseType.Perlin);
+		windZNoise.SetNoiseType(FastNoiseLite.NoiseType.Perlin);
+		windXNoise.SetFractalOctaves(2);
+		windZNoise.SetFractalOctaves(2);
 		ServerWorldEvents.LOAD.register((server, world) -> {
 			heatNoise.SetSeed(((int)world.getSeed()));
 			humidityNoise.SetSeed((int)world.getSeed()+1);
+			windXNoise.SetSeed((int)world.getSeed()+2);
+			windZNoise.SetSeed((int)world.getSeed()+3);
 		});
 		ServerTickEvents.START_WORLD_TICK.register((world) -> {
 			if(world.getDimensionKey().equals(DimensionTypes.OVERWORLD)) {
@@ -71,7 +87,7 @@ public class EnhancedWeather implements ModInitializer {
 				noiseTick += 1;
 				if (noiseTick % 20 == 0) {
 					for (ServerPlayerEntity player : PlayerLookup.all(world.getServer())) {
-						UpdateConditions.send(world.getServer(), player, getHeat(world, player.getBlockX(), player.getBlockZ()), getHumidity(world, player.getBlockX(), player.getBlockZ()));
+						UpdateConditions.send(world.getServer(), player, getHeat(world, player.getBlockX(), player.getBlockZ()), getHumidity(world, player.getBlockX(), player.getBlockZ()), getWindX(world), getWindZ(world));
 					}
 				}
 			}

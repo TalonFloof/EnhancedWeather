@@ -33,6 +33,8 @@ public class EnhancedWeatherClient implements ClientModInitializer {
 	public static float cloud = 0F;
 	public static float rainDest = 0F;
 	public static float cloudDest = 0F;
+	public static float windX = 0F;
+	public static float windZ = 0F;
 	public static boolean firstReceive = false;
 
 	public static SoundEvent raindrop = SoundEvent.of(new Identifier("enhancedweather:raindrop"), 1);

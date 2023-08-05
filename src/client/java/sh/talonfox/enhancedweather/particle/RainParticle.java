@@ -22,32 +22,49 @@ import net.minecraft.world.biome.source.BiomeSources;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
+import sh.talonfox.enhancedweather.EnhancedWeatherClient;
 
 public class RainParticle extends SpriteBillboardParticle {
+    public float yaw;
+    public float pitch = 0F;
     public RainParticle(ClientWorld clientWorld, double x, double y, double z, double r, double g, double b, SpriteProvider provider) {
         super(clientWorld, x, y, z, r, g, b);
+        this.yaw = clientWorld.random.nextInt(360) - 180F;
         this.velocityX = 0.0D;
         this.velocityY = -1.0D;
         this.velocityZ = 0.0D;
         this.gravityStrength = 1.0F;
-        this.scale = 0.5F;
-        this.maxAge = Integer.MAX_VALUE;
+        this.scale = 0.25F;
+        this.maxAge = 200;
         this.setSprite(provider);
         BlockPos pos = new BlockPos((int)x,(int)y,(int)z);
-        int color = 0x43d5ee;
+        //int color = 0x43d5ee;
+        int color = 0xffffff;
         this.setColor((float)ColorHelper.Argb.getRed(color)/255F,(float)ColorHelper.Argb.getGreen(color)/255F,(float)ColorHelper.Argb.getBlue(color)/255F);
     }
 
     @Override
     public void buildGeometry(VertexConsumer builder, Camera camera, float f) {
+        internalBuildGeometry(builder,camera,f,0F);
+        internalBuildGeometry(builder,camera,f,180F);
+    }
+
+    public void internalBuildGeometry(VertexConsumer builder, Camera camera, float f, float yaw) {
         Vec3d vec3 = camera.getPos();
         float x = (float) (MathHelper.lerp(f, this.prevPosX, this.x) - vec3.x);
         float y = (float) (MathHelper.lerp(f, this.prevPosY, this.y) - vec3.y);
         float z = (float) (MathHelper.lerp(f, this.prevPosZ, this.z) - vec3.z);
-        Quaternionf quaternion = new Quaternionf(camera.getRotation());
-        quaternion.mul(RotationAxis.NEGATIVE_X.rotationDegrees(camera.getPitch()));
-        quaternion.mul(RotationAxis.POSITIVE_Y.rotationDegrees(camera.getYaw()));
-        quaternion.mul(RotationAxis.POSITIVE_Y.rotation((float) Math.atan2(x, z)));
+        Quaternionf quaternion = new Quaternionf(0,0,0,1);
+        if(EnhancedWeatherClient.rainDest == 1F) {
+            quaternion.mul(RotationAxis.NEGATIVE_Z.rotationDegrees(EnhancedWeatherClient.windZ * 17.5F));
+            quaternion.mul(RotationAxis.POSITIVE_X.rotationDegrees(EnhancedWeatherClient.windX * 17.5F));
+        } else {
+            quaternion.mul(RotationAxis.NEGATIVE_Z.rotationDegrees(EnhancedWeatherClient.windZ * 10F));
+            quaternion.mul(RotationAxis.POSITIVE_X.rotationDegrees(EnhancedWeatherClient.windX * 10F));
+            /*quaternion.mul(RotationAxis.NEGATIVE_X.rotationDegrees(camera.getPitch()));
+            quaternion.mul(RotationAxis.POSITIVE_Y.rotationDegrees(camera.getYaw()));*/
+        }
+        quaternion.mul(RotationAxis.POSITIVE_X.rotationDegrees(yaw));
 
         Vector3f[] vector3fs = new Vector3f[]{new Vector3f(-1.0F, -1.0F, 0.0F), new Vector3f(-1.0F, 1.0F, 0.0F), new Vector3f(1.0F, 1.0F, 0.0F), new Vector3f(1.0F, -1.0F, 0.0F)};
         float k = this.getSize(f);
@@ -71,6 +88,8 @@ public class RainParticle extends SpriteBillboardParticle {
     }
 
     public void tick() {
+        this.velocityX = EnhancedWeatherClient.windX/2F;
+        this.velocityZ = EnhancedWeatherClient.windZ/2F;
         super.tick();
         MinecraftClient client = MinecraftClient.getInstance();
         if (this.onGround || this.world.getBlockState(new BlockPos((int) this.x, (int)this.y, (int)this.z)).blocksMovement() || this.world.getFluidState(new BlockPos((int) this.x, (int) this.y, (int) this.z)).isIn(FluidTags.WATER) || this.world.getFluidState(new BlockPos((int) this.x, (int) this.y, (int) this.z)).isIn(FluidTags.LAVA)) {

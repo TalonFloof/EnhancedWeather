@@ -5,6 +5,8 @@
   "client": [
     "BackgroundRendererMixin",
     "ClientWorldMixin",
+    "MixinParticle",
+    "WorldMixin",
     "WorldRendererMixin"
   ],
   "injectors": {
