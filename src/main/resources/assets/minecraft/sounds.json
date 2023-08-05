@@ -1,0 +1,75 @@
+{
+  "weather.rain": {
+    "category": "weather",
+    "replace": true,
+    "sounds": [
+      {
+        "name": "minecraft:ambient/weather/rain1",
+        "volume": 0.2
+      },
+      {
+        "name": "minecraft:ambient/weather/rain2",
+        "volume": 0.2
+      },
+      {
+        "name": "minecraft:ambient/weather/rain3",
+        "volume": 0.2
+      },
+      {
+        "name": "minecraft:ambient/weather/rain4",
+        "volume": 0.2
+      }
+    ]
+  },
+  "weather.rain.above": {
+    "category": "weather",
+    "replace": true,
+    "sounds": [
+      {
+        "name": "minecraft:ambient/weather/rain1",
+        "volume": 0.2
+      },
+      {
+        "name": "minecraft:ambient/weather/rain2",
+        "volume": 0.2
+      },
+      {
+        "name": "minecraft:ambient/weather/rain3",
+        "volume": 0.2
+      },
+      {
+        "name": "minecraft:ambient/weather/rain4",
+        "volume": 0.2
+      }
+    ]
+  },
+  "entity.lightning_bolt.thunder": {
+    "replace": true,
+    "sounds": [
+      {
+        "name": "minecraft:ambient/weather/thunder1",
+        "stream": true
+      },
+      {
+        "name": "minecraft:ambient/weather/thunder2",
+        "stream": true
+      },
+      {
+        "name": "minecraft:ambient/weather/thunder3",
+        "stream": true
+      },
+      {
+        "name": "minecraft:ambient/weather/thunder4",
+        "stream": true
+      },
+      {
+        "name": "minecraft:ambient/weather/thunder5",
+        "stream": true
+      },
+      {
+        "name": "minecraft:ambient/weather/thunder6",
+        "stream": true
+      }
+    ]
+  }
+}

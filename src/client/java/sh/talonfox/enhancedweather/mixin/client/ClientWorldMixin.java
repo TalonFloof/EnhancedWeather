@@ -18,4 +18,9 @@ public class ClientWorldMixin {
     private float ambientDarkness(ClientWorld instance, float v) {
         return EnhancedWeatherClient.cloud;
     }
+
+    @Redirect(method = "getSkyBrightness",  at = @At(value = "INVOKE", target = "Lnet/minecraft/client/world/ClientWorld;getThunderGradient(F)F"))
+    private float thunderDarkness(ClientWorld instance, float v) {
+        return EnhancedWeatherClient.rain;
+    }
 }

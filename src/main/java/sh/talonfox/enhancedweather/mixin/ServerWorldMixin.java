@@ -21,8 +21,9 @@ public class ServerWorldMixin {
     }
     @Redirect(method = "tickChunk", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerWorld;hasRain(Lnet/minecraft/util/math/BlockPos;)Z"))
     private boolean canSpawnLightning(ServerWorld instance, BlockPos blockPos) {
-        /*Biome biome = instance.getBiome(blockPos).value();
-        return EnhancedWeather.getIntensity(blockPos.getX()/50,blockPos.getZ()/50) >= 0.8F && biome.getPrecipitation(blockPos) == Biome.Precipitation.RAIN && biome.doesNotSnow(blockPos);*/
+        if(instance.getBiome(blockPos).value().getPrecipitation(blockPos) == Biome.Precipitation.RAIN && EnhancedWeather.getHumidity(instance,blockPos.getX(),blockPos.getZ()) > 65) {
+            return true;
+        }
         return false;
     }
     @Redirect(method = "tickChunk", at = @At(value="INVOKE", target = "Lnet/minecraft/util/math/random/Random;nextInt(I)I"))
