@@ -10,6 +10,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import sh.talonfox.enhancedweather.EnhancedWeatherClient;
+import sh.talonfox.enhancedweather.config.EnhancedWeatherConfig;
 
 @Mixin(WorldRenderer.class)
 public class WorldRendererMixin {
@@ -20,7 +21,9 @@ public class WorldRendererMixin {
 
     @Inject(method = "renderWeather(Lnet/minecraft/client/render/LightmapTextureManager;FDDD)V", at = @At("HEAD"), cancellable = true)
     public void rain(LightmapTextureManager manager, float tickDelta, double cameraX, double cameraY, double cameraZ, CallbackInfo ci) {
-        ci.cancel();
+        if(EnhancedWeatherConfig.Client_ParticleRain) {
+            ci.cancel();
+        }
     }
 
     @Redirect(method = "tickRainSplashing(Lnet/minecraft/client/render/Camera;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/world/ClientWorld;getRainGradient(F)F"))

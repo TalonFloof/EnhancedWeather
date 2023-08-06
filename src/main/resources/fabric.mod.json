@@ -20,6 +20,9 @@
 		],
 		"client": [
 			"sh.talonfox.enhancedweather.EnhancedWeatherClient"
+		],
+		"modmenu": [
+			"sh.talonfox.enhancedweather.config.ModMenuSupport"
 		]
 	},
 	"mixins": [

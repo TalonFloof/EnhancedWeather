@@ -46,7 +46,9 @@ public class RainParticle extends SpriteBillboardParticle {
     @Override
     public void buildGeometry(VertexConsumer builder, Camera camera, float f) {
         internalBuildGeometry(builder,camera,f,0F);
+        internalBuildGeometry(builder,camera,f,90F);
         internalBuildGeometry(builder,camera,f,180F);
+        internalBuildGeometry(builder,camera,f,270F);
     }
 
     public void internalBuildGeometry(VertexConsumer builder, Camera camera, float f, float yaw) {
@@ -56,15 +58,15 @@ public class RainParticle extends SpriteBillboardParticle {
         float z = (float) (MathHelper.lerp(f, this.prevPosZ, this.z) - vec3.z);
         Quaternionf quaternion = new Quaternionf(0,0,0,1);
         if(EnhancedWeatherClient.rainDest == 1F) {
-            quaternion.mul(RotationAxis.NEGATIVE_Z.rotationDegrees(EnhancedWeatherClient.windZ * 17.5F));
-            quaternion.mul(RotationAxis.POSITIVE_X.rotationDegrees(EnhancedWeatherClient.windX * 17.5F));
+            quaternion.mul(RotationAxis.POSITIVE_Z.rotationDegrees((EnhancedWeatherClient.windZ/2F) * 17.5F));
+            quaternion.mul(RotationAxis.NEGATIVE_X.rotationDegrees((EnhancedWeatherClient.windX/2F) * 17.5F));
         } else {
-            quaternion.mul(RotationAxis.NEGATIVE_Z.rotationDegrees(EnhancedWeatherClient.windZ * 10F));
-            quaternion.mul(RotationAxis.POSITIVE_X.rotationDegrees(EnhancedWeatherClient.windX * 10F));
+            quaternion.mul(RotationAxis.POSITIVE_Z.rotationDegrees((EnhancedWeatherClient.windZ/2F) * 10F));
+            quaternion.mul(RotationAxis.NEGATIVE_X.rotationDegrees((EnhancedWeatherClient.windX/2F) * 10F));
             /*quaternion.mul(RotationAxis.NEGATIVE_X.rotationDegrees(camera.getPitch()));
             quaternion.mul(RotationAxis.POSITIVE_Y.rotationDegrees(camera.getYaw()));*/
         }
-        quaternion.mul(RotationAxis.POSITIVE_X.rotationDegrees(yaw));
+        quaternion.mul(RotationAxis.POSITIVE_Y.rotationDegrees(yaw));
 
         Vector3f[] vector3fs = new Vector3f[]{new Vector3f(-1.0F, -1.0F, 0.0F), new Vector3f(-1.0F, 1.0F, 0.0F), new Vector3f(1.0F, 1.0F, 0.0F), new Vector3f(1.0F, -1.0F, 0.0F)};
         float k = this.getSize(f);

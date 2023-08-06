@@ -17,6 +17,8 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.dimension.DimensionTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sh.talonfox.enhancedweather.config.ConfigRegistry;
+import sh.talonfox.enhancedweather.config.EnhancedWeatherConfig;
 import sh.talonfox.enhancedweather.network.UpdateConditions;
 import sh.talonfox.enhancedweather.util.FastNoiseLite;
 
@@ -25,6 +27,7 @@ public class EnhancedWeather implements ModInitializer {
 	// It is considered best practice to use your mod id as the logger's name.
 	// That way, it's clear which mod wrote info, warnings, and errors.
     public static final Logger LOGGER = LoggerFactory.getLogger("enhancedweather");
+	public static EnhancedWeatherConfig CONFIG;
 	public static FastNoiseLite windXNoise = new FastNoiseLite();
 	public static FastNoiseLite windZNoise = new FastNoiseLite();
 	public static FastNoiseLite heatNoise = new FastNoiseLite();
@@ -65,6 +68,7 @@ public class EnhancedWeather implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+		ConfigRegistry.init();
 		Registry.register(Registries.PARTICLE_TYPE, new Identifier("enhancedweather", "rain"), EW_RAIN);
 		heatNoise.SetNoiseType(FastNoiseLite.NoiseType.Perlin);
 		humidityNoise.SetNoiseType(FastNoiseLite.NoiseType.Perlin);

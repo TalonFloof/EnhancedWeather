@@ -11,6 +11,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.Heightmap;
+import sh.talonfox.enhancedweather.config.EnhancedWeatherConfig;
 import sh.talonfox.enhancedweather.network.UpdateConditions;
 import sh.talonfox.enhancedweather.network.UpdateConditionsClient;
 import sh.talonfox.enhancedweather.particle.RainParticle;
@@ -63,6 +64,8 @@ public class EnhancedWeatherClient implements ClientModInitializer {
 			}
 		});
 		ClientTickEvents.END_CLIENT_TICK.register((client) -> {
+			if(!EnhancedWeatherConfig.Client_ParticleRain)
+				return;
 			if (client.isPaused() || client.world == null && client.getCameraEntity() == null)
 				return;
 			int density = (int) ((rainDest == 1.0F ? 800 : 200) * rain);
