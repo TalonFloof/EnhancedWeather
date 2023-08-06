@@ -11,12 +11,15 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.Heightmap;
+import net.minecraft.world.biome.Biome;
 import sh.talonfox.enhancedweather.config.EnhancedWeatherConfig;
 import sh.talonfox.enhancedweather.network.UpdateConditions;
 import sh.talonfox.enhancedweather.network.UpdateConditionsClient;
 import sh.talonfox.enhancedweather.particle.RainParticle;
+import sh.talonfox.enhancedweather.particle.SnowParticle;
 
 import static sh.talonfox.enhancedweather.EnhancedWeather.EW_RAIN;
+import static sh.talonfox.enhancedweather.EnhancedWeather.EW_SNOW;
 
 /*
 Weather Modifier Values:
@@ -38,11 +41,10 @@ public class EnhancedWeatherClient implements ClientModInitializer {
 	public static float windZ = 0F;
 	public static boolean firstReceive = false;
 
-	public static SoundEvent raindrop = SoundEvent.of(new Identifier("enhancedweather:raindrop"), 1);
-
 	@Override
 	public void onInitializeClient() {
 		ParticleFactoryRegistry.getInstance().register(EW_RAIN, RainParticle.DefaultFactory::new);
+		ParticleFactoryRegistry.getInstance().register(EW_SNOW, SnowParticle.DefaultFactory::new);
 		ClientPlayNetworking.registerGlobalReceiver(UpdateConditions.PACKET_ID, UpdateConditionsClient::onReceive);
 		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> firstReceive = true);
 		ClientTickEvents.START_WORLD_TICK.register((client) -> {
@@ -68,24 +70,30 @@ public class EnhancedWeatherClient implements ClientModInitializer {
 				return;
 			if (client.isPaused() || client.world == null && client.getCameraEntity() == null)
 				return;
-			int density = (int) ((rainDest == 1.0F ? 800 : 200) * rain);
+			if(client.world.getBiome(client.player.getBlockPos()).value().getPrecipitation(client.player.getBlockPos()) == Biome.Precipitation.SNOW) {
+				for(int i=0; i < 32; i++) {
+					client.world.addParticle(EnhancedWeather.EW_SNOW, MathHelper.lerp(client.world.random.nextDouble(), client.player.getBlockX() - 64, client.player.getBlockX() + 64), client.player.getBlockY() + 50, MathHelper.lerp(client.world.random.nextDouble(), client.player.getBlockZ() - 64, client.player.getBlockZ() + 64), 0f, 0f, 0f);
+				}
+			} else {
+				int density = (int) ((rainDest == 1.0F ? 800 : 200) * rain);
 
-			Random rand = Random.create();
+				Random rand = Random.create();
 
-			for (int pass = 0; pass < density; pass++) {
+				for (int pass = 0; pass < density; pass++) {
 
-				float theta = (float) (2 * Math.PI * rand.nextFloat());
-				float phi = (float) Math.acos(2 * rand.nextFloat() - 1);
-				double x = 25 * MathHelper.sin(phi) * Math.cos(theta);
-				double y = 25 * MathHelper.sin(phi) * Math.sin(theta);
-				double z = 25 * MathHelper.cos(phi);
+					float theta = (float) (2 * Math.PI * rand.nextFloat());
+					float phi = (float) Math.acos(2 * rand.nextFloat() - 1);
+					double x = 25 * MathHelper.sin(phi) * Math.cos(theta);
+					double y = 25 * MathHelper.sin(phi) * Math.sin(theta);
+					double z = 25 * MathHelper.cos(phi);
 
-				var pos = new BlockPos.Mutable();
-				pos.set(x + client.player.getX(), y + client.player.getY(), z + client.player.getZ());
-				if (client.world.getTopY(Heightmap.Type.MOTION_BLOCKING, pos.getX(), pos.getZ()) > pos.getY())
-					continue;
+					var pos = new BlockPos.Mutable();
+					pos.set(x + client.player.getX(), y + client.player.getY(), z + client.player.getZ());
+					if (client.world.getTopY(Heightmap.Type.MOTION_BLOCKING, pos.getX(), pos.getZ()) > pos.getY())
+						continue;
 
-				client.world.addParticle(EnhancedWeather.EW_RAIN,pos.getX() + rand.nextFloat(), pos.getY() + rand.nextFloat(), pos.getZ() + rand.nextFloat(),0,0,0);
+					client.world.addParticle(EnhancedWeather.EW_RAIN, pos.getX() + rand.nextFloat(), pos.getY() + rand.nextFloat(), pos.getZ() + rand.nextFloat(), 0, 0, 0);
+				}
 			}
 		});
 	}

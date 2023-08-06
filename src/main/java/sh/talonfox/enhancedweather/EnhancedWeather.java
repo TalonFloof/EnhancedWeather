@@ -35,6 +35,7 @@ public class EnhancedWeather implements ModInitializer {
 	public static FastNoiseLite humidityNoise = new FastNoiseLite();
 	public static long noiseTick = 0;
 	public static final DefaultParticleType EW_RAIN = FabricParticleTypes.simple(true);
+	public static final DefaultParticleType EW_SNOW = FabricParticleTypes.simple(true);
 
 	public static float getBaseHeat(ServerWorld world, int x, int z) {
 		float temperature = MathHelper.clamp(world.getBiome(new BlockPos(x,64,z)).value().weather.temperature(),0F,1F);
@@ -71,6 +72,7 @@ public class EnhancedWeather implements ModInitializer {
 	public void onInitialize() {
 		ConfigRegistry.init();
 		Registry.register(Registries.PARTICLE_TYPE, new Identifier("enhancedweather", "rain"), EW_RAIN);
+		Registry.register(Registries.PARTICLE_TYPE, new Identifier("enhancedweather", "snow"), EW_SNOW);
 		heatNoise.SetNoiseType(FastNoiseLite.NoiseType.Perlin);
 		humidityNoise.SetNoiseType(FastNoiseLite.NoiseType.Perlin);
 		heatNoise.SetFractalOctaves(2);
