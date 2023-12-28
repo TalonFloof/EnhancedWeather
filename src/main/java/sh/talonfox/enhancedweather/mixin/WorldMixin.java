@@ -14,7 +14,7 @@ import sh.talonfox.enhancedweather.EnhancedWeather;
 public class WorldMixin {
     @Inject(method = "hasRain", at = @At("RETURN"), cancellable = true)
     public void hasRain(BlockPos pos, CallbackInfoReturnable<Boolean> cir) {
-        if (EnhancedWeather.getHumidity(((World)(Object)this),pos.getX(),pos.getZ()) < 50F) {
+        /*if (EnhancedWeather.getHumidity(((World)(Object)this),pos.getX(),pos.getZ()) < 50F) {
             cir.setReturnValue(false);
         } else if (!((World)(Object)this).isSkyVisible(pos)) {
             cir.setReturnValue(false);
@@ -23,6 +23,7 @@ public class WorldMixin {
         } else {
             Biome biome = ((World)(Object)this).getBiome(pos).value();
             cir.setReturnValue(biome.getPrecipitation(pos) == Biome.Precipitation.RAIN);
-        }
+        }*/
+        cir.setReturnValue(false);
     }
 }
