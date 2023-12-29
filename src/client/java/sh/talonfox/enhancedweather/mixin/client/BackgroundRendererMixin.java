@@ -26,11 +26,7 @@ public class BackgroundRendererMixin {
     private static void addWeatherFog(Camera camera, BackgroundRenderer.FogType fogType, float viewDistance, boolean thickFog, float tickDelta, CallbackInfo ci) {
         if (MinecraftClient.getInstance().world.getDimensionKey().equals(DimensionTypes.OVERWORLD)) {
             if (MinecraftClient.getInstance().gameRenderer.getCamera().getSubmersionType().equals(CameraSubmersionType.NONE)) {
-                double time = ((double)((MinecraftClient.getInstance().world.getTimeOfDay()+6000)%24000))/24000.0;
-                if(EnhancedWeatherClient.humidity >= 25 && EnhancedWeatherClient.humidity < 50 && EnhancedWeatherClient.heat < 50 && time > (4.0 / 24.0) && time < (8.0 / 24.0)) {
-                    RenderSystem.setShaderFogStart(0F);
-                    RenderSystem.setShaderFogEnd(32F);
-                }
+
             }
         }
     }

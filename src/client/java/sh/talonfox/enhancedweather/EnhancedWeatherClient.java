@@ -31,22 +31,18 @@ Weather Modifier Values:
  */
 
 public class EnhancedWeatherClient implements ClientModInitializer {
-	public static float heat = 0F;
-	public static float humidity = 0F;
 	public static float rain = 0F;
 	public static float cloud = 0F;
 	public static float rainDest = 0F;
 	public static float cloudDest = 0F;
 	public static float windX = 0F;
 	public static float windZ = 0F;
-	public static boolean firstReceive = false;
 
 	@Override
 	public void onInitializeClient() {
 		ParticleFactoryRegistry.getInstance().register(EW_RAIN, RainParticle.DefaultFactory::new);
 		ParticleFactoryRegistry.getInstance().register(EW_SNOW, SnowParticle.DefaultFactory::new);
 		ClientPlayNetworking.registerGlobalReceiver(UpdateConditions.PACKET_ID, UpdateConditionsClient::onReceive);
-		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> firstReceive = true);
 		ClientTickEvents.START_WORLD_TICK.register((client) -> {
 			if(rain > rainDest) {
 				rain -= 0.0005F;
@@ -71,8 +67,10 @@ public class EnhancedWeatherClient implements ClientModInitializer {
 			if (client.isPaused() || client.world == null && client.getCameraEntity() == null)
 				return;
 			if(client.world.getBiome(client.player.getBlockPos()).value().getPrecipitation(client.player.getBlockPos()) == Biome.Precipitation.SNOW) {
-				for(int i=0; i < 32; i++) {
-					client.world.addParticle(EnhancedWeather.EW_SNOW, MathHelper.lerp(client.world.random.nextDouble(), client.player.getBlockX() - 64, client.player.getBlockX() + 64), client.player.getBlockY() + 50, MathHelper.lerp(client.world.random.nextDouble(), client.player.getBlockZ() - 64, client.player.getBlockZ() + 64), 0f, 0f, 0f);
+				if(rain > 0) {
+					for (int i = 0; i < 32; i++) {
+						client.world.addParticle(EnhancedWeather.EW_SNOW, MathHelper.lerp(client.world.random.nextDouble(), client.player.getBlockX() - 64, client.player.getBlockX() + 64), client.player.getBlockY() + 50, MathHelper.lerp(client.world.random.nextDouble(), client.player.getBlockZ() - 64, client.player.getBlockZ() + 64), 0f, 0f, 0f);
+					}
 				}
 			} else {
 				int density = (int) ((rainDest == 1.0F ? 800 : 200) * rain);

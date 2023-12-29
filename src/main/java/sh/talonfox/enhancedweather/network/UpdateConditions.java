@@ -9,10 +9,8 @@ import net.minecraft.util.Identifier;
 
 public class UpdateConditions {
     public static Identifier PACKET_ID = new Identifier("enhancedweather","update_conditions");
-    public static void send(MinecraftServer server, ServerPlayerEntity player, float heat, float humidity, float windX, float windZ) {
+    public static void send(MinecraftServer server, ServerPlayerEntity player, float windX, float windZ) {
         PacketByteBuf buf = PacketByteBufs.create();
-        buf.writeFloat(heat);
-        buf.writeFloat(humidity);
         buf.writeFloat(windX);
         buf.writeFloat(windZ);
         ServerPlayNetworking.send(player, PACKET_ID, buf);

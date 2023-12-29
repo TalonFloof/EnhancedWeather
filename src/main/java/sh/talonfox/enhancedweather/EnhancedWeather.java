@@ -23,6 +23,9 @@ import sh.talonfox.enhancedweather.config.EnhancedWeatherConfig;
 import sh.talonfox.enhancedweather.network.UpdateConditions;
 import sh.talonfox.enhancedweather.util.FastNoiseLite;
 
+import static sh.talonfox.enhancedweather.api.EnhancedWeatherAPI.getWindX;
+import static sh.talonfox.enhancedweather.api.EnhancedWeatherAPI.getWindZ;
+
 public class EnhancedWeather implements ModInitializer {
 	// This logger is used to write text to the console and the log file.
 	// It is considered best practice to use your mod id as the logger's name.
@@ -31,12 +34,34 @@ public class EnhancedWeather implements ModInitializer {
 	public static EnhancedWeatherConfig CONFIG;
 	public static final DefaultParticleType EW_RAIN = FabricParticleTypes.simple(true);
 	public static final DefaultParticleType EW_SNOW = FabricParticleTypes.simple(true);
+	public static FastNoiseLite windXNoise = new FastNoiseLite();
+	public static FastNoiseLite windZNoise = new FastNoiseLite();
+	public static long noiseTick = 0;
 
 	@Override
 	public void onInitialize() {
 		ConfigRegistry.init();
 		Registry.register(Registries.PARTICLE_TYPE, new Identifier("enhancedweather", "rain"), EW_RAIN);
 		Registry.register(Registries.PARTICLE_TYPE, new Identifier("enhancedweather", "snow"), EW_SNOW);
-
+		windXNoise.SetNoiseType(FastNoiseLite.NoiseType.Perlin);
+		windZNoise.SetNoiseType(FastNoiseLite.NoiseType.Perlin);
+		windXNoise.SetFractalOctaves(2);
+		windZNoise.SetFractalOctaves(2);
+		ServerWorldEvents.LOAD.register((server, world) -> {
+			windXNoise.SetSeed((int)world.getSeed());
+			windZNoise.SetSeed((int)world.getSeed()+1);
+		});
+		ServerTickEvents.START_WORLD_TICK.register((world) -> {
+			if(world.getDimensionKey().equals(DimensionTypes.OVERWORLD)) {
+				world.setRainGradient(0F);
+				world.setThunderGradient(0F);
+				noiseTick += 1;
+				if (noiseTick % 20 == 0) {
+					for (ServerPlayerEntity player : PlayerLookup.all(world.getServer())) {
+						UpdateConditions.send(world.getServer(), player, getWindX(world), getWindZ(world));
+					}
+				}
+			}
+		});
 	}
 }
