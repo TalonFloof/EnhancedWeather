@@ -1,6 +1,7 @@
 package sh.talonfox.enhancedweather.mixin;
 
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
@@ -9,12 +10,13 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import sh.talonfox.enhancedweather.EnhancedWeather;
+import sh.talonfox.enhancedweather.api.EnhancedWeatherAPI;
 
 @Mixin(World.class)
 public class WorldMixin {
     @Inject(method = "hasRain", at = @At("RETURN"), cancellable = true)
     public void hasRain(BlockPos pos, CallbackInfoReturnable<Boolean> cir) {
-        /*if (EnhancedWeather.getHumidity(((World)(Object)this),pos.getX(),pos.getZ()) < 50F) {
+        if (!EnhancedWeatherAPI.isRaining(((World)(Object)this),pos.getX() - MathHelper.floor(EnhancedWeather.cloudX), pos.getZ() - MathHelper.floor(EnhancedWeather.cloudZ))) {
             cir.setReturnValue(false);
         } else if (!((World)(Object)this).isSkyVisible(pos)) {
             cir.setReturnValue(false);
@@ -23,7 +25,6 @@ public class WorldMixin {
         } else {
             Biome biome = ((World)(Object)this).getBiome(pos).value();
             cir.setReturnValue(biome.getPrecipitation(pos) == Biome.Precipitation.RAIN);
-        }*/
-        cir.setReturnValue(false);
+        }
     }
 }

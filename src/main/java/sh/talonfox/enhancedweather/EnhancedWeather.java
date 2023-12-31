@@ -14,6 +14,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionTypes;
 import org.slf4j.Logger;
@@ -23,9 +24,6 @@ import sh.talonfox.enhancedweather.config.EnhancedWeatherConfig;
 import sh.talonfox.enhancedweather.network.UpdateConditions;
 import sh.talonfox.enhancedweather.util.FastNoiseLite;
 
-import static sh.talonfox.enhancedweather.api.EnhancedWeatherAPI.getWindX;
-import static sh.talonfox.enhancedweather.api.EnhancedWeatherAPI.getWindZ;
-
 public class EnhancedWeather implements ModInitializer {
 	// This logger is used to write text to the console and the log file.
 	// It is considered best practice to use your mod id as the logger's name.
@@ -34,31 +32,35 @@ public class EnhancedWeather implements ModInitializer {
 	public static EnhancedWeatherConfig CONFIG;
 	public static final DefaultParticleType EW_RAIN = FabricParticleTypes.simple(true);
 	public static final DefaultParticleType EW_SNOW = FabricParticleTypes.simple(true);
-	public static FastNoiseLite windXNoise = new FastNoiseLite();
-	public static FastNoiseLite windZNoise = new FastNoiseLite();
 	public static long noiseTick = 0;
+	public static double cloudX = 0;
+	public static double cloudZ = 0;
 
 	@Override
 	public void onInitialize() {
 		ConfigRegistry.init();
 		Registry.register(Registries.PARTICLE_TYPE, new Identifier("enhancedweather", "rain"), EW_RAIN);
 		Registry.register(Registries.PARTICLE_TYPE, new Identifier("enhancedweather", "snow"), EW_SNOW);
-		windXNoise.SetNoiseType(FastNoiseLite.NoiseType.Perlin);
-		windZNoise.SetNoiseType(FastNoiseLite.NoiseType.Perlin);
-		windXNoise.SetFractalOctaves(2);
-		windZNoise.SetFractalOctaves(2);
 		ServerWorldEvents.LOAD.register((server, world) -> {
-			windXNoise.SetSeed((int)world.getSeed());
-			windZNoise.SetSeed((int)world.getSeed()+1);
+			WindManager.reset();
+			Random r = Random.create(world.getSeed());
+			cloudX = r.nextInt();
+			cloudZ = r.nextInt();
+			EnhancedWeather.LOGGER.info("Starting cloud position will be: X={},Z={}",cloudX,cloudZ);
 		});
 		ServerTickEvents.START_WORLD_TICK.register((world) -> {
 			if(world.getDimensionKey().equals(DimensionTypes.OVERWORLD)) {
 				world.setRainGradient(0F);
 				world.setThunderGradient(0F);
 				noiseTick += 1;
+				WindManager.tick();
+				float windX = (float)-Math.sin(Math.toRadians(WindManager.windAngle))*(WindManager.windSpeed/25F);
+				float windZ = (float)Math.cos(Math.toRadians(WindManager.windAngle))*(WindManager.windSpeed/25F);
+				cloudX += (windX * 0.002) * 32;
+				cloudZ += (windZ * 0.002) * 32;
 				if (noiseTick % 20 == 0) {
 					for (ServerPlayerEntity player : PlayerLookup.all(world.getServer())) {
-						UpdateConditions.send(world.getServer(), player, getWindX(world), getWindZ(world));
+						UpdateConditions.send(world.getServer(), player, windX, windZ, cloudX, cloudZ);
 					}
 				}
 			}

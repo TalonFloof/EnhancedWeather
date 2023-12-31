@@ -5,6 +5,7 @@ import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.ParticleEffect;
+import net.minecraft.util.math.MathHelper;
 import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -17,11 +18,6 @@ import sh.talonfox.enhancedweather.config.EnhancedWeatherConfig;
 
 @Mixin(WorldRenderer.class)
 public class WorldRendererMixin {
-    @Redirect(method = "renderSky(Lnet/minecraft/client/util/math/MatrixStack;Lorg/joml/Matrix4f;FLnet/minecraft/client/render/Camera;ZLjava/lang/Runnable;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/world/ClientWorld;getRainGradient(F)F"))
-    public float sunRemoval(ClientWorld clientWorld, float delta) {
-        return EnhancedWeatherClient.cloud;
-    }
-
     @Inject(method = "renderWeather(Lnet/minecraft/client/render/LightmapTextureManager;FDDD)V", at = @At("HEAD"), cancellable = true)
     public void rain(LightmapTextureManager manager, float tickDelta, double cameraX, double cameraY, double cameraZ, CallbackInfo ci) {
         if(EnhancedWeatherConfig.Client_ParticleRain) {
@@ -31,7 +27,7 @@ public class WorldRendererMixin {
 
     @Redirect(method = "tickRainSplashing(Lnet/minecraft/client/render/Camera;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/world/ClientWorld;getRainGradient(F)F"))
     public float rainSound(ClientWorld instance, float v) {
-        return EnhancedWeatherClient.rain;
+        return MathHelper.clamp(EnhancedWeatherClient.rain,0,1);
     }
 
     @Redirect(method = "tickRainSplashing(Lnet/minecraft/client/render/Camera;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/world/ClientWorld;addParticle(Lnet/minecraft/particle/ParticleEffect;DDDDDD)V"))

@@ -8,6 +8,8 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import sh.talonfox.enhancedweather.EnhancedWeather;
+import sh.talonfox.enhancedweather.WindManager;
+import sh.talonfox.enhancedweather.api.EnhancedWeatherAPI;
 
 @Mixin(ServerWorld.class)
 public class ServerWorldMixin {
@@ -21,9 +23,9 @@ public class ServerWorldMixin {
     }
     @Redirect(method = "tickChunk", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerWorld;hasRain(Lnet/minecraft/util/math/BlockPos;)Z"))
     private boolean canSpawnLightning(ServerWorld instance, BlockPos blockPos) {
-        /*if(instance.getBiome(blockPos).value().getPrecipitation(blockPos) == Biome.Precipitation.RAIN && EnhancedWeather.getHumidity(instance,blockPos.getX(),blockPos.getZ()) > 65) {
+        if(instance.getBiome(blockPos).value().getPrecipitation(blockPos) == Biome.Precipitation.RAIN && EnhancedWeatherAPI.isThundering(instance, WindManager.windSpeed,blockPos.getX(),blockPos.getY(),blockPos.getZ())) {
             return true;
-        }*/
+        }
         return false;
     }
     @Redirect(method = "tickChunk", at = @At(value="INVOKE", target = "Lnet/minecraft/util/math/random/Random;nextInt(I)I"))

@@ -18,7 +18,7 @@ public class ClientWorldMixin {
 
     @Redirect(method = "getSkyColor", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/world/ClientWorld;getThunderGradient(F)F"))
     private float skyThunder(ClientWorld world, float delta) {
-        return EnhancedWeatherClient.rain;
+        return EnhancedWeatherClient.rainDest == 1 ? EnhancedWeatherClient.rain : 0;
     }
 
     @Redirect(method = "getCloudsColor", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/world/ClientWorld;getRainGradient(F)F"))
@@ -28,7 +28,7 @@ public class ClientWorldMixin {
 
     @Redirect(method = "getCloudsColor", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/world/ClientWorld;getThunderGradient(F)F"))
     private float rainCloud(ClientWorld instance, float v) {
-        return EnhancedWeatherClient.rain;
+        return EnhancedWeatherClient.rainDest == 1 ? EnhancedWeatherClient.rain : 0;
     }
 
     @Redirect(method = "getSkyBrightness",  at = @At(value = "INVOKE", target = "Lnet/minecraft/client/world/ClientWorld;getRainGradient(F)F"))
@@ -38,6 +38,6 @@ public class ClientWorldMixin {
 
     @Redirect(method = "getSkyBrightness",  at = @At(value = "INVOKE", target = "Lnet/minecraft/client/world/ClientWorld;getThunderGradient(F)F"))
     private float thunderDarkness(ClientWorld instance, float v) {
-        return EnhancedWeatherClient.rain;
+        return EnhancedWeatherClient.rainDest == 1 ? EnhancedWeatherClient.rain : 0;
     }
 }

@@ -37,6 +37,7 @@ public class EnhancedWeatherClient implements ClientModInitializer {
 	public static float cloudDest = 0F;
 	public static float windX = 0F;
 	public static float windZ = 0F;
+	public static float windSpeed = 0F;
 
 	@Override
 	public void onInitializeClient() {
@@ -45,24 +46,29 @@ public class EnhancedWeatherClient implements ClientModInitializer {
 		ClientPlayNetworking.registerGlobalReceiver(UpdateConditions.PACKET_ID, UpdateConditionsClient::onReceive);
 		ClientTickEvents.START_WORLD_TICK.register((client) -> {
 			if(rain > rainDest) {
-				rain -= 0.0005F;
+				rain -= 0.005F;
 			} else if(rain < rainDest) {
-				rain += 0.0005F;
+				rain += 0.005F;
 			}
-			if(rainDest == 0 && rain != 0F && Math.abs(rain-rainDest) < 0.001F) {
+			if(rain > 1) {
+				rain = 1;
+			}
+			if(rainDest == 0 && rain != 0F && Math.abs(rain-rainDest) < 0.2F) {
 				rain = 0F;
 			}
 			if(cloud > cloudDest) {
-				cloud -= 0.0005F;
+				cloud -= 0.005F;
 			} else if(cloud < cloudDest) {
-				cloud += 0.0005F;
+				cloud += 0.005F;
 			}
-			if(cloudDest == 0 && cloud != 0F && Math.abs(cloud-cloudDest) < 0.001F) {
+			if(cloudDest == 0 && cloud != 0F && Math.abs(cloud-cloudDest) < 0.2F) {
 				cloud = 0F;
 			}
 		});
 		ClientTickEvents.END_CLIENT_TICK.register((client) -> {
 			if(!EnhancedWeatherConfig.Client_ParticleRain)
+				return;
+			if(rain < 0.2F)
 				return;
 			if (client.isPaused() || client.world == null && client.getCameraEntity() == null)
 				return;
@@ -73,7 +79,7 @@ public class EnhancedWeatherClient implements ClientModInitializer {
 					}
 				}
 			} else {
-				int density = (int) ((rainDest == 1.0F ? 800 : 200) * rain);
+				int density = (int) ((rainDest == 1.0F ? 200 : 200) * rain);
 
 				Random rand = Random.create();
 

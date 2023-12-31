@@ -3,6 +3,7 @@ package sh.talonfox.enhancedweather.api;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
+import net.minecraft.world.World;
 import sh.talonfox.enhancedweather.EnhancedWeather;
 import sh.talonfox.enhancedweather.util.ImageSampler;
 
@@ -19,8 +20,23 @@ public class EnhancedWeatherAPI {
     private static final float[] CLOUD_SHAPE = new float[64];
     private static final Vec2f[] OFFSETS;
 
+    public static float sampleThunderstorm(float windSpeed, int x, int z, double scale) {
+        return windSpeed > 50F ? 1F : THUNDERSTORMS.sample(x * scale, z * scale);
+    }
+
+    public static boolean isRaining(World world, int x, int z) {
+        float rainFront = sampleFront(x, z, 0.1);
+        if (rainFront < 0.2F) return false;
+
+        return true;
+    }
+
+    public static boolean isThundering(World world, float windSpeed, int x, int y, int z) {
+        return isRaining(world, x, z) && sampleThunderstorm(windSpeed, x, z, 0.05) > 0.3F;
+    }
+
     public static float getCoverage(float rainFront) {
-        return MathHelper.lerp(rainFront, 1.3F, 0.5F);
+        return MathHelper.lerp(MathHelper.clamp(rainFront,0,1), 1.3F, 0.5F);
     }
 
     public static float getCloudDensity(int x, int y, int z, float rainFront) {
@@ -44,17 +60,9 @@ public class EnhancedWeatherAPI {
 
     public static float sampleFront(int x, int z, double scale) {
         float front = FRONT_SAMPLE.sample(x * scale, z * scale);
-        scale *= 0.7;
-        front *= RAIN_DENSITY.sample(x * scale, z * scale);
+        //scale *= 0.7;
+        //front *= RAIN_DENSITY.sample(x * scale, z * scale);
         return front;
-    }
-
-    public static float getWindX(ServerWorld world) {
-        return EnhancedWeather.windXNoise.GetNoise((float) (world.getTime() / 600),0) * 2F;
-    }
-
-    public static float getWindZ(ServerWorld world) {
-        return EnhancedWeather.windZNoise.GetNoise((float) (world.getTime() / 600),0) * 2F;
     }
 
     static {

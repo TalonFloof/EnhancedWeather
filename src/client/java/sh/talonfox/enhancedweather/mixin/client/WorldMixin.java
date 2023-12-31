@@ -13,21 +13,13 @@ import sh.talonfox.enhancedweather.EnhancedWeatherClient;
 @Environment(EnvType.CLIENT)
 @Mixin(World.class)
 public class WorldMixin {
-    /**
-     * @author TalonFox
-     * @reason For shader compatibility
-     */
-    @Overwrite
-    public float getRainGradient(float delta) {
-        return EnhancedWeatherClient.rain;
+    @Inject(method="getRainGradient(F)F",at = @At("TAIL"), cancellable = true)
+    public void getRainGradient(float delta, CallbackInfoReturnable<Float> cir) {
+       cir.setReturnValue(EnhancedWeatherClient.rain);
     }
 
-    /**
-     * @author TalonFox
-     * @reason For shader compatibility
-     */
-    @Overwrite
-    public float getThunderGradient(float delta) {
-        return EnhancedWeatherClient.rainDest == 1F ? EnhancedWeatherClient.rain : 0F;
+    @Inject(method="getThunderGradient(F)F",at = @At("TAIL"), cancellable = true)
+    public void getThunderGradient(float delta, CallbackInfoReturnable<Float> cir) {
+        cir.setReturnValue(EnhancedWeatherClient.rainDest == 1F ? EnhancedWeatherClient.rain : 0F);
     }
 }

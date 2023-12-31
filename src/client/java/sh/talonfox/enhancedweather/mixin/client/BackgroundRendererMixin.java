@@ -17,10 +17,10 @@ import sh.talonfox.enhancedweather.EnhancedWeatherClient;
 
 @Mixin(BackgroundRenderer.class)
 public class BackgroundRendererMixin {
-    @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/world/ClientWorld;getRainGradient(F)F"))
+    /*@Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/world/ClientWorld;getRainGradient(F)F"))
     private static float fogDarken(ClientWorld world, float delta) {
         return EnhancedWeatherClient.cloud;
-    }
+    }*/
 
     @Inject(method = "applyFog", at = @At(value = "RETURN"))
     private static void addWeatherFog(Camera camera, BackgroundRenderer.FogType fogType, float viewDistance, boolean thickFog, float tickDelta, CallbackInfo ci) {

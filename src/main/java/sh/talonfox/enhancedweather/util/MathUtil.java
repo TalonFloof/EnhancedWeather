@@ -3,11 +3,11 @@ package sh.talonfox.enhancedweather.util;
 import net.minecraft.util.math.MathHelper;
 
 public class MathUtil {
-    public static int wrap(int value, int side) {
-        if (MathHelper.isPowerOfTwo(side)) {
+    public static long wrap(long value, long side) {
+        if (side != 0 && (side & side - 1) == 0) {
             return value & (side - 1);
         }
-        int result = (value - value / side * side);
+        long result = (value - value / side * side);
         return result < 0 ? result + side : result;
     }
 }

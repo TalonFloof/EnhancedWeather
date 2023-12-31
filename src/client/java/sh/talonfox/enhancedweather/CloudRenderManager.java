@@ -31,14 +31,16 @@ public class CloudRenderManager {
     private static long lastTick = 0;
     private static double prevCloudX = 0;
     private static double prevCloudZ = 0;
-    private static double cloudX = 0;
-    private static double cloudZ = 0;
+    public static double cloudX = 0;
+    public static double cloudZ = 0;
+    private static Vec3d lastCloudColor = new Vec3d(1,1,1);
 
     private static int getIndex(int x, int y) {
-        return MathUtil.wrap(x, SIDE) * SIDE + MathUtil.wrap(y, SIDE);
+        return (int)MathUtil.wrap(x, SIDE) * SIDE + (int)MathUtil.wrap(y, SIDE);
     }
 
     public static void render(MatrixStack matrices, Matrix4f projectionMatrix, float tickDelta, double cameraX, double cameraY, double cameraZ) {
+        MinecraftClient client = MinecraftClient.getInstance();
         if(firstStart) {
             for (int i = 0; i < chunks.length; i++) {
                 chunks[i] = new CloudChunk();
@@ -61,8 +63,11 @@ public class CloudRenderManager {
         RenderSystem.enableBlend();
         RenderSystem.enableDepthTest();
         RenderSystem.depthMask(true);
-        RenderSystem.setShader(GameRenderer::getPositionTexColorProgram);
+        RenderSystem.setShader(GameRenderer::getPositionTexColorNormalProgram);
         RenderSystem.setShaderTexture(0,CLOUD);
+        BackgroundRenderer.setFogBlack();
+        RenderSystem.setShaderFogStart(275);
+        RenderSystem.setShaderFogEnd(288);
         ShaderProgram shaderProgram = RenderSystem.getShader();
         // Cloud Chunk Rendering
         double eX = cameraX;
@@ -71,7 +76,7 @@ public class CloudRenderManager {
         int centerZ = MathHelper.floor((cameraZ)/32);
         int worldXOffset = (int)(cloudX/32);
         int worldZOffset = (int)(cloudZ/32);
-        long currentTick = MinecraftClient.getInstance().world.getTime();
+        long currentTick = client.world.getTime();
         if(lastTick != currentTick) {
             prevCloudX = cloudX;
             prevCloudZ = cloudZ;
@@ -83,6 +88,7 @@ public class CloudRenderManager {
         eZ -= MathHelper.lerp(tickDelta,prevCloudZ,cloudZ) % 32;
         if(!firstStart) {
             boolean canUpdate = true;
+            Vec3d curColor = client.world.getCloudsColor(tickDelta);
             for (Vec2f offset : offsets) {
                 int cx = centerX + (int)offset.x;
                 int cz = centerZ + (int)offset.y;
@@ -101,7 +107,9 @@ public class CloudRenderManager {
                     matrices.translate(chunk.posX - eX, 192 - cameraY, chunk.posZ - eZ);
                     matrices.scale(2,2,2);
                     chunk.buf.bind();
+                    RenderSystem.setShaderColor((float)curColor.x,(float)curColor.y,(float)curColor.z,1.0F);
                     chunk.buf.draw(matrices.peek().getPositionMatrix(), projectionMatrix, shaderProgram);
+                    RenderSystem.setShaderColor(1.0F,1.0F,1.0F,1.0F);
                     VertexBuffer.unbind();
                     matrices.pop();
                 }
@@ -114,42 +122,42 @@ public class CloudRenderManager {
 
     public static void makeCloudBlock(BufferBuilder tessellator, int x, int y, int z, float r, float g, float b, short[] data, int index) {
         if (x == 0 || data[index - 1] == (short)0xf000) {
-            tessellator.vertex(x, y, z).texture(0,0).color(r,g,b,1.0F).next();
-            tessellator.vertex(x, y + 1, z).texture(0,0).color(r,g,b,1.0F).next();
-            tessellator.vertex(x, y + 1, z + 1).texture(0,0).color(r,g,b,1.0F).next();
-            tessellator.vertex(x, y, z + 1).texture(0,0).color(r,g,b,1.0F).next();
+            tessellator.vertex(x, y, z).normal(-1,0,0).texture(0,0).color(r,g,b,1.0F).next();
+            tessellator.vertex(x, y + 1, z).normal(-1,0,0).texture(0,0).color(r,g,b,1.0F).next();
+            tessellator.vertex(x, y + 1, z + 1).normal(-1,0,0).texture(0,0).color(r,g,b,1.0F).next();
+            tessellator.vertex(x, y, z + 1).normal(-1,0,0).texture(0,0).color(r,g,b,1.0F).next();
         }
         if (x == 15 || data[index + 1] == (short)0xf000) {
-            tessellator.vertex(x + 1, y, z).texture(0,0).color(r,g,b,1.0F).next();
-            tessellator.vertex(x + 1, y + 1, z).texture(0,0).color(r,g,b,1.0F).next();
-            tessellator.vertex(x + 1, y + 1, z + 1).texture(0,0).color(r,g,b,1.0F).next();
-            tessellator.vertex(x + 1, y, z + 1).texture(0,0).color(r,g,b,1.0F).next();
+            tessellator.vertex(x + 1, y, z).normal(1,0,0).texture(0,0).color(r,g,b,1.0F).next();
+            tessellator.vertex(x + 1, y + 1, z).normal(1,0,0).texture(0,0).color(r,g,b,1.0F).next();
+            tessellator.vertex(x + 1, y + 1, z + 1).normal(1,0,0).texture(0,0).color(r,g,b,1.0F).next();
+            tessellator.vertex(x + 1, y, z + 1).normal(1,0,0).texture(0,0).color(r,g,b,1.0F).next();
         }
 
         if (y == 0 || data[index - 16] == (short)0xf000) {
-            tessellator.vertex(x, y, z).texture(0,0).color(r,g,b,1.0F).next();
-            tessellator.vertex(x + 1, y, z).texture(0,0).color(r,g,b,1.0F).next();
-            tessellator.vertex(x + 1, y, z + 1).texture(0,0).color(r,g,b,1.0F).next();
-            tessellator.vertex(x, y, z + 1).texture(0,0).color(r,g,b,1.0F).next();
+            tessellator.vertex(x, y, z).normal(0,-1,0).texture(0,0).color(r,g,b,1.0F).next();
+            tessellator.vertex(x + 1, y, z).normal(0,-1,0).texture(0,0).color(r,g,b,1.0F).next();
+            tessellator.vertex(x + 1, y, z + 1).normal(0,-1,0).texture(0,0).color(r,g,b,1.0F).next();
+            tessellator.vertex(x, y, z + 1).normal(0,-1,0).texture(0,0).color(r,g,b,1.0F).next();
         }
         if (y == 31 || data[index + 16] == (short)0xf000) {
-            tessellator.vertex(x, y + 1, z).texture(0,0).color(r,g,b,1.0F).next();
-            tessellator.vertex(x + 1, y + 1, z).texture(0,0).color(r,g,b,1.0F).next();
-            tessellator.vertex(x + 1, y + 1, z + 1).texture(0,0).color(r,g,b,1.0F).next();
-            tessellator.vertex(x, y + 1, z + 1).texture(0,0).color(r,g,b,1.0F).next();
+            tessellator.vertex(x, y + 1, z).normal(0,1,0).texture(0,0).color(r,g,b,1.0F).next();
+            tessellator.vertex(x + 1, y + 1, z).normal(0,1,0).texture(0,0).color(r,g,b,1.0F).next();
+            tessellator.vertex(x + 1, y + 1, z + 1).normal(0,1,0).texture(0,0).color(r,g,b,1.0F).next();
+            tessellator.vertex(x, y + 1, z + 1).normal(0,1,0).texture(0,0).color(r,g,b,1.0F).next();
         }
 
         if (z == 0 || data[index - 512] == (short)0xf000) {
-            tessellator.vertex(x, y, z).texture(0,0).color(r,g,b,1.0F).next();
-            tessellator.vertex(x, y + 1, z).texture(0,0).color(r,g,b,1.0F).next();
-            tessellator.vertex(x + 1, y + 1, z).texture(0,0).color(r,g,b,1.0F).next();
-            tessellator.vertex(x + 1, y, z).texture(0,0).color(r,g,b,1.0F).next();
+            tessellator.vertex(x, y, z).normal(0,0,-1).texture(0,0).color(r,g,b,1.0F).next();
+            tessellator.vertex(x, y + 1, z).normal(0,0,-1).texture(0,0).color(r,g,b,1.0F).next();
+            tessellator.vertex(x + 1, y + 1, z).normal(0,0,-1).texture(0,0).color(r,g,b,1.0F).next();
+            tessellator.vertex(x + 1, y, z).normal(0,0,-1).texture(0,0).color(r,g,b,1.0F).next();
         }
         if (z == 15 || data[index + 512] == (short)0xf000) {
-            tessellator.vertex(x, y, z + 1).texture(0,0).color(r,g,b,1.0F).next();
-            tessellator.vertex(x, y + 1, z + 1).texture(0,0).color(r,g,b,1.0F).next();
-            tessellator.vertex(x + 1, y + 1, z + 1).texture(0,0).color(r,g,b,1.0F).next();
-            tessellator.vertex(x + 1, y, z + 1).texture(0,0).color(r,g,b,1.0F).next();
+            tessellator.vertex(x, y, z + 1).normal(0,0,1).texture(0,0).color(r,g,b,1.0F).next();
+            tessellator.vertex(x, y + 1, z + 1).normal(0,0,1).texture(0,0).color(r,g,b,1.0F).next();
+            tessellator.vertex(x + 1, y + 1, z + 1).normal(0,0,1).texture(0,0).color(r,g,b,1.0F).next();
+            tessellator.vertex(x + 1, y, z + 1).normal(0,0,1).texture(0,0).color(r,g,b,1.0F).next();
         }
     }
 }

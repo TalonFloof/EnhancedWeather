@@ -46,19 +46,19 @@ public class ImageSampler {
     }
 
     public float sample(double x, double z) {
-        int x1 = MathHelper.floor(x);
-        int z1 = MathHelper.floor(z);
-        int x2 = MathUtil.wrap(x1 + 1, width);
-        int z2 = MathUtil.wrap(z1 + 1, height);
-        float dx = (float) (x - x1);
-        float dz = (float) (z - z1);
+        long x1 = MathHelper.floor(x);
+        long z1 = MathHelper.floor(z);
+        long x2 = MathUtil.wrap(x1 + 1, width);
+        long z2 = MathUtil.wrap(z1 + 1, height);
+        double dx = x - x1;
+        double dz = z - z1;
         x1 = MathUtil.wrap(x1, width);
         z1 = MathUtil.wrap(z1, height);
 
-        float a = data[getIndex(x1, z1)];
-        float b = data[getIndex(x2, z1)];
-        float c = data[getIndex(x1, z2)];
-        float d = data[getIndex(x2, z2)];
+        float a = data[getIndex((int)x1, (int)z1)];
+        float b = data[getIndex((int)x2, (int)z1)];
+        float c = data[getIndex((int)x1, (int)z2)];
+        float d = data[getIndex((int)x2, (int)z2)];
 
         if (smooth) {
             dx = smoothStep(dx);
@@ -79,7 +79,7 @@ public class ImageSampler {
         return this;
     }
 
-    private float smoothStep(float x) {
+    private double smoothStep(double x) {
         return x * x * x * (x * (x * 6 - 15) + 10);
     }
 }

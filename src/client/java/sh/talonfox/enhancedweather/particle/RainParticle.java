@@ -26,6 +26,7 @@ import sh.talonfox.enhancedweather.EnhancedWeatherClient;
 
 public class RainParticle extends SpriteBillboardParticle {
     public float yaw;
+    public float prevPitch = 0F;
     public float pitch = 0F;
     public RainParticle(ClientWorld clientWorld, double x, double y, double z, double r, double g, double b, SpriteProvider provider) {
         super(clientWorld, x, y, z, r, g, b);
@@ -35,7 +36,7 @@ public class RainParticle extends SpriteBillboardParticle {
         this.velocityZ = 0.0D;
         this.gravityStrength = 1.0F;
         this.scale = 0.25F;
-        this.maxAge = 200;
+        this.maxAge = 20;
         this.setSprite(provider);
         BlockPos pos = new BlockPos((int)x,(int)y,(int)z);
         //int color = 0x43d5ee;
@@ -57,15 +58,10 @@ public class RainParticle extends SpriteBillboardParticle {
         float y = (float) (MathHelper.lerp(f, this.prevPosY, this.y) - vec3.y);
         float z = (float) (MathHelper.lerp(f, this.prevPosZ, this.z) - vec3.z);
         Quaternionf quaternion = new Quaternionf(0,0,0,1);
-        if(EnhancedWeatherClient.rainDest == 1F) {
-            quaternion.mul(RotationAxis.NEGATIVE_Z.rotationDegrees((EnhancedWeatherClient.windZ/2F) * 17.5F));
-            quaternion.mul(RotationAxis.POSITIVE_X.rotationDegrees((EnhancedWeatherClient.windX/2F) * 17.5F));
-        } else {
-            quaternion.mul(RotationAxis.NEGATIVE_Z.rotationDegrees((EnhancedWeatherClient.windZ/2F) * 10F));
-            quaternion.mul(RotationAxis.POSITIVE_X.rotationDegrees((EnhancedWeatherClient.windX/2F) * 10F));
-            /*quaternion.mul(RotationAxis.NEGATIVE_X.rotationDegrees(camera.getPitch()));
-            quaternion.mul(RotationAxis.POSITIVE_Y.rotationDegrees(camera.getYaw()));*/
-        }
+        double motionXZ = Math.sqrt((velocityX * 2) * (velocityX * 2) + (velocityZ * 2) * (velocityZ * 2));
+        prevPitch = pitch;
+        pitch = (float)Math.atan2(-0.1, motionXZ);
+        quaternion.mul(RotationAxis.POSITIVE_X.rotationDegrees(MathHelper.lerp(f, prevPitch, pitch)));
         quaternion.mul(RotationAxis.POSITIVE_Y.rotationDegrees(yaw));
 
         Vector3f[] vector3fs = new Vector3f[]{new Vector3f(-1.0F, -1.0F, 0.0F), new Vector3f(-1.0F, 1.0F, 0.0F), new Vector3f(1.0F, 1.0F, 0.0F), new Vector3f(1.0F, -1.0F, 0.0F)};
