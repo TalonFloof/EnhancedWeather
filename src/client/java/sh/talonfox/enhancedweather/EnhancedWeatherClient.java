@@ -5,6 +5,7 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -15,11 +16,11 @@ import net.minecraft.world.biome.Biome;
 import sh.talonfox.enhancedweather.config.EnhancedWeatherConfig;
 import sh.talonfox.enhancedweather.network.UpdateConditions;
 import sh.talonfox.enhancedweather.network.UpdateConditionsClient;
+import sh.talonfox.enhancedweather.particle.HailParticle;
 import sh.talonfox.enhancedweather.particle.RainParticle;
 import sh.talonfox.enhancedweather.particle.SnowParticle;
 
-import static sh.talonfox.enhancedweather.EnhancedWeather.EW_RAIN;
-import static sh.talonfox.enhancedweather.EnhancedWeather.EW_SNOW;
+import static sh.talonfox.enhancedweather.EnhancedWeather.*;
 
 /*
 Weather Modifier Values:
@@ -33,6 +34,8 @@ Weather Modifier Values:
 public class EnhancedWeatherClient implements ClientModInitializer {
 	public static float rain = 0F;
 	public static float cloud = 0F;
+	public static int wetness = 0;
+	public static boolean showRainbow = false;
 	public static float rainDest = 0F;
 	public static float cloudDest = 0F;
 	public static float windX = 0F;
@@ -41,10 +44,23 @@ public class EnhancedWeatherClient implements ClientModInitializer {
 
 	@Override
 	public void onInitializeClient() {
+		//HudRenderCallback.EVENT.register(new EWDebugHud());
 		ParticleFactoryRegistry.getInstance().register(EW_RAIN, RainParticle.DefaultFactory::new);
 		ParticleFactoryRegistry.getInstance().register(EW_SNOW, SnowParticle.DefaultFactory::new);
+		ParticleFactoryRegistry.getInstance().register(EW_HAIL, HailParticle.DefaultFactory::new);
 		ClientPlayNetworking.registerGlobalReceiver(UpdateConditions.PACKET_ID, UpdateConditionsClient::onReceive);
 		ClientTickEvents.START_WORLD_TICK.register((client) -> {
+			if(rainDest > 0.90) {
+				wetness = Math.min(wetness + 1,1000);
+				if(wetness >= 1000) {
+					showRainbow = true;
+				}
+			} else {
+				wetness = Math.max(wetness - 1,0);
+				if(wetness == 0) {
+					showRainbow = false;
+				}
+			}
 			if(rain > rainDest) {
 				rain -= 0.005F;
 			} else if(rain < rainDest) {
@@ -66,8 +82,6 @@ public class EnhancedWeatherClient implements ClientModInitializer {
 			}
 		});
 		ClientTickEvents.END_CLIENT_TICK.register((client) -> {
-			if(!EnhancedWeatherConfig.Client_ParticleRain)
-				return;
 			if(rain < 0.2F)
 				return;
 			if (client.isPaused() || client.world == null && client.getCameraEntity() == null)
@@ -96,7 +110,11 @@ public class EnhancedWeatherClient implements ClientModInitializer {
 					if (client.world.getTopY(Heightmap.Type.MOTION_BLOCKING, pos.getX(), pos.getZ()) > pos.getY())
 						continue;
 
-					client.world.addParticle(EnhancedWeather.EW_RAIN, pos.getX() + rand.nextFloat(), pos.getY() + rand.nextFloat(), pos.getZ() + rand.nextFloat(), 0, 0, 0);
+					if(EnhancedWeatherConfig.Client_ParticleRain)
+						client.world.addParticle(EnhancedWeather.EW_RAIN, pos.getX() + rand.nextFloat(), pos.getY() + rand.nextFloat(), pos.getZ() + rand.nextFloat(), 0, 0, 0);
+					if(windSpeed >= 50 && rainDest == 1F && pass < 5) {
+						client.world.addParticle(EnhancedWeather.EW_HAIL, pos.getX() + rand.nextFloat(), pos.getY() + rand.nextFloat(), pos.getZ() + rand.nextFloat(), 0, 0, 0);
+					}
 				}
 			}
 		});

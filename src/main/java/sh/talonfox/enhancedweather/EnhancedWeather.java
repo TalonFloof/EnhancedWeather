@@ -32,6 +32,7 @@ public class EnhancedWeather implements ModInitializer {
 	public static EnhancedWeatherConfig CONFIG;
 	public static final DefaultParticleType EW_RAIN = FabricParticleTypes.simple(true);
 	public static final DefaultParticleType EW_SNOW = FabricParticleTypes.simple(true);
+	public static final DefaultParticleType EW_HAIL = FabricParticleTypes.simple(true);
 	public static long noiseTick = 0;
 	public static double cloudX = 0;
 	public static double cloudZ = 0;
@@ -41,11 +42,12 @@ public class EnhancedWeather implements ModInitializer {
 		ConfigRegistry.init();
 		Registry.register(Registries.PARTICLE_TYPE, new Identifier("enhancedweather", "rain"), EW_RAIN);
 		Registry.register(Registries.PARTICLE_TYPE, new Identifier("enhancedweather", "snow"), EW_SNOW);
+		Registry.register(Registries.PARTICLE_TYPE, new Identifier("enhancedweather", "hail"), EW_HAIL);
 		ServerWorldEvents.LOAD.register((server, world) -> {
 			WindManager.reset();
-			Random r = Random.create(world.getSeed());
-			cloudX = r.nextInt();
-			cloudZ = r.nextInt();
+			Random r = Random.create();
+			cloudX = r.nextBetween(-16777216,16777216);
+			cloudZ = r.nextBetween(-16777216,16777216);
 			EnhancedWeather.LOGGER.info("Starting cloud position will be: X={},Z={}",cloudX,cloudZ);
 		});
 		ServerTickEvents.START_WORLD_TICK.register((world) -> {
@@ -56,8 +58,10 @@ public class EnhancedWeather implements ModInitializer {
 				WindManager.tick();
 				float windX = (float)-Math.sin(Math.toRadians(WindManager.windAngle))*(WindManager.windSpeed/25F);
 				float windZ = (float)Math.cos(Math.toRadians(WindManager.windAngle))*(WindManager.windSpeed/25F);
-				cloudX += (windX * 0.002) * 32;
-				cloudZ += (windZ * 0.002) * 32;
+				float moveX = (float)-Math.sin(Math.toRadians(WindManager.windAngle))*Math.min(1.5F,WindManager.windSpeed/25F);
+				float moveZ = (float)Math.cos(Math.toRadians(WindManager.windAngle))*Math.min(1.5F,WindManager.windSpeed/25F);
+				cloudX += (moveX * 0.002) * 32;
+				cloudZ += (moveZ * 0.002) * 32;
 				if (noiseTick % 20 == 0) {
 					for (ServerPlayerEntity player : PlayerLookup.all(world.getServer())) {
 						UpdateConditions.send(world.getServer(), player, windX, windZ, cloudX, cloudZ);

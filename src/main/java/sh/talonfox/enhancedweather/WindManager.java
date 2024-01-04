@@ -15,7 +15,7 @@ public class WindManager {
         Random rand = Random.create();
         windAngle = rand.nextInt(360)-180;
         windSpeed = rand.nextInt(45);
-        windSpeedRandChangeTimer = 0;
+        windSpeedRandChangeTimer = windSpeedRandChangeDelay;
         lowWindTimer = 0;
         highWindTimer = 0;
     }

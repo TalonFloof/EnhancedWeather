@@ -21,7 +21,7 @@ public class EnhancedWeatherAPI {
     private static final Vec2f[] OFFSETS;
 
     public static float sampleThunderstorm(float windSpeed, int x, int z, double scale) {
-        return windSpeed > 50F ? 1F : THUNDERSTORMS.sample(x * scale, z * scale);
+        return windSpeed >= 50F ? 1F : THUNDERSTORMS.sample(x * scale, z * scale);
     }
 
     public static boolean isRaining(World world, int x, int z) {
@@ -60,8 +60,8 @@ public class EnhancedWeatherAPI {
 
     public static float sampleFront(int x, int z, double scale) {
         float front = FRONT_SAMPLE.sample(x * scale, z * scale);
-        //scale *= 0.7;
-        //front *= RAIN_DENSITY.sample(x * scale, z * scale);
+        /*scale *= 0.7;
+        front *= RAIN_DENSITY.sample(x * scale, z * scale);*/
         return front;
     }
 
