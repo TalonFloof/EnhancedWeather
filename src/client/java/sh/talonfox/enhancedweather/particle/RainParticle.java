@@ -32,9 +32,9 @@ public class RainParticle extends SpriteBillboardParticle {
         super(clientWorld, x, y, z, r, g, b);
         this.yaw = clientWorld.random.nextInt(360) - 180F;
         this.velocityX = 0.0D;
-        this.velocityY = -1.0D;
+        this.velocityY = -0.5D;
         this.velocityZ = 0.0D;
-        this.gravityStrength = 1.0F;
+        this.gravityStrength = 1.8F;
         this.scale = 0.25F;
         this.maxAge = 20;
         this.setSprite(provider);
@@ -58,9 +58,9 @@ public class RainParticle extends SpriteBillboardParticle {
         float y = (float) (MathHelper.lerp(f, this.prevPosY, this.y) - vec3.y);
         float z = (float) (MathHelper.lerp(f, this.prevPosZ, this.z) - vec3.z);
         Quaternionf quaternion = new Quaternionf(0,0,0,1);
-        double motionXZ = Math.sqrt((velocityX * 2) * (velocityX * 2) + (velocityZ * 2) * (velocityZ * 2));
+        double motionXZ = Math.sqrt(velocityX * velocityX + velocityZ * velocityZ);
         prevPitch = pitch;
-        pitch = (float)Math.atan2(-0.1, motionXZ);
+        pitch = (float)Math.atan2(velocityY, motionXZ);
         quaternion.mul(RotationAxis.POSITIVE_X.rotationDegrees(MathHelper.lerp(f, prevPitch, pitch)));
         quaternion.mul(RotationAxis.POSITIVE_Y.rotationDegrees(yaw));
 

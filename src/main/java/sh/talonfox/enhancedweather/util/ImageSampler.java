@@ -12,7 +12,7 @@ public class ImageSampler {
     private final int width;
     private final int height;
 
-    private boolean smooth;
+    private boolean smooth = false;
 
     public ImageSampler(String path) {
         URL url = Thread.currentThread().getContextClassLoader().getResource(path);

@@ -29,8 +29,8 @@ public class CloudRenderManager {
     private static Vec2f[] offsets;
     private static boolean firstStart = true;
     private static long lastTick = 0;
-    private static double prevCloudX = 0;
-    private static double prevCloudZ = 0;
+    public static double prevCloudX = 0;
+    public static double prevCloudZ = 0;
     public static double cloudX = 0;
     public static double cloudZ = 0;
     private static Vec3d lastCloudColor = new Vec3d(1,1,1);
@@ -80,8 +80,9 @@ public class CloudRenderManager {
         if(lastTick != currentTick) {
             prevCloudX = cloudX;
             prevCloudZ = cloudZ;
-            cloudX += (windX * 0.002) * 32;
-            cloudZ += (windZ * 0.002) * 32;
+            Vec2f normal = new Vec2f(windX,windZ).normalize();
+            cloudX += ((normal.x*Math.min(1.5,EnhancedWeatherClient.windSpeed/25F)) * 0.002) * 32;
+            cloudZ += ((normal.y*Math.min(1.5,EnhancedWeatherClient.windSpeed/25F)) * 0.002) * 32;
             lastTick = currentTick;
         }
         eX -= MathHelper.lerp(tickDelta,prevCloudX,cloudX) % 32;
