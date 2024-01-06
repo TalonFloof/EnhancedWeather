@@ -60,8 +60,8 @@ public class EnhancedWeatherAPI {
 
     public static float sampleFront(int x, int z, double scale) {
         float front = FRONT_SAMPLE.sample(x * scale, z * scale);
-        //scale *= 0.7;
-        //front *= RAIN_DENSITY.sample(x * scale, z * scale);
+        /*scale *= 0.7;
+        front *= RAIN_DENSITY.sample(x * scale, z * scale);*/
         return front;
     }
 
