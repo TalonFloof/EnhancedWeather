@@ -31,7 +31,7 @@ public class EnhancedWeatherAPI {
         return true;
     }
 
-    public static boolean isThundering(World world, float windSpeed, int x, int y, int z) {
+    public static boolean isThundering(World world, float windSpeed, int x, int z) {
         return isRaining(world, x, z) && sampleThunderstorm(windSpeed, x, z, 0.05) > 0.3F;
     }
 
@@ -60,8 +60,8 @@ public class EnhancedWeatherAPI {
 
     public static float sampleFront(int x, int z, double scale) {
         float front = FRONT_SAMPLE.sample(x * scale, z * scale);
-        /*scale *= 0.7;
-        front *= RAIN_DENSITY.sample(x * scale, z * scale);*/
+        //scale *= 0.7;
+        //front *= RAIN_DENSITY.sample(x * scale, z * scale);
         return front;
     }
 

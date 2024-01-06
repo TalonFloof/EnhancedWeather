@@ -60,6 +60,8 @@ public class WorldRendererMixin {
             target = "Lnet/minecraft/client/util/math/MatrixStack;multiply(Lorg/joml/Quaternionf;)V"
     ))
     public void renderRainbow(MatrixStack matrices, Matrix4f projectionMatrix, float tickDelta, Camera camera, boolean thickFog, Runnable fogCallback, CallbackInfo ci) {
+        if(!EnhancedWeatherClient.showRainbow)
+            return;
         ClientWorld world = MinecraftClient.getInstance().world;
         matrices.push();
         Tessellator t = Tessellator.getInstance();

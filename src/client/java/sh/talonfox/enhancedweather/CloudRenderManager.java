@@ -105,7 +105,7 @@ public class CloudRenderManager {
                 }
                 if (!chunk.needUpdate()) {
                     matrices.push();
-                    matrices.translate(chunk.posX - eX, 192 - cameraY, chunk.posZ - eZ);
+                    matrices.translate(chunk.posX - eX, client.world.getDimensionEffects().getCloudsHeight() - cameraY, chunk.posZ - eZ);
                     matrices.scale(2,2,2);
                     chunk.buf.bind();
                     RenderSystem.setShaderColor((float)curColor.x,(float)curColor.y,(float)curColor.z,1.0F);

@@ -19,6 +19,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sh.talonfox.enhancedweather.block.BlockRegistry;
 import sh.talonfox.enhancedweather.config.ConfigRegistry;
 import sh.talonfox.enhancedweather.config.EnhancedWeatherConfig;
 import sh.talonfox.enhancedweather.network.UpdateConditions;
@@ -43,6 +44,7 @@ public class EnhancedWeather implements ModInitializer {
 		Registry.register(Registries.PARTICLE_TYPE, new Identifier("enhancedweather", "rain"), EW_RAIN);
 		Registry.register(Registries.PARTICLE_TYPE, new Identifier("enhancedweather", "snow"), EW_SNOW);
 		Registry.register(Registries.PARTICLE_TYPE, new Identifier("enhancedweather", "hail"), EW_HAIL);
+		BlockRegistry.register();
 		ServerWorldEvents.LOAD.register((server, world) -> {
 			WindManager.reset();
 			Random r = Random.create();

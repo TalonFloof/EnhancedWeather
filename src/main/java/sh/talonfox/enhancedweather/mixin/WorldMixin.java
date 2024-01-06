@@ -18,13 +18,17 @@ public class WorldMixin {
     public void hasRain(BlockPos pos, CallbackInfoReturnable<Boolean> cir) {
         if (!EnhancedWeatherAPI.isRaining(((World)(Object)this),pos.getX() - MathHelper.floor(EnhancedWeather.cloudX), pos.getZ() - MathHelper.floor(EnhancedWeather.cloudZ))) {
             cir.setReturnValue(false);
-        } else if (!((World)(Object)this).isSkyVisible(pos)) {
-            cir.setReturnValue(false);
-        } else if (((World)(Object)this).getTopPosition(Heightmap.Type.MOTION_BLOCKING, pos).getY() > pos.getY()) {
-            cir.setReturnValue(false);
-        } else {
-            Biome biome = ((World)(Object)this).getBiome(pos).value();
-            cir.setReturnValue(biome.getPrecipitation(pos) == Biome.Precipitation.RAIN);
+            return;
         }
+        if (!((World)(Object)this).isSkyVisible(pos)) {
+            cir.setReturnValue(false);
+            return;
+        }
+        if (((World)(Object)this).getTopPosition(Heightmap.Type.MOTION_BLOCKING, pos).getY() > pos.getY()) {
+            cir.setReturnValue(false);
+            return;
+        }
+        Biome biome = ((World)(Object)this).getBiome(pos).value();
+        cir.setReturnValue(biome.getPrecipitation(pos) == Biome.Precipitation.RAIN);
     }
 }
