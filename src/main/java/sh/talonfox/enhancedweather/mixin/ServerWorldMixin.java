@@ -26,7 +26,7 @@ public class ServerWorldMixin {
     }
     @Redirect(method = "tickChunk", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerWorld;hasRain(Lnet/minecraft/util/math/BlockPos;)Z"))
     private boolean canSpawnLightning(ServerWorld instance, BlockPos pos) {
-        if(!EnhancedWeatherAPI.isThundering(instance, WindManager.windSpeed,pos.getX() - MathHelper.floor(EnhancedWeather.cloudX), pos.getZ() - MathHelper.floor(EnhancedWeather.cloudZ))) {
+        if(!EnhancedWeatherAPI.isThundering(instance, 0,pos.getX() - MathHelper.floor(EnhancedWeather.cloudX), pos.getZ() - MathHelper.floor(EnhancedWeather.cloudZ))) {
             return false;
         } else if (!instance.isSkyVisible(pos)) {
             return false;

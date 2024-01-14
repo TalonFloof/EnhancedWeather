@@ -14,6 +14,7 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
 import sh.talonfox.enhancedweather.config.EnhancedWeatherConfig;
+import sh.talonfox.enhancedweather.events.TornadoClient;
 import sh.talonfox.enhancedweather.network.ScreenOpen;
 import sh.talonfox.enhancedweather.network.ScreenOpenClient;
 import sh.talonfox.enhancedweather.network.UpdateConditions;
@@ -21,6 +22,7 @@ import sh.talonfox.enhancedweather.network.UpdateConditionsClient;
 import sh.talonfox.enhancedweather.particle.HailParticle;
 import sh.talonfox.enhancedweather.particle.RainParticle;
 import sh.talonfox.enhancedweather.particle.SnowParticle;
+import sh.talonfox.enhancedweather.particle.TornadoParticle;
 
 import static sh.talonfox.enhancedweather.EnhancedWeather.*;
 
@@ -43,6 +45,7 @@ public class EnhancedWeatherClient implements ClientModInitializer {
 	public static float windX = 0F;
 	public static float windZ = 0F;
 	public static float windSpeed = 0F;
+	public static TornadoClient test = new TornadoClient(0,192,0);
 
 	@Override
 	public void onInitializeClient() {
@@ -50,9 +53,11 @@ public class EnhancedWeatherClient implements ClientModInitializer {
 		ParticleFactoryRegistry.getInstance().register(EW_RAIN, RainParticle.DefaultFactory::new);
 		ParticleFactoryRegistry.getInstance().register(EW_SNOW, SnowParticle.DefaultFactory::new);
 		ParticleFactoryRegistry.getInstance().register(EW_HAIL, HailParticle.DefaultFactory::new);
+		ParticleFactoryRegistry.getInstance().register(EW_TORNADO, TornadoParticle.DefaultFactory::new);
 		ClientPlayNetworking.registerGlobalReceiver(UpdateConditions.PACKET_ID, UpdateConditionsClient::onReceive);
 		ClientPlayNetworking.registerGlobalReceiver(ScreenOpen.PACKET_ID, ScreenOpenClient::onReceive);
 		ClientTickEvents.START_WORLD_TICK.register((client) -> {
+			test.tickClient();
 			if(rainDest > 0.90) {
 				wetness = Math.min(wetness + 1,1000);
 				if(wetness >= 1000) {
