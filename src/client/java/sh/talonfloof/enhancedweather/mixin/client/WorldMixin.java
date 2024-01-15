@@ -1,0 +1,35 @@
+package sh.talonfloof.enhancedweather.mixin.client;
+
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.world.World;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import sh.talonfloof.enhancedweather.EnhancedWeatherClient;
+
+@Environment(EnvType.CLIENT)
+@Mixin(World.class)
+public class WorldMixin {
+    @Inject(method="getRainGradient(F)F",at = @At("TAIL"), cancellable = true)
+    public void getRainGradient(float delta, CallbackInfoReturnable<Float> cir) {
+        if(MinecraftClient.getInstance().player != null) {
+            if (MinecraftClient.getInstance().player.getY() > MinecraftClient.getInstance().world.getDimensionEffects().getCloudsHeight())
+                cir.setReturnValue(0F);
+            else
+                cir.setReturnValue(EnhancedWeatherClient.rain);
+        }
+    }
+
+    @Inject(method="getThunderGradient(F)F",at = @At("TAIL"), cancellable = true)
+    public void getThunderGradient(float delta, CallbackInfoReturnable<Float> cir) {
+        if(MinecraftClient.getInstance().player != null) {
+            if (MinecraftClient.getInstance().player.getY() > MinecraftClient.getInstance().world.getDimensionEffects().getCloudsHeight())
+                cir.setReturnValue(0F);
+            else
+                cir.setReturnValue(EnhancedWeatherClient.rainDest == 1F ? EnhancedWeatherClient.rain : 0F);
+        }
+    }
+}

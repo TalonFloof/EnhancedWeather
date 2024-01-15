@@ -1,12 +1,13 @@
 {
   "required": true,
-  "package": "sh.talonfox.enhancedweather.mixin.client",
+  "package": "sh.talonfloof.enhancedweather.mixin.client",
   "compatibilityLevel": "JAVA_17",
   "client": [
     "BackgroundRendererMixin",
     "CherryLeavesParticleMixin",
     "ClientWorldMixin",
     "MixinParticle",
+    "ParticleManagerMixin",
     "WorldMixin",
     "WorldRendererMixin"
   ],

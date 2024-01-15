@@ -1,0 +1,7 @@
+{
+  "text.autoconfig.enhancedweather.title": "Verbesserter Wetterkonfigurationsbildschirm",
+  "text.autoconfig.enhancedweather.category.client": "Kunde",
+  "text.autoconfig.enhancedweather.option.Client_ParticleRain": "Partikelbasierter Niederschlag",
+  "text.autoconfig.enhancedweather.option.Client_ShowRainbow": "Regenbogen zeigen",
+  "block.enhancedweather.radar": "Wetterradar"
+}

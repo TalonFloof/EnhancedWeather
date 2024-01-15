@@ -3,26 +3,25 @@
 	"id": "enhancedweather",
 	"version": "${version}",
 	"name": "Enhanced Weather",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "The ultimate weather mod for Minecraft Fabric",
 	"authors": [
-		"Me!"
+		"TalonFloof"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"sources": "https://github.com/TalonFloof/EnhancedWeather"
 	},
 	"license": "CC0-1.0",
 	"icon": "assets/enhancedweather/icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-          "sh.talonfox.enhancedweather.EnhancedWeather"
+          "sh.talonfloof.enhancedweather.EnhancedWeather"
 		],
 		"client": [
-			"sh.talonfox.enhancedweather.EnhancedWeatherClient"
+          "sh.talonfloof.enhancedweather.EnhancedWeatherClient"
 		],
 		"modmenu": [
-			"sh.talonfox.enhancedweather.config.ModMenuSupport"
+          "sh.talonfloof.enhancedweather.config.ModMenuSupport"
 		]
 	},
 	"mixins": [

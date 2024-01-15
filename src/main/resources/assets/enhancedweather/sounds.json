@@ -1,0 +1,11 @@
+{
+  "radar.beep": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "enhancedweather:radar_beep",
+        "stream": true
+      }
+    ]
+  }
+}
