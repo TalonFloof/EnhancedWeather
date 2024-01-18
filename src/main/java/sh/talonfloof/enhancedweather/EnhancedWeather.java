@@ -10,6 +10,8 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
+import net.fabricmc.fabric.api.networking.v1.ServerLoginConnectionEvents;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
 import net.minecraft.item.ItemGroups;
 import net.minecraft.particle.DefaultParticleType;
@@ -32,6 +34,7 @@ import sh.talonfloof.enhancedweather.config.ConfigRegistry;
 import sh.talonfloof.enhancedweather.config.EnhancedWeatherConfig;
 import sh.talonfloof.enhancedweather.events.Tornado;
 import sh.talonfloof.enhancedweather.events.WeatherEvent;
+import sh.talonfloof.enhancedweather.network.SettingSync;
 import sh.talonfloof.enhancedweather.network.UpdateConditions;
 import sh.talonfloof.enhancedweather.network.UpdateEvent;
 
@@ -144,6 +147,9 @@ public class EnhancedWeather implements ModInitializer {
 				}
 			}
 		});
+		ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
+			SettingSync.send(handler.player);
+		});
 		ServerTickEvents.START_WORLD_TICK.register((world) -> {
 			if(world.getDimensionKey().equals(DimensionTypes.OVERWORLD)) {
 				if(events.size() < world.getServer().getCurrentPlayerCount()) {
@@ -151,7 +157,7 @@ public class EnhancedWeather implements ModInitializer {
 						BlockPos pos = player.getBlockPos();
 						Random r = Random.create();
 						pos = pos.add(r.nextBetween(-2048, 2048), 0, r.nextBetween(-2048, 2048));
-						if (EnhancedWeatherAPI.isThundering(world, 0, pos.getX() - MathHelper.floor(cloudX), pos.getZ() - MathHelper.floor(cloudZ))) {
+						if (EnhancedWeatherAPI.isThundering(world, 0, pos.getX() - MathHelper.floor(cloudX), pos.getZ() - MathHelper.floor(cloudZ)) && WindManager.windSpeed >= 15) {
 							if(r.nextInt(100) == 0) {
 								Tornado t = new Tornado(pos.getX(),192,pos.getZ());
 								events.put(UUID.randomUUID(),t);
@@ -172,10 +178,12 @@ public class EnhancedWeather implements ModInitializer {
 						} else {
 							var col = PlayerLookup.around(world.getServer().getOverworld(), new Vec3d(e.position.x, 50, e.position.z), 2048.0D);
 							if (col.isEmpty()) {
-								for (ServerPlayerEntity player : PlayerLookup.all(world.getServer())) {
-									UpdateEvent.send(world.getServer(), ids[i], null, player);
+								if(!(!world.getServer().isDedicated() && world.getServer().getCurrentPlayerCount() == 0)) {
+									for (ServerPlayerEntity player : PlayerLookup.all(world.getServer())) {
+										UpdateEvent.send(world.getServer(), ids[i], null, player);
+									}
+									events.remove(ids[i]);
 								}
-								events.remove(ids[i]);
 							} else {
 								((Tornado) e).tickServer();
 							}
@@ -194,6 +202,7 @@ public class EnhancedWeather implements ModInitializer {
 				cloudZ += (moveZ * 0.002) * 32;
 				if (noiseTick % 20 == 0) {
 					for (ServerPlayerEntity player : PlayerLookup.all(world.getServer())) {
+						SettingSync.send(player);
 						UpdateConditions.send(world.getServer(), player, windX, windZ, cloudX, cloudZ);
 						for(UUID id : events.keySet()) {
 							UpdateEvent.send(world.getServer(),id,events.get(id).generateUpdate(),player);

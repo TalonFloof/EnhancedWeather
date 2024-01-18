@@ -17,12 +17,12 @@ import org.joml.Vector3f;
 import sh.talonfloof.enhancedweather.EnhancedWeatherClient;
 
 public class RainParticle extends SpriteBillboardParticle {
-    public float yaw;
+    public float prevYaw = 0F;
+    public float yaw = 0F;
     public float prevPitch = 0F;
     public float pitch = 0F;
     public RainParticle(ClientWorld clientWorld, double x, double y, double z, double r, double g, double b, SpriteProvider provider) {
         super(clientWorld, x, y, z, r, g, b);
-        this.yaw = clientWorld.random.nextInt(360) - 180F;
         this.velocityX = 0.0D;
         this.velocityY = -0.5D;
         this.velocityZ = 0.0D;
@@ -50,11 +50,14 @@ public class RainParticle extends SpriteBillboardParticle {
         float y = (float) (MathHelper.lerp(f, this.prevPosY, this.y) - vec3.y);
         float z = (float) (MathHelper.lerp(f, this.prevPosZ, this.z) - vec3.z);
         Quaternionf quaternion = new Quaternionf(0,0,0,1);
-        double motionXZ = Math.sqrt(velocityX * velocityX + velocityZ * velocityZ);
+        double speed = velocityX * velocityX + velocityZ * velocityZ;
+        prevYaw = this.yaw;
         prevPitch = pitch;
-        pitch = (float)Math.atan2(velocityY, motionXZ);
-        quaternion.mul(RotationAxis.POSITIVE_Y.rotationDegrees(yaw));
+        this.yaw = -(float)Math.toDegrees(Math.atan2(velocityZ, velocityX))-90;
+        this.pitch = Math.min(45, (float)(speed * 120));
+        quaternion.mul(RotationAxis.POSITIVE_Y.rotationDegrees(MathHelper.lerp(f, this.prevYaw, this.yaw)));
         quaternion.mul(RotationAxis.POSITIVE_X.rotationDegrees(MathHelper.lerp(f, prevPitch, pitch)));
+        quaternion.mul(RotationAxis.POSITIVE_Y.rotationDegrees(yaw));
 
         Vector3f[] vector3fs = new Vector3f[]{new Vector3f(-1.0F, -1.0F, 0.0F), new Vector3f(-1.0F, 1.0F, 0.0F), new Vector3f(1.0F, 1.0F, 0.0F), new Vector3f(1.0F, -1.0F, 0.0F)};
         float k = this.getSize(f);

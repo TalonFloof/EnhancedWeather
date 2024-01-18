@@ -42,7 +42,9 @@ public class WindManager {
             }
         } else {
             lowWindTimer--;
-            windSpeed -= 0.01F;
+            if(windSpeed > 10F) {
+                windSpeed -= 0.01F;
+            }
         }
         if (highWindTimer > 0) {
             highWindTimer--;

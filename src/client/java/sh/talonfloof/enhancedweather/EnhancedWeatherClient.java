@@ -10,6 +10,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
+import sh.talonfloof.enhancedweather.api.EnhancedWeatherAPI;
 import sh.talonfloof.enhancedweather.config.EnhancedWeatherConfig;
 import sh.talonfloof.enhancedweather.events.WeatherEvent;
 import sh.talonfloof.enhancedweather.network.*;
@@ -53,11 +54,23 @@ public class EnhancedWeatherClient implements ClientModInitializer {
 		ParticleFactoryRegistry.getInstance().register(EW_HAIL, HailParticle.DefaultFactory::new);
 		ParticleFactoryRegistry.getInstance().register(EW_TORNADO, TornadoParticle.DefaultFactory::new);
 		ClientPlayNetworking.registerGlobalReceiver(UpdateConditions.PACKET_ID, UpdateConditionsClient::onReceive);
+		ClientPlayNetworking.registerGlobalReceiver(SettingSync.PACKET_ID, SettingSyncClient::onReceive);
 		ClientPlayNetworking.registerGlobalReceiver(ScreenOpen.PACKET_ID, ScreenOpenClient::onReceive);
 		ClientPlayNetworking.registerGlobalReceiver(UpdateEvent.PACKET_ID, UpdateEventClient::onReceive);
 		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
 			EnhancedWeather.LOGGER.info("Client has disconnected");
 			clientEvents.clear();
+			CloudRenderManager.cloudX = 0;
+			CloudRenderManager.cloudZ = 0;
+			cloudDest = 0;
+			windX = 0;
+			windZ = 0;
+			windSpeed = 0;
+			wetness = 0;
+			cloud = 0;
+			rain = 0;
+			rainDest = 0;
+			EnhancedWeatherAPI.clientReducedRain = false;
 		});
 		ClientTickEvents.START_WORLD_TICK.register((client) -> {
 			for(UUID id : clientEvents.keySet()) {

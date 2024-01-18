@@ -155,12 +155,12 @@ public class RadarScreen extends Screen {
                 if(Math.pow(x,2)+Math.pow(z,2) < Math.pow(32,2)) {
                     int finalX = ((chunkX * 64) + (x * 64)) - MathHelper.floor(CloudRenderManager.cloudX);
                     int finalZ = ((chunkZ * 64) + (z * 64)) - MathHelper.floor(CloudRenderManager.cloudZ);
-                    int front = Math.round((Math.max(0, EnhancedWeatherAPI.sampleFront(finalX, finalZ, 0.1) - 0.2F) / 0.8F) * 6);
+                    int front = Math.round((Math.max(0, EnhancedWeatherAPI.sampleFrontClient(finalX, finalZ, 0.1) - 0.2F) / 0.8F) * 6);
 
                     if (chunkX + x == chunkX && chunkZ + z == chunkZ) {
                         context.fill(x * 3, z * 3, (x * 3) + 3, (z * 3) + 3, 0xffffffff);
                     } else {
-                        if (EnhancedWeatherAPI.sampleFront(finalX, finalZ, 0.1) >= 0.2F && EnhancedWeatherAPI.sampleThunderstorm(0, finalX, finalZ, 0.05) > 0.3) {
+                        if (EnhancedWeatherAPI.sampleFrontClient(finalX, finalZ, 0.1) >= 0.2F && EnhancedWeatherAPI.sampleThunderstorm(0, finalX, finalZ, 0.05) > 0.3) {
                             front = Math.round((Math.max(0, EnhancedWeatherAPI.sampleThunderstorm(0, finalX, finalZ, 0.05) - 0.3F) / 0.7F) * 4);
                             if (EnhancedWeatherClient.windSpeed >= 50F) {
                                 context.fill(x * 3, z * 3, (x * 3) + 3, (z * 3) + 3, hailColors[front] | 0xff000000);

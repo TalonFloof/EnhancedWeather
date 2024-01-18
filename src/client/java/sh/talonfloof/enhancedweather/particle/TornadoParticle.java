@@ -1,8 +1,12 @@
 package sh.talonfloof.enhancedweather.particle;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.particle.*;
+import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.util.math.MathHelper;
@@ -31,14 +35,14 @@ public class TornadoParticle extends SpriteBillboardParticle {
         this.setMaxAge(300+rand.nextInt(100));
         this.setColor((float)g,(float)g,(float)b);
         this.age = 0;
-        this.setAlpha(0.0F);
+        this.setAlpha(1.0F);
         this.yaw = Math.round(Math.random()*360);
         this.pitch = -90+Math.round(Math.random()*50)-Math.round(Math.random()*50);
     }
 
     @Override
     public ParticleTextureSheet getType() {
-        return ParticleTextureSheet.PARTICLE_SHEET_OPAQUE;
+        return ParticleTextureSheet.PARTICLE_SHEET_TRANSLUCENT;
     }
 
     @Override
@@ -74,10 +78,10 @@ public class TornadoParticle extends SpriteBillboardParticle {
         float n = this.getMinV();
         float o = this.getMaxV();
         int p = this.getBrightness(tickDelta);
-        vertexConsumer.vertex(vector3fs[0].x, vector3fs[0].y, vector3fs[0].z).texture(m, o).color(this.red, this.green, this.blue, this.alpha).normal(0,0,0).light(p).next();
-        vertexConsumer.vertex(vector3fs[1].x, vector3fs[1].y, vector3fs[1].z).texture(m, n).color(this.red, this.green, this.blue, this.alpha).normal(0,0,0).light(p).next();
-        vertexConsumer.vertex(vector3fs[2].x, vector3fs[2].y, vector3fs[2].z).texture(l, n).color(this.red, this.green, this.blue, this.alpha).normal(0,0,0).light(p).next();
-        vertexConsumer.vertex(vector3fs[3].x, vector3fs[3].y, vector3fs[3].z).texture(l, o).color(this.red, this.green, this.blue, this.alpha).normal(0,0,0).light(p).next();
+        vertexConsumer.vertex(vector3fs[0].x, vector3fs[0].y, vector3fs[0].z).texture(m, o).color(this.red, this.green, this.blue, this.alpha).light(p).next();
+        vertexConsumer.vertex(vector3fs[1].x, vector3fs[1].y, vector3fs[1].z).texture(m, n).color(this.red, this.green, this.blue, this.alpha).light(p).next();
+        vertexConsumer.vertex(vector3fs[2].x, vector3fs[2].y, vector3fs[2].z).texture(l, n).color(this.red, this.green, this.blue, this.alpha).light(p).next();
+        vertexConsumer.vertex(vector3fs[3].x, vector3fs[3].y, vector3fs[3].z).texture(l, o).color(this.red, this.green, this.blue, this.alpha).light(p).next();
     }
 
     @Override

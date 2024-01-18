@@ -38,6 +38,14 @@ public class CloudRenderManager {
         return (int)MathUtil.wrap(x, SIDE) * SIDE + (int)MathUtil.wrap(y, SIDE);
     }
 
+    public static void forceUpdate() {
+        if(!firstStart) {
+            for (int i = 0; i < chunks.length; i++) {
+                chunks[i].forceUpdate();
+            }
+        }
+    }
+
     public static void render(MatrixStack matrices, Matrix4f projectionMatrix, float tickDelta, double cameraX, double cameraY, double cameraZ) {
         MinecraftClient client = MinecraftClient.getInstance();
         if(firstStart) {

@@ -1,7 +1,9 @@
 {
   "text.autoconfig.enhancedweather.title": "Enhanced Weather Config Screen",
   "text.autoconfig.enhancedweather.category.client": "Client",
+  "text.autoconfig.enhancedweather.category.weather": "Weather",
   "text.autoconfig.enhancedweather.option.Client_ParticleRain": "Particle-based Precipitation",
   "text.autoconfig.enhancedweather.option.Client_ShowRainbow": "Show Rainbows",
+  "text.autoconfig.enhancedweather.option.Weather_ReducedRainFronts": "Reduce Rain Fronts",
   "block.enhancedweather.radar": "Weather Radar"
 }

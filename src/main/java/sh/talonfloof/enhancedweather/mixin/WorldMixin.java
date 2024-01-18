@@ -14,7 +14,7 @@ import sh.talonfloof.enhancedweather.api.EnhancedWeatherAPI;
 
 @Mixin(World.class)
 public class WorldMixin {
-    @Inject(method = "hasRain", at = @At("RETURN"), cancellable = true)
+    @Inject(method = "hasRain(Lnet/minecraft/util/math/BlockPos;)Z", at = @At("RETURN"), cancellable = true)
     public void hasRain(BlockPos pos, CallbackInfoReturnable<Boolean> cir) {
         if (!EnhancedWeatherAPI.isRaining(((World)(Object)this),pos.getX() - MathHelper.floor(EnhancedWeather.cloudX), pos.getZ() - MathHelper.floor(EnhancedWeather.cloudZ))) {
             cir.setReturnValue(false);

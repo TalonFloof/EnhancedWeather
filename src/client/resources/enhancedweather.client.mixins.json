@@ -8,7 +8,7 @@
     "ClientWorldMixin",
     "MixinParticle",
     "ParticleManagerMixin",
-    "WorldMixin",
+    "WorldClientMixin",
     "WorldRendererMixin"
   ],
   "injectors": {

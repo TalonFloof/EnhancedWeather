@@ -3,6 +3,7 @@ package sh.talonfloof.enhancedweather.mixin.client;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
@@ -13,6 +14,7 @@ import net.minecraft.util.math.random.Random;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -24,6 +26,9 @@ import sh.talonfloof.enhancedweather.EnhancedWeatherClient;
 
 @Mixin(WorldRenderer.class)
 public class WorldRendererMixin {
+    @Unique
+    private static VertexConsumerProvider.Immediate capturedImmediate;
+
     @Inject(method = "renderWeather(Lnet/minecraft/client/render/LightmapTextureManager;FDDD)V", at = @At("HEAD"), cancellable = true)
     public void rain(LightmapTextureManager manager, float tickDelta, double cameraX, double cameraY, double cameraZ, CallbackInfo ci) {
         if (EnhancedWeatherConfig.Client_ParticleRain) {
