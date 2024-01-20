@@ -1,6 +1,7 @@
 package sh.talonfloof.enhancedweather;
 
 import net.minecraft.util.math.random.Random;
+import sh.talonfloof.enhancedweather.config.EnhancedWeatherConfig;
 
 public class WindManager {
     public static float windAngle = 0;
@@ -29,20 +30,20 @@ public class WindManager {
                     windSpeed += (rand.nextDouble() * windSpeedChangeRate);
                 windSpeedRandChangeTimer = windSpeedRandChangeDelay;
                 if (highWindTimer <= 0)
-                    if (rand.nextInt(20*200) == 0) {
-                        lowWindTimer = (20*60*2) + rand.nextInt(20*60*10);
+                    if (rand.nextInt(EnhancedWeatherConfig.Wind_LowWindChance) == 0) {
+                        lowWindTimer = EnhancedWeatherConfig.Wind_LowWindBaseTime + rand.nextInt(EnhancedWeatherConfig.Wind_LowWindExtraTime);
                         EnhancedWeather.LOGGER.info("Low Wind for {} ticks", lowWindTimer);
                     } else
                         lowWindTimer = 0;
                 if (highWindTimer <= 0)
-                    if (rand.nextInt(20*400) == 0) {
-                        highWindTimer = (20*60*2) + rand.nextInt(20*60*10);
+                    if (rand.nextInt(EnhancedWeatherConfig.Wind_HighWindChance) == 0) {
+                        highWindTimer = EnhancedWeatherConfig.Wind_HighWindBaseTime + rand.nextInt(EnhancedWeatherConfig.Wind_HighWindExtraTime);
                         EnhancedWeather.LOGGER.info("High Wind for {} ticks", highWindTimer);
                     }
             }
         } else {
             lowWindTimer--;
-            if(windSpeed > 10F) {
+            if(windSpeed > EnhancedWeatherConfig.Wind_LowWindThreshold) {
                 windSpeed -= 0.01F;
             }
         }

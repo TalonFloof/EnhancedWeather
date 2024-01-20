@@ -15,18 +15,24 @@ import sh.talonfloof.enhancedweather.CloudRenderManager;
 import sh.talonfloof.enhancedweather.EnhancedWeatherClient;
 import sh.talonfloof.enhancedweather.api.EnhancedWeatherAPI;
 import sh.talonfloof.enhancedweather.events.WeatherEvent;
+import sh.talonfloof.enhancedweather.network.SuppressAlert;
 
 import java.util.UUID;
 import java.util.function.BiConsumer;
 
+import static sh.talonfloof.enhancedweather.block.RadarBlock.LIGHT;
+
 public class RadarScreen extends Screen {
     private BlockPos pos;
-    private int count = 0;
     private boolean alert = false;
     private boolean alertPressed = false;
+    private static final Identifier TORNADO_SYMBOL = new Identifier("enhancedweather","textures/gui/tornado_symbol.png");
+    private static final Identifier RADAR_ALERT_LIGHT = new Identifier("enhancedweather","textures/gui/radar_alert_light.png");
+    private static final Identifier RADAR_BG = new Identifier("enhancedweather","textures/gui/radar.png");
     public RadarScreen(BlockPos pos) {
         super(Text.literal("Radar Screen"));
         this.pos = pos;
+        alert = MinecraftClient.getInstance().world.getBlockState(pos).get(LIGHT);
     }
 
     @Override
@@ -107,6 +113,7 @@ public class RadarScreen extends Screen {
         double y = (this.height/2F)-((double) (128 * 2) /2)+(113*2);
         if(mouseX >= x && mouseX <= x+16 && mouseY >= y && mouseY <= y+16 && alertPressed) {
             MinecraftClient.getInstance().player.playSound(SoundEvents.UI_BUTTON_CLICK.value(), SoundCategory.MASTER, 0.25F, 1.5F);
+            SuppressAlert.send(pos);
             alert = false;
         }
         alertPressed = false;
@@ -144,9 +151,9 @@ public class RadarScreen extends Screen {
         };
         context.getMatrices().push();
         context.getMatrices().translate(context.getScaledWindowWidth()/2F,context.getScaledWindowHeight()/2F,0);
-        context.drawTexture(new Identifier("enhancedweather","textures/gui/radar.png"),-((128*2)/2),-((128*2)/2),128*2,128*2,0,0,128,128,128,128);
+        context.drawTexture(RADAR_BG,-((128*2)/2),-((128*2)/2),128*2,128*2,0,0,128,128,128,128);
         if(alert)
-            context.drawTexture(new Identifier("enhancedweather","textures/gui/radar_alert_light.png"),-((128*2)/2)+(7*2),-((128*2)/2)+(113*2),16,16,0,0,8,8,8,8);
+            context.drawTexture( RADAR_ALERT_LIGHT,-((128*2)/2)+(7*2),-((128*2)/2)+(113*2),16,16,0,0,8,8,8,8);
         if(alertPressed)
             context.fill(-((128*2)/2)+(7*2),-((128*2)/2)+(113*2),-((128*2)/2)+(7*2)+16,-((128*2)/2)+(113*2)+16,0x4f000000);
         context.getMatrices().translate(-5,-2,0);
@@ -176,20 +183,13 @@ public class RadarScreen extends Screen {
                 }
             }
         }
-        int newCount = 0;
         for(UUID id : EnhancedWeatherClient.clientEvents.keySet()) {
             WeatherEvent w = EnhancedWeatherClient.clientEvents.get(id);
             Vec3d ourPos = new Vec3d(pos.getX(),w.position.y,pos.getZ());
             if(w.position.distanceTo(ourPos) < 2048) {
-                context.drawTexture(new Identifier("enhancedweather","textures/gui/tornado_symbol.png"),(int)((w.position.x-ourPos.x)/64)*3-8,(int)((w.position.z-ourPos.z)/64)*3-8,16,16,0,0,128,128,128,128);
-                newCount++;
+                context.drawTexture(TORNADO_SYMBOL,(int)((w.position.x-ourPos.x)/64)*3-8,(int)((w.position.z-ourPos.z)/64)*3-8,16,16,0,0,128,128,128,128);
             }
         }
-        if(newCount > count && !alert) {
-            alert = true;
-            client.world.playSoundAtBlockCenter(pos, SoundEvent.of(new Identifier("enhancedweather:radar.beep")), SoundCategory.BLOCKS,1F,1.0F,true);
-        }
-        count = newCount;
         for(int x=-32; x < 32;x++) {
             for (int z = -32; z < 32; z++) {
                 double v = Math.pow(x, 2) + Math.pow(z, 2);

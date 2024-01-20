@@ -8,12 +8,10 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
-import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
-import net.fabricmc.fabric.api.networking.v1.ServerLoginConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
-import net.minecraft.item.ItemGroups;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
@@ -35,13 +33,13 @@ import sh.talonfloof.enhancedweather.config.EnhancedWeatherConfig;
 import sh.talonfloof.enhancedweather.events.Tornado;
 import sh.talonfloof.enhancedweather.events.WeatherEvent;
 import sh.talonfloof.enhancedweather.network.SettingSync;
+import sh.talonfloof.enhancedweather.network.SuppressAlertServer;
 import sh.talonfloof.enhancedweather.network.UpdateConditions;
 import sh.talonfloof.enhancedweather.network.UpdateEvent;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.util.HashMap;
-import java.util.Set;
 import java.util.UUID;
 
 public class EnhancedWeather implements ModInitializer {
@@ -131,6 +129,7 @@ public class EnhancedWeather implements ModInitializer {
 		Registry.register(Registries.PARTICLE_TYPE, new Identifier("enhancedweather", "snow"), EW_SNOW);
 		Registry.register(Registries.PARTICLE_TYPE, new Identifier("enhancedweather", "hail"), EW_HAIL);
 		Registry.register(Registries.PARTICLE_TYPE, new Identifier("enhancedweather", "tornado"), EW_TORNADO);
+		ServerPlayNetworking.registerGlobalReceiver(SuppressAlertServer.PACKET_ID,SuppressAlertServer::onReceive);
 		BlockRegistry.register();
 		ServerWorldEvents.LOAD.register((server, world) -> {
 			if(world.getDimensionKey().equals(DimensionTypes.OVERWORLD)) {
@@ -157,8 +156,8 @@ public class EnhancedWeather implements ModInitializer {
 						BlockPos pos = player.getBlockPos();
 						Random r = Random.create();
 						pos = pos.add(r.nextBetween(-2048, 2048), 0, r.nextBetween(-2048, 2048));
-						if (EnhancedWeatherAPI.isThundering(world, 0, pos.getX() - MathHelper.floor(cloudX), pos.getZ() - MathHelper.floor(cloudZ)) && WindManager.windSpeed >= 15) {
-							if(r.nextInt(100) == 0) {
+						if (EnhancedWeatherAPI.isThundering(world, 0, pos.getX() - MathHelper.floor(cloudX), pos.getZ() - MathHelper.floor(cloudZ)) && WindManager.windSpeed >= EnhancedWeatherConfig.Weather_TornadoMinimumWind) {
+							if(r.nextInt(EnhancedWeatherConfig.Weather_TornadoSpawnChance) == 0) {
 								Tornado t = new Tornado(pos.getX(),192,pos.getZ());
 								events.put(UUID.randomUUID(),t);
 								EnhancedWeather.LOGGER.info("Tornado Spawn: " + pos.getX() + ", " + pos.getZ());
@@ -170,7 +169,7 @@ public class EnhancedWeather implements ModInitializer {
 				for(int i=0; i < ids.length; i++) {
 					WeatherEvent e = events.get(ids[i]);
 					if(e instanceof Tornado) {
-						if(WindManager.windSpeed < 15) {
+						if(WindManager.windSpeed < EnhancedWeatherConfig.Weather_TornadoMinimumWind) {
 							for (ServerPlayerEntity player : PlayerLookup.all(world.getServer())) {
 								UpdateEvent.send(world.getServer(),ids[i],null,player);
 							}

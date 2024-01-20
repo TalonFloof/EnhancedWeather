@@ -11,6 +11,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 import org.joml.Matrix4f;
+import sh.talonfloof.enhancedweather.config.EnhancedWeatherConfig;
 import sh.talonfloof.enhancedweather.util.MathUtil;
 
 import java.util.ArrayList;
@@ -21,12 +22,11 @@ import static sh.talonfloof.enhancedweather.EnhancedWeatherClient.windZ;
 
 public class CloudRenderManager {
     private static final Identifier CLOUD = new Identifier("enhancedweather","textures/cloud/cloud.png");
-    private static final int RADIUS = 9;
-    private static final int SIDE = RADIUS * 2 + 1;
-    private static final int CAPACITY = SIDE * SIDE;
-    private static final CloudChunk[] chunks = new CloudChunk[CAPACITY];
+    private static int RADIUS = 0;
+    private static int SIDE = 0;
+    private static int CAPACITY = 0;
+    private static CloudChunk[] chunks = new CloudChunk[CAPACITY];
     private static Vec2f[] offsets;
-    private static boolean firstStart = true;
     private static long lastTick = 0;
     public static double prevCloudX = 0;
     public static double prevCloudZ = 0;
@@ -39,7 +39,7 @@ public class CloudRenderManager {
     }
 
     public static void forceUpdate() {
-        if(!firstStart) {
+        if(RADIUS == EnhancedWeatherConfig.Client_CloudRadius) {
             for (int i = 0; i < chunks.length; i++) {
                 chunks[i].forceUpdate();
             }
@@ -48,13 +48,17 @@ public class CloudRenderManager {
 
     public static void render(MatrixStack matrices, Matrix4f projectionMatrix, float tickDelta, double cameraX, double cameraY, double cameraZ) {
         MinecraftClient client = MinecraftClient.getInstance();
-        if(firstStart) {
+        if(RADIUS != EnhancedWeatherConfig.Client_CloudRadius) {
+            RADIUS = EnhancedWeatherConfig.Client_CloudRadius;
+            SIDE = RADIUS * 2 + 1;
+            CAPACITY = SIDE * SIDE;
+            chunks = new CloudChunk[CAPACITY];
             for (int i = 0; i < chunks.length; i++) {
                 chunks[i] = new CloudChunk();
             }
             List<Vec2f> offset = new ArrayList<>(CAPACITY);
-            for (byte x = -RADIUS; x <= RADIUS; x++) {
-                for (byte z = -RADIUS; z <= RADIUS; z++) {
+            for (int x = -RADIUS; x <= RADIUS; x++) {
+                for (int z = -RADIUS; z <= RADIUS; z++) {
                     offset.add(new Vec2f(x, z));
                 }
             }
@@ -64,7 +68,6 @@ public class CloudRenderManager {
                 return Integer.compare(d1, d2);
             });
             offsets = offset.toArray(Vec2f[]::new);
-            firstStart = false;
         }
         RenderSystem.disableCull();
         RenderSystem.enableBlend();
@@ -73,8 +76,6 @@ public class CloudRenderManager {
         RenderSystem.setShader(GameRenderer::getPositionTexColorNormalProgram);
         RenderSystem.setShaderTexture(0,CLOUD);
         BackgroundRenderer.setFogBlack();
-        RenderSystem.setShaderFogStart(275);
-        RenderSystem.setShaderFogEnd(288);
         ShaderProgram shaderProgram = RenderSystem.getShader();
         // Cloud Chunk Rendering
         double eX = cameraX;
@@ -94,7 +95,7 @@ public class CloudRenderManager {
         }
         eX -= MathHelper.lerp(tickDelta,prevCloudX,cloudX) % 32;
         eZ -= MathHelper.lerp(tickDelta,prevCloudZ,cloudZ) % 32;
-        if(!firstStart) {
+        if(RADIUS == EnhancedWeatherConfig.Client_CloudRadius) {
             boolean canUpdate = true;
             Vec3d curColor = client.world.getCloudsColor(tickDelta);
             for (Vec2f offset : offsets) {

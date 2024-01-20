@@ -1,5 +1,6 @@
 {
   "variants": {
-    "": { "model": "enhancedweather:block/radar" }
+    "light=false": { "model": "enhancedweather:block/radar" },
+    "light=true": { "model": "enhancedweather:block/radar_light" }
   }
 }
