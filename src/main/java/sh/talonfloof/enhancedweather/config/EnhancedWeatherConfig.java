@@ -14,8 +14,8 @@ public class EnhancedWeatherConfig implements ConfigData {
     @Comment("We recommended disabling this if you're using shaders\n(Default: true)")
     public static boolean Client_ShowRainbow = true;
     @ConfigEntry.Category("client")
-    @Comment("Changes the radius of clouds that are rendered")
-    @ConfigEntry.BoundedDiscrete(min=9,max=16)
+    @Comment("Changes the radius of clouds that are rendered\n(Default: 9)")
+    @ConfigEntry.BoundedDiscrete(min=6,max=16)
     public static int Client_CloudRadius = 9;
 
     @ConfigEntry.Category("weather")

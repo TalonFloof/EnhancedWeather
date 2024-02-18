@@ -77,7 +77,7 @@ public class EnhancedWeather implements ModInitializer {
 				for(String id : events.keySet()) {
 					JsonObject eventData = events.getObject(id);
 					if(eventData.get(String.class,"id").equals("enhancedweather:tornado")) {
-						Tornado t = new Tornado(0,0,0);
+						Tornado t = new Tornado(0,0,0,0);
 						t.loadSaveData(eventData);
 						EnhancedWeather.events.put(UUID.fromString(id),t);
 					}
@@ -155,10 +155,10 @@ public class EnhancedWeather implements ModInitializer {
 					for (ServerPlayerEntity player : PlayerLookup.all(world.getServer())) {
 						BlockPos pos = player.getBlockPos();
 						Random r = Random.create();
-						pos = pos.add(r.nextBetween(-2048, 2048), 0, r.nextBetween(-2048, 2048));
+						pos = pos.add(r.nextBetween(-1024, 1024), 0, r.nextBetween(-1024, 1024));
 						if (EnhancedWeatherAPI.isThundering(world, 0, pos.getX() - MathHelper.floor(cloudX), pos.getZ() - MathHelper.floor(cloudZ)) && WindManager.windSpeed >= EnhancedWeatherConfig.Weather_TornadoMinimumWind) {
 							if(r.nextInt(EnhancedWeatherConfig.Weather_TornadoSpawnChance) == 0) {
-								Tornado t = new Tornado(pos.getX(),192,pos.getZ());
+								Tornado t = new Tornado(pos.getX(),192,pos.getZ(),r.nextInt(3));
 								events.put(UUID.randomUUID(),t);
 								EnhancedWeather.LOGGER.info("Tornado Spawn: " + pos.getX() + ", " + pos.getZ());
 							}
@@ -175,7 +175,7 @@ public class EnhancedWeather implements ModInitializer {
 							}
 							events.remove(ids[i]);
 						} else {
-							var col = PlayerLookup.around(world.getServer().getOverworld(), new Vec3d(e.position.x, 50, e.position.z), 2048.0D);
+							var col = PlayerLookup.around(world.getServer().getOverworld(), new Vec3d(e.position.x, 50, e.position.z), 1024.0D);
 							if (col.isEmpty()) {
 								if(!(!world.getServer().isDedicated() && world.getServer().getCurrentPlayerCount() == 0)) {
 									for (ServerPlayerEntity player : PlayerLookup.all(world.getServer())) {

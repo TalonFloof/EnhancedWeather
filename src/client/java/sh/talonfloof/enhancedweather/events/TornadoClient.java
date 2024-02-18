@@ -21,7 +21,7 @@ public class TornadoClient extends Tornado {
     public List<Particle> funnelParticles = new ArrayList<Particle>();
     public Random rand = Random.create();
     public TornadoClient(double x, double y, double z) {
-        super(x, y, z);
+        super(x, y, z, 0);
     }
     long ticks = 0;
     @Override

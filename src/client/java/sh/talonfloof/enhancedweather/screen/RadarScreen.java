@@ -124,8 +124,8 @@ public class RadarScreen extends Screen {
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         this.renderBackground(context);
         MinecraftClient client = MinecraftClient.getInstance();
-        int chunkX = Math.floorDiv(pos.getX(),64);
-        int chunkZ = Math.floorDiv(pos.getZ(),64);
+        int chunkX = Math.floorDiv(pos.getX(),32);
+        int chunkZ = Math.floorDiv(pos.getZ(),32);
         int[] rainColors = {
                 0x000000,
                 0x008C4D,
@@ -160,8 +160,8 @@ public class RadarScreen extends Screen {
         for(int x=-32; x < 32;x++) {
             for(int z=-32;z < 32;z++) {
                 if(Math.pow(x,2)+Math.pow(z,2) < Math.pow(32,2)) {
-                    int finalX = ((chunkX * 64) + (x * 64)) - MathHelper.floor(CloudRenderManager.cloudX);
-                    int finalZ = ((chunkZ * 64) + (z * 64)) - MathHelper.floor(CloudRenderManager.cloudZ);
+                    int finalX = ((chunkX * 32) + (x * 32)) - MathHelper.floor(CloudRenderManager.cloudX);
+                    int finalZ = ((chunkZ * 32) + (z * 32)) - MathHelper.floor(CloudRenderManager.cloudZ);
                     int front = Math.round((Math.max(0, EnhancedWeatherAPI.sampleFrontClient(finalX, finalZ, 0.1) - 0.2F) / 0.8F) * 6);
 
                     if (chunkX + x == chunkX && chunkZ + z == chunkZ) {
@@ -186,8 +186,8 @@ public class RadarScreen extends Screen {
         for(UUID id : EnhancedWeatherClient.clientEvents.keySet()) {
             WeatherEvent w = EnhancedWeatherClient.clientEvents.get(id);
             Vec3d ourPos = new Vec3d(pos.getX(),w.position.y,pos.getZ());
-            if(w.position.distanceTo(ourPos) < 2048) {
-                context.drawTexture(TORNADO_SYMBOL,(int)((w.position.x-ourPos.x)/64)*3-8,(int)((w.position.z-ourPos.z)/64)*3-8,16,16,0,0,128,128,128,128);
+            if(w.position.distanceTo(ourPos) < 1024) {
+                context.drawTexture(TORNADO_SYMBOL,(int)((w.position.x-ourPos.x)/32)*3-8,(int)((w.position.z-ourPos.z)/32)*3-8,16,16,0,0,128,128,128,128);
             }
         }
         for(int x=-32; x < 32;x++) {
@@ -206,6 +206,21 @@ public class RadarScreen extends Screen {
                 context.fill(x * 3, y * 3, (x * 3) + 3, (y * 3) + 3, (MathHelper.lerp(val,255,0) << 24)| 0xFFFFFF);
             });
         }
+        double a = -Math.toDegrees(Math.atan2(EnhancedWeatherClient.windZ,EnhancedWeatherClient.windX))-90;
+        int baseX = -((128*2)/2)+(16*2);
+        int baseY = -((128*2)/2)+(16*2);
+        for(int x=-12; x < 12;x++) {
+            for (int z = -12; z < 12; z++) {
+                if (Math.pow(x, 2) + Math.pow(z, 2) < Math.pow(12, 2)) {
+                    context.fill(baseX+(x * 2), baseY+(z * 2), baseX+((x * 2) + 2), baseY+((z * 2) + 2), 0xff121214);
+                }
+            }
+        }
+        castLine(0, 0, -(int)Math.round(Math.sin(Math.toRadians(a)) * 8), -(int)Math.round(Math.cos(Math.toRadians(a)) * 8), (x, y) -> {
+            context.fill(baseX+(x * 3), baseY+(y * 3), baseX+((x * 3) + 3), baseY+((y * 3) + 3), 0xFFFFFFFF);
+        });
+        String s = MathHelper.lerp(EnhancedWeatherClient.windSpeed/100F,0,(4*20*60*60)/1000)+" km/h";
+        context.drawText(this.textRenderer,s,baseX-(this.textRenderer.getWidth(s)/2),baseY+(12*2),0xffffffff,false);
         context.getMatrices().pop();
     }
 }

@@ -36,7 +36,7 @@ public class MixinParticle {
     private void applyWind(CallbackInfo ci) {
         if (world.getDimensionKey().equals(DimensionTypes.OVERWORLD)) {
             if (collidesWithWorld) {
-                if(world.getTopPosition(Heightmap.Type.MOTION_BLOCKING,new BlockPos((int)prevPosX,(int)prevPosY,(int)prevPosZ)).getY() <= prevPosY) {
+                if(world.getTopPosition(Heightmap.Type.MOTION_BLOCKING,new BlockPos((int)Math.floor(prevPosX),(int)Math.floor(prevPosY),(int)Math.floor(prevPosZ))).getY() <= prevPosY) {
                     velocityX = EnhancedWeatherClient.windX/4F;
                     velocityZ = EnhancedWeatherClient.windZ/4F;
                 }
