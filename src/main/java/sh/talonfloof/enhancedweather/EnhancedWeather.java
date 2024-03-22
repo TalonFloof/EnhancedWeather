@@ -28,11 +28,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sh.talonfloof.enhancedweather.api.EnhancedWeatherAPI;
 import sh.talonfloof.enhancedweather.block.BlockRegistry;
-import sh.talonfloof.enhancedweather.config.ConfigRegistry;
 import sh.talonfloof.enhancedweather.config.EnhancedWeatherConfig;
 import sh.talonfloof.enhancedweather.events.Tornado;
 import sh.talonfloof.enhancedweather.events.WeatherEvent;
-import sh.talonfloof.enhancedweather.network.SettingSync;
 import sh.talonfloof.enhancedweather.network.SuppressAlertServer;
 import sh.talonfloof.enhancedweather.network.UpdateConditions;
 import sh.talonfloof.enhancedweather.network.UpdateEvent;
@@ -48,7 +46,7 @@ public class EnhancedWeather implements ModInitializer {
 	// That way, it's clear which mod wrote info, warnings, and errors.
     public static final Logger LOGGER = LoggerFactory.getLogger("enhancedweather");
 	public static final int WEATHER_DATA_VERSION = 202402001;
-	public static EnhancedWeatherConfig CONFIG;
+	public static final EnhancedWeatherConfig CONFIG = EnhancedWeatherConfig.createAndLoad();
 	public static final DefaultParticleType EW_RAIN = FabricParticleTypes.simple(true);
 	public static final DefaultParticleType EW_SNOW = FabricParticleTypes.simple(true);
 	public static final DefaultParticleType EW_HAIL = FabricParticleTypes.simple(true);
@@ -124,7 +122,6 @@ public class EnhancedWeather implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
-		ConfigRegistry.init();
 		Registry.register(Registries.PARTICLE_TYPE, new Identifier("enhancedweather", "rain"), EW_RAIN);
 		Registry.register(Registries.PARTICLE_TYPE, new Identifier("enhancedweather", "snow"), EW_SNOW);
 		Registry.register(Registries.PARTICLE_TYPE, new Identifier("enhancedweather", "hail"), EW_HAIL);
@@ -146,9 +143,6 @@ public class EnhancedWeather implements ModInitializer {
 				}
 			}
 		});
-		ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
-			SettingSync.send(handler.player);
-		});
 		ServerTickEvents.START_WORLD_TICK.register((world) -> {
 			if(world.getDimensionKey().equals(DimensionTypes.OVERWORLD)) {
 				if(events.size() < world.getServer().getCurrentPlayerCount()) {
@@ -156,8 +150,8 @@ public class EnhancedWeather implements ModInitializer {
 						BlockPos pos = player.getBlockPos();
 						Random r = Random.create();
 						pos = pos.add(r.nextBetween(-1024, 1024), 0, r.nextBetween(-1024, 1024));
-						if (EnhancedWeatherAPI.isThundering(world, 0, pos.getX() - MathHelper.floor(cloudX), pos.getZ() - MathHelper.floor(cloudZ)) && WindManager.windSpeed >= EnhancedWeatherConfig.Weather_TornadoMinimumWind) {
-							if(r.nextInt(EnhancedWeatherConfig.Weather_TornadoSpawnChance) == 0) {
+						if (EnhancedWeatherAPI.isThundering(world, 0, pos.getX() - MathHelper.floor(cloudX), pos.getZ() - MathHelper.floor(cloudZ)) && WindManager.windSpeed >= CONFIG.Weather_TornadoMinimumWind()) {
+							if(r.nextInt(EnhancedWeather.CONFIG.Weather_TornadoSpawnChance()) == 0) {
 								Tornado t = new Tornado(pos.getX(),192,pos.getZ(),r.nextInt(3));
 								events.put(UUID.randomUUID(),t);
 								EnhancedWeather.LOGGER.info("Tornado Spawn: " + pos.getX() + ", " + pos.getZ());
@@ -169,7 +163,7 @@ public class EnhancedWeather implements ModInitializer {
 				for(int i=0; i < ids.length; i++) {
 					WeatherEvent e = events.get(ids[i]);
 					if(e instanceof Tornado) {
-						if(WindManager.windSpeed < EnhancedWeatherConfig.Weather_TornadoMinimumWind) {
+						if(WindManager.windSpeed < EnhancedWeather.CONFIG.Weather_TornadoMinimumWind()) {
 							for (ServerPlayerEntity player : PlayerLookup.all(world.getServer())) {
 								UpdateEvent.send(world.getServer(),ids[i],null,player);
 							}
@@ -201,7 +195,6 @@ public class EnhancedWeather implements ModInitializer {
 				cloudZ += (moveZ * 0.002) * 32;
 				if (noiseTick % 20 == 0) {
 					for (ServerPlayerEntity player : PlayerLookup.all(world.getServer())) {
-						SettingSync.send(player);
 						UpdateConditions.send(world.getServer(), player, windX, windZ, cloudX, cloudZ);
 						for(UUID id : events.keySet()) {
 							UpdateEvent.send(world.getServer(),id,events.get(id).generateUpdate(),player);

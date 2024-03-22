@@ -30,20 +30,20 @@ public class WindManager {
                     windSpeed += (rand.nextDouble() * windSpeedChangeRate);
                 windSpeedRandChangeTimer = windSpeedRandChangeDelay;
                 if (highWindTimer <= 0)
-                    if (rand.nextInt(EnhancedWeatherConfig.Wind_LowWindChance) == 0) {
-                        lowWindTimer = EnhancedWeatherConfig.Wind_LowWindBaseTime + rand.nextInt(EnhancedWeatherConfig.Wind_LowWindExtraTime);
+                    if (rand.nextInt(EnhancedWeather.CONFIG.Wind_LowWindChance()) == 0) {
+                        lowWindTimer = EnhancedWeather.CONFIG.Wind_LowWindBaseTime() + rand.nextInt(EnhancedWeather.CONFIG.Wind_LowWindExtraTime());
                         EnhancedWeather.LOGGER.info("Low Wind for {} ticks", lowWindTimer);
                     } else
                         lowWindTimer = 0;
                 if (highWindTimer <= 0)
-                    if (rand.nextInt(EnhancedWeatherConfig.Wind_HighWindChance) == 0) {
-                        highWindTimer = EnhancedWeatherConfig.Wind_HighWindBaseTime + rand.nextInt(EnhancedWeatherConfig.Wind_HighWindExtraTime);
+                    if (rand.nextInt(EnhancedWeather.CONFIG.Wind_HighWindChance()) == 0) {
+                        highWindTimer = EnhancedWeather.CONFIG.Wind_HighWindBaseTime() + rand.nextInt(EnhancedWeather.CONFIG.Wind_HighWindExtraTime());
                         EnhancedWeather.LOGGER.info("High Wind for {} ticks", highWindTimer);
                     }
             }
         } else {
             lowWindTimer--;
-            if(windSpeed > EnhancedWeatherConfig.Wind_LowWindThreshold) {
+            if(windSpeed > EnhancedWeather.CONFIG.Wind_LowWindThreshold()) {
                 windSpeed -= 0.01F;
             }
         }

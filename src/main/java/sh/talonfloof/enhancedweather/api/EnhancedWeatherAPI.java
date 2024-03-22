@@ -5,6 +5,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.world.World;
+import sh.talonfloof.enhancedweather.EnhancedWeather;
 import sh.talonfloof.enhancedweather.config.EnhancedWeatherConfig;
 import sh.talonfloof.enhancedweather.util.ImageSampler;
 
@@ -20,7 +21,6 @@ public class EnhancedWeatherAPI {
     private static final ImageSampler THUNDERSTORMS = new ImageSampler("data/enhancedweather/clouds/thunderstorms.png");
     private static final float[] CLOUD_SHAPE = new float[64];
     private static final Vec2f[] OFFSETS;
-    public static boolean clientReducedRain = false;
 
     public static float sampleThunderstorm(float windSpeed, int x, int z, double scale) {
         return windSpeed >= 50F ? 1F : THUNDERSTORMS.sample(x * scale, z * scale);
@@ -73,7 +73,7 @@ public class EnhancedWeatherAPI {
 
     public static float sampleFront(int x, int z, double scale) {
         float front = FRONT_SAMPLE.sample(x * scale, z * scale);
-        if(EnhancedWeatherConfig.Weather_ReducedRainFronts) {
+        if(EnhancedWeather.CONFIG.Weather_ReducedRainFronts()) {
             scale *= 0.7;
             front *= RAIN_DENSITY.sample(x * scale, z * scale);
         }
@@ -83,7 +83,7 @@ public class EnhancedWeatherAPI {
     @Environment(EnvType.CLIENT)
     public static float sampleFrontClient(int x, int z, double scale) {
         float front = FRONT_SAMPLE.sample(x * scale, z * scale);
-        if(clientReducedRain) {
+        if(EnhancedWeather.CONFIG.Weather_ReducedRainFronts()) {
             scale *= 0.7;
             front *= RAIN_DENSITY.sample(x * scale, z * scale);
         }

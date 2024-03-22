@@ -39,7 +39,7 @@ public class CloudRenderManager {
     }
 
     public static void forceUpdate() {
-        if(RADIUS == EnhancedWeatherConfig.Client_CloudRadius) {
+        if(RADIUS == EnhancedWeather.CONFIG.Client_CloudRadius()) {
             for (int i = 0; i < chunks.length; i++) {
                 chunks[i].forceUpdate();
             }
@@ -48,8 +48,8 @@ public class CloudRenderManager {
 
     public static void render(MatrixStack matrices, Matrix4f projectionMatrix, float tickDelta, double cameraX, double cameraY, double cameraZ) {
         MinecraftClient client = MinecraftClient.getInstance();
-        if(RADIUS != EnhancedWeatherConfig.Client_CloudRadius) {
-            RADIUS = EnhancedWeatherConfig.Client_CloudRadius;
+        if(RADIUS != EnhancedWeather.CONFIG.Client_CloudRadius()) {
+            RADIUS = EnhancedWeather.CONFIG.Client_CloudRadius();
             SIDE = RADIUS * 2 + 1;
             CAPACITY = SIDE * SIDE;
             chunks = new CloudChunk[CAPACITY];
@@ -75,7 +75,7 @@ public class CloudRenderManager {
         RenderSystem.depthMask(true);
         RenderSystem.setShader(GameRenderer::getPositionTexColorNormalProgram);
         RenderSystem.setShaderTexture(0,CLOUD);
-        BackgroundRenderer.setFogBlack();
+        //BackgroundRenderer.clearFog();
         ShaderProgram shaderProgram = RenderSystem.getShader();
         // Cloud Chunk Rendering
         double eX = cameraX;
@@ -95,7 +95,7 @@ public class CloudRenderManager {
         }
         eX -= MathHelper.lerp(tickDelta,prevCloudX,cloudX) % 32;
         eZ -= MathHelper.lerp(tickDelta,prevCloudZ,cloudZ) % 32;
-        if(RADIUS == EnhancedWeatherConfig.Client_CloudRadius) {
+        if(RADIUS == EnhancedWeather.CONFIG.Client_CloudRadius()) {
             boolean canUpdate = true;
             Vec3d curColor = client.world.getCloudsColor(tickDelta);
             for (Vec2f offset : offsets) {

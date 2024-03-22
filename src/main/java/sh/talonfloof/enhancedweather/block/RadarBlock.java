@@ -1,5 +1,6 @@
 package sh.talonfloof.enhancedweather.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
@@ -18,10 +19,16 @@ import org.jetbrains.annotations.Nullable;
 import sh.talonfloof.enhancedweather.network.ScreenOpen;
 
 public class RadarBlock extends BlockWithEntity implements BlockEntityProvider {
+    public static final MapCodec<RadarBlock> CODEC = createCodec(RadarBlock::new);
     public static final BooleanProperty LIGHT = BooleanProperty.of("light");
     public RadarBlock(Settings settings) {
         super(settings);
         setDefaultState(this.stateManager.getDefaultState().with(LIGHT,false));
+    }
+
+    @Override
+    protected MapCodec<? extends BlockWithEntity> getCodec() {
+        return CODEC;
     }
 
     @Override
@@ -53,6 +60,6 @@ public class RadarBlock extends BlockWithEntity implements BlockEntityProvider {
 
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-        return checkType(type, BlockRegistry.RADAR_BLOCK_ENTITY, RadarBlockEntity::tick);
+        return validateTicker(type, BlockRegistry.RADAR_BLOCK_ENTITY, RadarBlockEntity::tick);
     }
 }

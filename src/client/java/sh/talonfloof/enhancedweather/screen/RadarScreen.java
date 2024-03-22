@@ -122,7 +122,7 @@ public class RadarScreen extends Screen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        this.renderBackground(context);
+        this.blur();
         MinecraftClient client = MinecraftClient.getInstance();
         int chunkX = Math.floorDiv(pos.getX(),32);
         int chunkZ = Math.floorDiv(pos.getZ(),32);
@@ -219,7 +219,7 @@ public class RadarScreen extends Screen {
         castLine(0, 0, -(int)Math.round(Math.sin(Math.toRadians(a)) * 8), -(int)Math.round(Math.cos(Math.toRadians(a)) * 8), (x, y) -> {
             context.fill(baseX+(x * 3), baseY+(y * 3), baseX+((x * 3) + 3), baseY+((y * 3) + 3), 0xFFFFFFFF);
         });
-        String s = MathHelper.lerp(EnhancedWeatherClient.windSpeed/100F,0,(4*20*60*60)/1000)+" km/h";
+        String s = ((int)Math.floor(EnhancedWeatherClient.windSpeed))+" km/h";
         context.drawText(this.textRenderer,s,baseX-(this.textRenderer.getWidth(s)/2),baseY+(12*2),0xffffffff,false);
         context.getMatrices().pop();
     }

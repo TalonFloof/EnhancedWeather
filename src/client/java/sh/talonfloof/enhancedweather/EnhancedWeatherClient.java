@@ -17,7 +17,6 @@ import sh.talonfloof.enhancedweather.network.*;
 import sh.talonfloof.enhancedweather.particle.HailParticle;
 import sh.talonfloof.enhancedweather.particle.SnowParticle;
 import sh.talonfloof.enhancedweather.particle.TornadoParticle;
-import sh.talonfloof.enhancedweather.network.*;
 import sh.talonfloof.enhancedweather.particle.RainParticle;
 
 import java.util.HashMap;
@@ -54,7 +53,6 @@ public class EnhancedWeatherClient implements ClientModInitializer {
 		ParticleFactoryRegistry.getInstance().register(EW_HAIL, HailParticle.DefaultFactory::new);
 		ParticleFactoryRegistry.getInstance().register(EW_TORNADO, TornadoParticle.DefaultFactory::new);
 		ClientPlayNetworking.registerGlobalReceiver(UpdateConditions.PACKET_ID, UpdateConditionsClient::onReceive);
-		ClientPlayNetworking.registerGlobalReceiver(SettingSync.PACKET_ID, SettingSyncClient::onReceive);
 		ClientPlayNetworking.registerGlobalReceiver(ScreenOpen.PACKET_ID, ScreenOpenClient::onReceive);
 		ClientPlayNetworking.registerGlobalReceiver(UpdateEvent.PACKET_ID, UpdateEventClient::onReceive);
 		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
@@ -70,7 +68,6 @@ public class EnhancedWeatherClient implements ClientModInitializer {
 			cloud = 0;
 			rain = 0;
 			rainDest = 0;
-			EnhancedWeatherAPI.clientReducedRain = false;
 		});
 		ClientTickEvents.START_WORLD_TICK.register((client) -> {
 			for(UUID id : clientEvents.keySet()) {
@@ -138,7 +135,7 @@ public class EnhancedWeatherClient implements ClientModInitializer {
 					if (client.world.getTopY(Heightmap.Type.MOTION_BLOCKING, pos.getX(), pos.getZ()) > pos.getY())
 						continue;
 
-					if(EnhancedWeatherConfig.Client_ParticleRain)
+					if(EnhancedWeather.CONFIG.Client_ParticleRain())
 						client.world.addParticle(EnhancedWeather.EW_RAIN, pos.getX() + rand.nextFloat(), pos.getY() + rand.nextFloat(), pos.getZ() + rand.nextFloat(), 0, 0, 0);
 					if(windSpeed >= 50 && rainDest == 1F && pass < 5) {
 						client.world.addParticle(EnhancedWeather.EW_HAIL, pos.getX() + rand.nextFloat(), pos.getY() + rand.nextFloat(), pos.getZ() + rand.nextFloat(), 0, 0, 0);

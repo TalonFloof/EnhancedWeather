@@ -21,6 +21,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import sh.talonfloof.enhancedweather.CloudRenderManager;
+import sh.talonfloof.enhancedweather.EnhancedWeather;
 import sh.talonfloof.enhancedweather.config.EnhancedWeatherConfig;
 import sh.talonfloof.enhancedweather.EnhancedWeatherClient;
 
@@ -31,7 +32,7 @@ public class WorldRendererMixin {
 
     @Inject(method = "renderWeather(Lnet/minecraft/client/render/LightmapTextureManager;FDDD)V", at = @At("HEAD"), cancellable = true)
     public void rain(LightmapTextureManager manager, float tickDelta, double cameraX, double cameraY, double cameraZ, CallbackInfo ci) {
-        if (EnhancedWeatherConfig.Client_ParticleRain) {
+        if (EnhancedWeather.CONFIG.Client_ParticleRain()) {
             ci.cancel();
         }
     }
@@ -47,8 +48,11 @@ public class WorldRendererMixin {
 
     @Inject(method = "renderClouds(Lnet/minecraft/client/util/math/MatrixStack;Lorg/joml/Matrix4f;FDDD)V", at = @At("HEAD"), cancellable = true)
     public void newCloudRender(MatrixStack matrices, Matrix4f projectionMatrix, float tickDelta, double cameraX, double cameraY, double cameraZ, CallbackInfo ci) {
-        CloudRenderManager.render(matrices, projectionMatrix, tickDelta, cameraX, cameraY, cameraZ);
-        ci.cancel();
+        ClientWorld world = MinecraftClient.getInstance().world;
+        if(EnhancedWeather.CONFIG.Misc_DimensionWhitelist().contains(world.getDimensionKey().getValue().toString())) {
+            CloudRenderManager.render(matrices, projectionMatrix, tickDelta, cameraX, cameraY, cameraZ);
+            ci.cancel();
+        }
     }
 
     @Inject(method = "renderSky(Lnet/minecraft/client/util/math/MatrixStack;Lorg/joml/Matrix4f;FLnet/minecraft/client/render/Camera;ZLjava/lang/Runnable;)V", slice = @Slice(
@@ -63,9 +67,12 @@ public class WorldRendererMixin {
             target = "Lnet/minecraft/client/util/math/MatrixStack;multiply(Lorg/joml/Quaternionf;)V"
     ))
     public void renderRainbow(MatrixStack matrices, Matrix4f projectionMatrix, float tickDelta, Camera camera, boolean thickFog, Runnable fogCallback, CallbackInfo ci) {
-        if(!EnhancedWeatherClient.showRainbow || !EnhancedWeatherConfig.Client_ShowRainbow)
+        if(!EnhancedWeatherClient.showRainbow || !EnhancedWeather.CONFIG.Client_ShowRainbow())
             return;
         ClientWorld world = MinecraftClient.getInstance().world;
+        if(!EnhancedWeather.CONFIG.Misc_DimensionWhitelist().contains(world.getDimensionKey().getValue().toString())) {
+            return;
+        }
         matrices.push();
         Tessellator t = Tessellator.getInstance();
         GlStateManager._blendFuncSeparate(770, 771, 1, 0);
