@@ -31,7 +31,7 @@
 	"accessWidener": "enhancedweather.accesswidener",
 	"depends": {
 		"fabricloader": "*",
-		"minecraft": "~1.20.4",
+		"minecraft": "~1.20.1",
 		"java": ">=17",
 		"fabric-api": "*"
 	}

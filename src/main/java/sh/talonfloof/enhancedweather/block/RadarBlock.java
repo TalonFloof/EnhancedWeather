@@ -19,16 +19,10 @@ import org.jetbrains.annotations.Nullable;
 import sh.talonfloof.enhancedweather.network.ScreenOpen;
 
 public class RadarBlock extends BlockWithEntity implements BlockEntityProvider {
-    public static final MapCodec<RadarBlock> CODEC = createCodec(RadarBlock::new);
     public static final BooleanProperty LIGHT = BooleanProperty.of("light");
     public RadarBlock(Settings settings) {
         super(settings);
         setDefaultState(this.stateManager.getDefaultState().with(LIGHT,false));
-    }
-
-    @Override
-    protected MapCodec<? extends BlockWithEntity> getCodec() {
-        return CODEC;
     }
 
     @Override
@@ -60,6 +54,6 @@ public class RadarBlock extends BlockWithEntity implements BlockEntityProvider {
 
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-        return validateTicker(type, BlockRegistry.RADAR_BLOCK_ENTITY, RadarBlockEntity::tick);
+        return checkType(type, BlockRegistry.RADAR_BLOCK_ENTITY, RadarBlockEntity::tick);
     }
 }
