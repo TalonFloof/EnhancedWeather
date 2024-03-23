@@ -109,6 +109,8 @@ public class EnhancedWeatherClient implements ClientModInitializer {
 				return;
 			if (client.isPaused() || client.world == null && client.getCameraEntity() == null)
 				return;
+			if(!EnhancedWeather.CONFIG.Misc_DimensionWhitelist().contains(client.world.getDimensionKey().getValue().toString()))
+				return;
 			if(client.player.getY() > client.world.getDimensionEffects().getCloudsHeight())
 				return;
 			if(client.world.getBiome(client.player.getBlockPos()).value().getPrecipitation(client.player.getBlockPos()) == Biome.Precipitation.SNOW) {
