@@ -154,7 +154,6 @@ public class EnhancedWeather implements ModInitializer {
 							if(r.nextInt(EnhancedWeather.CONFIG.Weather_TornadoSpawnChance()) == 0) {
 								Tornado t = new Tornado(pos.getX(),192,pos.getZ(),r.nextInt(3));
 								events.put(UUID.randomUUID(),t);
-								EnhancedWeather.LOGGER.info("Tornado Spawn: " + pos.getX() + ", " + pos.getZ());
 							}
 						}
 					}
