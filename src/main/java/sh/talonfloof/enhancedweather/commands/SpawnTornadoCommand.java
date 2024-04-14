@@ -1,7 +1,5 @@
 package sh.talonfloof.enhancedweather.commands;
 
-package sh.talonfloof.enhancedweather.command;
-
 import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
