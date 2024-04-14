@@ -14,8 +14,8 @@ public class SpawnTornadoCommand { // Example: /wxtornadoevent -42 785.75 500 - 
     public static void register() {
         CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
             dispatcher.register(CommandManager.literal("wxtornadoevent")
-                    .then(CommandManager.argument("x", IntegerArgumentType.integer())
-                            .then(CommandManager.argument("z", IntegerArgumentType.integer())
+                    .then(CommandManager.argument("x", FloatArgumentType.floatArg())
+                            .then(CommandManager.argument("z", FloatArgumentType.floatArg())
                                     .then(CommandManager.argument("intensityMax", IntegerArgumentType.integer())
                                             .executes(context -> execute(context.getSource(),
                                                     FloatArgumentType.getFloat(context, "x"),
