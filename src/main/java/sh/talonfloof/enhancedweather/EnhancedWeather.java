@@ -151,9 +151,11 @@ public class EnhancedWeather implements ModInitializer {
 						Random r = Random.create();
 						pos = pos.add(r.nextBetween(-1024, 1024), 0, r.nextBetween(-1024, 1024));
 						if (EnhancedWeatherAPI.isThundering(world, 0, pos.getX() - MathHelper.floor(cloudX), pos.getZ() - MathHelper.floor(cloudZ)) && WindManager.windSpeed >= CONFIG.Weather_TornadoMinimumWind()) {
-							if(r.nextInt(EnhancedWeather.CONFIG.Weather_TornadoSpawnChance()) == 0) {
-								Tornado t = new Tornado(pos.getX(),192,pos.getZ(),r.nextInt(3));
-								events.put(UUID.randomUUID(),t);
+							if(EnhancedWeather.CONFIG.Weather_TornadoSpawnChance() > 0) {
+								if (r.nextInt(EnhancedWeather.CONFIG.Weather_TornadoSpawnChance()) == 0) {
+									Tornado t = new Tornado(pos.getX(), 192, pos.getZ(), r.nextInt(3));
+									events.put(UUID.randomUUID(), t);
+								}
 							}
 						}
 					}

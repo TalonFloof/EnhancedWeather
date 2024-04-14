@@ -11,6 +11,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 import org.joml.Matrix4f;
+import sh.talonfloof.enhancedweather.api.EnhancedWeatherAPI;
 import sh.talonfloof.enhancedweather.config.EnhancedWeatherConfig;
 import sh.talonfloof.enhancedweather.util.MathUtil;
 
@@ -44,6 +45,13 @@ public class CloudRenderManager {
                 chunks[i].forceUpdate();
             }
         }
+    }
+
+    public static boolean hasCloudBlock(int x, int y, int z) {
+        float rainFront = EnhancedWeatherAPI.sampleFront(x, z, 0.2);
+        float density = EnhancedWeatherAPI.getCloudDensity(x << 1, y << 1, z << 1, rainFront);
+        float coverage = EnhancedWeatherAPI.getCoverage(rainFront);
+        return !(density < coverage);
     }
 
     public static void render(MatrixStack matrices, Matrix4f projectionMatrix, float tickDelta, double cameraX, double cameraY, double cameraZ) {
@@ -129,14 +137,14 @@ public class CloudRenderManager {
         RenderSystem.defaultBlendFunc();
     }
 
-    public static void makeCloudBlock(BufferBuilder tessellator, int x, int y, int z, float r, float g, float b, short[] data, int index) {
-        if (x == 0 || data[index - 1] == (short)0xf000) {
+    public static void makeCloudBlock(BufferBuilder tessellator, int x, int y, int z, float r, float g, float b, short[] data, int index, int oX, int oZ) {
+        if (!hasCloudBlock((oX*16)+x-1,y,(oZ*16)+z)) {
             tessellator.vertex(x, y, z).normal(-1,0,0).texture(0,0).color(r,g,b,1.0F).next();
             tessellator.vertex(x, y + 1, z).normal(-1,0,0).texture(0,0).color(r,g,b,1.0F).next();
             tessellator.vertex(x, y + 1, z + 1).normal(-1,0,0).texture(0,0).color(r,g,b,1.0F).next();
             tessellator.vertex(x, y, z + 1).normal(-1,0,0).texture(0,0).color(r,g,b,1.0F).next();
         }
-        if (x == 15 || data[index + 1] == (short)0xf000) {
+        if (!hasCloudBlock((oX*16)+x+1,y,(oZ*16)+z)) {
             tessellator.vertex(x + 1, y, z).normal(1,0,0).texture(0,0).color(r,g,b,1.0F).next();
             tessellator.vertex(x + 1, y + 1, z).normal(1,0,0).texture(0,0).color(r,g,b,1.0F).next();
             tessellator.vertex(x + 1, y + 1, z + 1).normal(1,0,0).texture(0,0).color(r,g,b,1.0F).next();
@@ -156,13 +164,13 @@ public class CloudRenderManager {
             tessellator.vertex(x, y + 1, z + 1).normal(0,1,0).texture(0,0).color(r,g,b,1.0F).next();
         }
 
-        if (z == 0 || data[index - 512] == (short)0xf000) {
+        if (!hasCloudBlock((oX*16)+x,y,(oZ*16)+z-1)) {
             tessellator.vertex(x, y, z).normal(0,0,-1).texture(0,0).color(r,g,b,1.0F).next();
             tessellator.vertex(x, y + 1, z).normal(0,0,-1).texture(0,0).color(r,g,b,1.0F).next();
             tessellator.vertex(x + 1, y + 1, z).normal(0,0,-1).texture(0,0).color(r,g,b,1.0F).next();
             tessellator.vertex(x + 1, y, z).normal(0,0,-1).texture(0,0).color(r,g,b,1.0F).next();
         }
-        if (z == 15 || data[index + 512] == (short)0xf000) {
+        if (!hasCloudBlock((oX*16)+x,y,(oZ*16)+z+1)) {
             tessellator.vertex(x, y, z + 1).normal(0,0,1).texture(0,0).color(r,g,b,1.0F).next();
             tessellator.vertex(x, y + 1, z + 1).normal(0,0,1).texture(0,0).color(r,g,b,1.0F).next();
             tessellator.vertex(x + 1, y + 1, z + 1).normal(0,0,1).texture(0,0).color(r,g,b,1.0F).next();

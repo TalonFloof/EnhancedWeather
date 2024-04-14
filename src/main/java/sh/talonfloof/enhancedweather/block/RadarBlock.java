@@ -10,10 +10,12 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
+import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import sh.talonfloof.enhancedweather.network.ScreenOpen;
@@ -23,7 +25,7 @@ public class RadarBlock extends BlockWithEntity implements BlockEntityProvider {
     public static final BooleanProperty LIGHT = BooleanProperty.of("light");
     public RadarBlock(Settings settings) {
         super(settings);
-        setDefaultState(this.stateManager.getDefaultState().with(LIGHT,false));
+        setDefaultState(this.stateManager.getDefaultState().with(LIGHT,false).with(Properties.HORIZONTAL_FACING, Direction.NORTH));
     }
 
     @Override
@@ -37,11 +39,14 @@ public class RadarBlock extends BlockWithEntity implements BlockEntityProvider {
     }
 
     @Override
-    protected void appendProperties(StateManager.Builder<Block, BlockState> stateManager) {stateManager.add(LIGHT);}
+    protected void appendProperties(StateManager.Builder<Block, BlockState> stateManager) {
+        stateManager.add(LIGHT);
+        stateManager.add(Properties.HORIZONTAL_FACING);
+    }
 
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
-        return (BlockState)this.getDefaultState().with(LIGHT,false);
+        return (BlockState)this.getDefaultState().with(LIGHT,false).with(Properties.HORIZONTAL_FACING, ctx.getHorizontalPlayerFacing().getOpposite());
     }
 
     @Override

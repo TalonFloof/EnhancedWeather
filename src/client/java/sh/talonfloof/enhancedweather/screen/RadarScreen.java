@@ -122,7 +122,6 @@ public class RadarScreen extends Screen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        this.blur();
         MinecraftClient client = MinecraftClient.getInstance();
         int chunkX = Math.floorDiv(pos.getX(),32);
         int chunkZ = Math.floorDiv(pos.getZ(),32);

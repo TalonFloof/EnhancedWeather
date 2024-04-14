@@ -10,6 +10,8 @@
   "text.config.enhancedweather.option.Client_ShowRainbow.tooltip": "We recommended disabling this if you're using shaders",
   "text.config.enhancedweather.option.Client_CloudRadius": "Cloud Render Radius",
   "text.config.enhancedweather.option.Client_CloudRadius.tooltip": "Changes the radius of clouds that are rendered",
+  "text.config.enhancedweather.option.Client_ParticlesMoveWithWind": "Particles Move with Wind",
+  "text.config.enhancedweather.option.Client_ParticlesMoveWithWind.tooltip": "Sets if particle velocity is affected by wind",
   "text.config.enhancedweather.option.Weather_ReducedRainFronts": "Reduce Rain Fronts",
   "text.config.enhancedweather.option.Weather_ReducedRainFronts.tooltip": "Enabling this reduces the amount of rain fronts",
   "text.config.enhancedweather.option.Weather_TornadoMinimumWind": "Tornado Minimum Wind Speed",

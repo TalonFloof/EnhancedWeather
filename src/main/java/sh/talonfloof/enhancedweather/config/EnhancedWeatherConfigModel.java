@@ -17,6 +17,7 @@ public class EnhancedWeatherConfigModel {
     //@Comment("Changes the radius of clouds that are rendered\n(Default: 9)")
     @RangeConstraint(min=6,max=16)
     public int Client_CloudRadius = 9;
+    public boolean Client_ParticlesMoveWithWind = true;
 
     @SectionHeader("weather")
     @Sync(value=Option.SyncMode.OVERRIDE_CLIENT)

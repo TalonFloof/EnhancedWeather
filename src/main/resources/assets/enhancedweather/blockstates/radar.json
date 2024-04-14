@@ -1,6 +1,12 @@
 {
   "variants": {
-    "light=false": { "model": "enhancedweather:block/radar" },
-    "light=true": { "model": "enhancedweather:block/radar_light" }
+    "facing=north,light=false": { "model": "enhancedweather:block/radar", "y": 180 },
+    "facing=north,light=true": { "model": "enhancedweather:block/radar_light", "y": 180 },
+    "facing=east,light=false": { "model": "enhancedweather:block/radar", "y": 270 },
+    "facing=east,light=true": { "model": "enhancedweather:block/radar_light", "y": 270 },
+    "facing=south,light=false": { "model": "enhancedweather:block/radar", "y": 0 },
+    "facing=south,light=true": { "model": "enhancedweather:block/radar_light", "y": 0 },
+    "facing=west,light=false": { "model": "enhancedweather:block/radar", "y": 90 },
+    "facing=west,light=true": { "model": "enhancedweather:block/radar_light", "y": 90 }
   }
 }

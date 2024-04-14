@@ -114,7 +114,7 @@ public class CloudChunk {
             r = MathHelper.clamp(MathHelper.lerp(deltaBrightness, r, 1F) * deltaThunder,0,1);
             g = MathHelper.clamp(MathHelper.lerp(deltaBrightness, g, 1F) * deltaThunder,0,1);
             b = MathHelper.clamp(MathHelper.lerp(deltaBrightness, b, 1F) * deltaThunder,0,1);
-            CloudRenderManager.makeCloudBlock(bufferBuilder,x,y,z,r,g,b,data,i);
+            CloudRenderManager.makeCloudBlock(bufferBuilder,x,y,z,r,g,b,data,i,chunkX,chunkZ);
         }
         buf.bind();
         buf.upload(bufferBuilder.end());
