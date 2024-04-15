@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sh.talonfloof.enhancedweather.api.EnhancedWeatherAPI;
 import sh.talonfloof.enhancedweather.block.BlockRegistry;
+import sh.talonfloof.enhancedweather.commands.SpawnTornadoCommand;
 import sh.talonfloof.enhancedweather.config.EnhancedWeatherConfig;
 import sh.talonfloof.enhancedweather.events.Tornado;
 import sh.talonfloof.enhancedweather.events.WeatherEvent;
@@ -128,6 +129,7 @@ public class EnhancedWeather implements ModInitializer {
 		Registry.register(Registries.PARTICLE_TYPE, new Identifier("enhancedweather", "tornado"), EW_TORNADO);
 		ServerPlayNetworking.registerGlobalReceiver(SuppressAlertServer.PACKET_ID,SuppressAlertServer::onReceive);
 		BlockRegistry.register();
+		SpawnTornadoCommand.register();
 		ServerWorldEvents.LOAD.register((server, world) -> {
 			if(world.getDimensionKey().equals(DimensionTypes.OVERWORLD)) {
 				events.clear();
